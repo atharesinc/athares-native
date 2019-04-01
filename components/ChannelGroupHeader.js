@@ -1,15 +1,29 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "@expo/vector-icons/Feather";
+import { withNavigation } from "react-navigation";
 
-const ChannelGroupHeader = ({ displayPlus = false, title }) => (
-  <View style={styles.row}>
-    <Text style={styles.channelTitle}>{title}</Text>
-    {displayPlus ? <Icon name="plus" size={25} color={"#FFFFFF"} /> : null}
-  </View>
-);
+const ChannelGroupHeader = ({ displayPlus = false, title, ...props }) => {
+  const nav = () => {
+    if (title === "DIRECT MESSAGES") {
+      props.navigation.navigate("CreateDM");
+    } else if (title === "CHANNELS") {
+      props.navigation.navigate("CreateChannel");
+    }
+  };
+  return (
+    <View style={styles.row}>
+      <Text style={styles.channelTitle}>{title}</Text>
+      {displayPlus ? (
+        <TouchableOpacity onPress={nav}>
+          <Icon name="plus" size={25} color={"#FFFFFF"} />
+        </TouchableOpacity>
+      ) : null}
+    </View>
+  );
+};
 
-export default ChannelGroupHeader;
+export default withNavigation(ChannelGroupHeader);
 
 const styles = StyleSheet.create({
   row: {

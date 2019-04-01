@@ -1,4 +1,4 @@
-import { createStackNavigator } from "react-navigation";
+import { createStackNavigator, createDrawerNavigator } from "react-navigation";
 
 import Dashboard from "./dashboard";
 import CreateCircle from "./createCircle";
@@ -9,8 +9,10 @@ import Channel from "./channel";
 import CreateDM from "./createDM";
 import DMChannel from "./dmChannel";
 import AddUser from "./addUser";
+import Revisions from "./revisions";
 import ViewOtherUser from "./viewOtherUser";
 import { slidingStackNavigator } from "../../config/navigators";
+import Menu from "./menu";
 
 const DashboardStackNavigator = createStackNavigator(
   {
@@ -23,9 +25,24 @@ const DashboardStackNavigator = createStackNavigator(
     CreateDM: CreateDM,
     DMChannel: DMChannel,
     AddUser: AddUser,
-    ViewOtherUser: ViewOtherUser
+    ViewOtherUser: ViewOtherUser,
+    Revisions: Revisions
   },
   slidingStackNavigator
 );
 
-export default DashboardStackNavigator;
+// this should be a list of all things in the drawer
+// Me
+// About
+// Policy
+// Logout
+const DashboardWithDrawer = createDrawerNavigator(
+  {
+    Dashboard: DashboardStackNavigator
+  },
+  {
+    contentComponent: Menu,
+    drawerPosition: "left"
+  }
+);
+export default DashboardWithDrawer;

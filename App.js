@@ -9,8 +9,6 @@ import AppContaner from "./screens";
 
 export default class App extends Component {
   state = {
-    top: "always",
-    bottom: "always",
     fontsAreLoaded: false
   };
 

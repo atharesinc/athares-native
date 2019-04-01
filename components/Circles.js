@@ -13,13 +13,19 @@ import Icon from "@expo/vector-icons/Feather";
 import CircleIcon from "./CircleIcon";
 
 const Circles = ({ loggedIn = false, ...props }) => {
-  const selectCircle = () => {
+  const selectCircle = (id = "") => {
     console.log("Selected a circle");
+    // props.dispatch(updateCircle(id))
   };
-
+  const goToCreateCircle = () => {
+    props.navigation.navigate("CreateCircle");
+  };
   return (
     <View style={styles.wrapper}>
-      <TouchableOpacity style={styles.addCircleWrapper}>
+      <TouchableOpacity
+        style={styles.addCircleWrapper}
+        onPress={goToCreateCircle}
+      >
         <View style={styles.iconWrapper}>
           <Icon
             name="plus"
@@ -32,17 +38,7 @@ const Circles = ({ loggedIn = false, ...props }) => {
         </Text>
       </TouchableOpacity>
       <ScrollView horizontal={true} contentContainerStyle={styles.circlesList}>
-        <CircleIcon selected={true} />
-        <CircleIcon />
-        <CircleIcon />
-        <CircleIcon />
-        <CircleIcon />
-        <CircleIcon />
-        <CircleIcon />
-        <CircleIcon />
-        <CircleIcon />
-        <CircleIcon />
-        <CircleIcon />
+        <CircleIcon selected={true} selectCircle={selectCircle} />
       </ScrollView>
     </View>
   );

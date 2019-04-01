@@ -3,45 +3,26 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "@expo/vector-icons/Feather";
 import { withNavigation } from "react-navigation";
 
-const ChannelItem = ({
-  channel = { name: "", channelType: "group" },
-  lastMessage,
-  showUnread = false,
-  ...props
-}) => {
+const GovernanceChannelItem = ({ link, title, ...props }) => {
   const nav = () => {
-    if (channel.channelType === "dm") {
-      props.navigation.navigate("DMChannel");
-    } else if (channel.channelType === "group") {
-      props.navigation.navigate("Channel");
-    }
+    props.navigation.navigate(link);
   };
   return (
     <TouchableOpacity style={styles.row} onPress={nav}>
       <View styleName="vertical">
-        <Text style={[styles.channelTitle, showUnread ? styles.unread : {}]}>
-          {channel.name || "General"}
-        </Text>
-        <Text
+        <Text style={styles.channelTitle}>{title}</Text>
+        {/* <Text
           style={[styles.channelText, showUnread ? styles.unread : {}]}
           numberOfLines={1}
         >
           www.example.com/deal/link/that-is-really-long-sdoifs-sdfvsdf-sbd-fbsdfbs
-        </Text>
+        </Text> */}
       </View>
-      {showUnread && (
-        <Icon
-          styleName="disclosure"
-          name="alert-circle"
-          size={25}
-          color={"#00dffc"}
-        />
-      )}
     </TouchableOpacity>
   );
 };
 
-export default withNavigation(ChannelItem);
+export default withNavigation(GovernanceChannelItem);
 
 const styles = StyleSheet.create({
   row: {

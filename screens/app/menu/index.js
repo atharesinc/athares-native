@@ -12,7 +12,12 @@ class SideMenu extends Component {
 
   render() {
     return (
-      <View style={{ backgroundColor: "#333333", flex: 1 }}>
+      <View
+        style={{
+          backgroundColor: "#2f32fa",
+          flex: 1
+        }}
+      >
         <ScrollView>
           <View>
             <View>

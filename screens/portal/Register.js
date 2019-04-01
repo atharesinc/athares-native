@@ -5,9 +5,7 @@ import PortalCard from "../../components/PortalCard";
 import { TouchableOpacity, Linking, Image, Text, View } from "react-native";
 
 export default class Register extends Component {
-  updateEmail = text => {
-    console.log(text);
-  };
+  updateEmail = text => {};
   tryRegister = () => {
     // whole lotta code
     this.props.navigation.navigate("Dashboard");

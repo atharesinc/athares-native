@@ -5,7 +5,6 @@ import Icon from "@expo/vector-icons/Feather";
 
 class PortalInput extends React.Component {
   handleClick = () => {
-    console.log(this.refs.input);
     this.refs.input.focus();
   };
 

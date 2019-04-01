@@ -1,16 +1,14 @@
 import React, { Component } from "react";
 
 import { StyleSheet, ScrollView, Text, View } from "react-native";
-import { createDrawerNavigator } from "react-navigation";
+// import { createDrawerNavigator, createStackNavigator } from "react-navigation";
 import Menu from "../menu";
-import Icon from "@expo/vector-icons/Feather";
 import Footer from "../../../components/Footer";
-
 import Circles from "../../../components/Circles";
 import ChannelItem from "../../../components/ChannelItem";
 import ChannelGroupHeader from "../../../components/ChannelGroupHeader";
 
-class DashboardWithoutDrawer extends Component {
+class Dashboard extends Component {
   state = {
     showSearch: false
   };
@@ -19,17 +17,22 @@ class DashboardWithoutDrawer extends Component {
     return (
       <View
         style={{
-          flex: 1,
           alignItems: "stretch",
           justifyContent: "space-between",
-          width: "100%"
+          width: "100%",
+          flex: 1
         }}
       >
         <Circles />
         <View style={{ backgroundColor: "#282a38", height: "75%" }}>
           <ScrollView>
             <ChannelGroupHeader title={"GOVERNANCE"} />
-            <ChannelItem />
+            <GovernanceChannelItem
+              title={"Constitution"}
+              link={"Constitution"}
+            />
+            <GovernanceChannelItem title={"Polls"} link={"Revisions"} />
+            <GovernanceChannelItem title={"Settings"} link={"CircleSettings"} />
             <ChannelGroupHeader title={"CHANNELS"} displayPlus={true} />
             <ChannelItem showUnread={true} />
             <ChannelItem />
@@ -40,7 +43,10 @@ class DashboardWithoutDrawer extends Component {
             <ChannelItem />
 
             <ChannelGroupHeader title={"DIRECT MESSAGES"} displayPlus={true} />
-            <ChannelItem showUnread={false} />
+            <ChannelItem
+              showUnread={false}
+              channel={{ name: "Jim", channelType: "dm" }}
+            />
           </ScrollView>
         </View>
         <Footer />
@@ -49,29 +55,6 @@ class DashboardWithoutDrawer extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  navBar: {
-    backgroundColor: "#282a38",
-    height: "10%"
-  }
-});
-
-// this should be a list of all things in the drawer
-// Me
-// About
-// Policy
-// Logout
-const Dashboard = createDrawerNavigator(
-  {
-    DashboardWithoutDrawer: {
-      screen: DashboardWithoutDrawer
-    }
-  },
-  {
-    contentComponent: Menu,
-    drawerPosition: "left"
-  }
-);
 export default Dashboard;
 
 // return (

@@ -5,9 +5,7 @@ import PortalButton from "../../components/PortalButton";
 import PortalCard from "../../components/PortalCard";
 
 export default class Login extends Component {
-  updateEmail = text => {
-    console.log(text);
-  };
+  updateEmail = text => {};
   tryLogin = () => {
     // whole lotta code
     this.props.navigation.navigate("Dashboard");

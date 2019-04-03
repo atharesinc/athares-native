@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 
-import { StyleSheet, ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 // import { createDrawerNavigator, createStackNavigator } from "react-navigation";
-import Menu from "../menu";
 import Footer from "../../../components/Footer";
 import Circles from "../../../components/Circles";
 import ChannelItem from "../../../components/ChannelItem";
 import ChannelGroupHeader from "../../../components/ChannelGroupHeader";
+import CircleHeader from "../../../components/CircleHeader";
+import GovernanceChannelItem from "../../../components/GovernanceChannelItem";
 
 class Dashboard extends Component {
   state = {
@@ -25,6 +26,7 @@ class Dashboard extends Component {
       >
         <Circles />
         <View style={{ backgroundColor: "#282a38", height: "75%" }}>
+          <CircleHeader />
           <ScrollView>
             <ChannelGroupHeader title={"GOVERNANCE"} />
             <GovernanceChannelItem

@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import { StyleSheet, View, ImageBackground } from "react-native";
 import { SafeAreaView } from "react-navigation";
-
 import { Font, AppLoading } from "expo";
 import { setCustomText, setCustomTextInput } from "react-native-global-props";
 
+// redux tomfoolery
+import { Provider } from "react-redux";
+import { store } from "./redux";
 import AppContaner from "./screens";
 
 export default class App extends Component {
@@ -31,22 +33,24 @@ export default class App extends Component {
       return <AppLoading />;
     }
     return (
-      <SafeAreaView
-        style={styles.container}
-        forceInset={{
-          top: "always",
-          bottom: "always"
-        }}
-      >
-        <ImageBackground
-          source={require("./assets/iss-master.jpg")}
-          style={styles.image}
+      <Provider store={store}>
+        <SafeAreaView
+          style={styles.container}
+          forceInset={{
+            top: "always",
+            bottom: "always"
+          }}
         >
-          <View style={styles.transparentView}>
-            <AppContaner style={styles.appContainer} />
-          </View>
-        </ImageBackground>
-      </SafeAreaView>
+          <ImageBackground
+            source={require("./assets/iss-master.jpg")}
+            style={styles.image}
+          >
+            <View style={styles.transparentView}>
+              <AppContaner style={styles.appContainer} />
+            </View>
+          </ImageBackground>
+        </SafeAreaView>
+      </Provider>
     );
   }
 }

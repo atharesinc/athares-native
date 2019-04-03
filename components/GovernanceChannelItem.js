@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import Icon from "@expo/vector-icons/Feather";
 import { withNavigation } from "react-navigation";
 
 const GovernanceChannelItem = ({ link, title, ...props }) => {
@@ -9,14 +8,8 @@ const GovernanceChannelItem = ({ link, title, ...props }) => {
   };
   return (
     <TouchableOpacity style={styles.row} onPress={nav}>
-      <View styleName="vertical">
+      <View>
         <Text style={styles.channelTitle}>{title}</Text>
-        {/* <Text
-          style={[styles.channelText, showUnread ? styles.unread : {}]}
-          numberOfLines={1}
-        >
-          www.example.com/deal/link/that-is-really-long-sdoifs-sdfvsdf-sbd-fbsdfbs
-        </Text> */}
       </View>
     </TouchableOpacity>
   );
@@ -35,7 +28,7 @@ const styles = StyleSheet.create({
   },
   channelTitle: {
     color: "#FFFFFF80",
-    fontSize: 25
+    fontSize: 20
   },
   channelText: {
     color: "#FFFFFF80",

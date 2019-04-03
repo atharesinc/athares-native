@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   channelTitle: {
     color: "#FFFFFF80",
-    fontSize: 25
+    fontSize: 20
   },
   channelText: {
     color: "#FFFFFF80",

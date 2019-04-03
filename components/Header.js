@@ -4,21 +4,110 @@ import { Text, TouchableOpacity, StyleSheet, View, Image } from "react-native";
 import { withNavigation } from "react-navigation";
 import Icon from "@expo/vector-icons/Feather";
 
+import { connect } from "react-redux";
+import { toggleSearch } from "../redux/ui/actions";
+import { pull } from "../redux/state/reducers";
+
 class Header extends Component {
   toggleDrawer = () => {
     this.props.navigation.toggleDrawer();
   };
+  toggleSearch = () => {
+    this.props.dispatch(toggleSearch());
+  };
+  back = () => {
+    this.props.navigation.navigate("Dashboard");
+  };
+  more = () => {
+    let {
+      navigation: {
+        state: { routes }
+      }
+    } = this.props;
+    let { routeName } = routes[routes.length - 1];
+    if (routeName === "DMChannel") {
+      this.props.navigation.navigate("DMSettings");
+    }
+  };
   render() {
     let {
-      loggedIn = true,
-      belongsToCircle = true,
-      searchOpen = false
+      loggedIn = false,
+      belongsToCircle = false,
+      searchOpen = false,
+      navigation: {
+        state: { routes }
+      }
     } = this.props;
 
+    const { routeName } = routes[routes.length - 1];
+    const routeTitleIndex = /[A-Z]/.exec("createChannel").index;
+
+    const simpleChannelsArr = [
+      "CreateCircle",
+      "CircleSettings",
+      "Constitution",
+      "CreateChannel",
+      "AddUser",
+      "Revisions"
+    ];
+
+    const simpleChannelsObj = {
+      CreateCircle: "Create Circle",
+      CircleSettings: "Circle Settings",
+      Constitution: "Constitution",
+      CreateChannel: "Create Channel",
+      AddUser: "Add User",
+      Revisions: "Revisions"
+    };
+
     // render screen name and back
-
+    if (simpleChannelsArr.indexOf(routeName) !== -1) {
+      return (
+        <View style={styles.header}>
+          <TouchableOpacity onPress={this.back}>
+            <Icon name="chevron-left" size={25} color={"#FFFFFF"} />
+          </TouchableOpacity>
+          <Text style={styles.headerText} numberOfLines={1}>
+            {simpleChannelsObj[routeName]}
+          </Text>
+          <Icon name="more-vertical" size={25} color={"transparent"} />
+        </View>
+      );
+    }
     // render channelName and back
-
+    if (["Channel", "DMChannel"].indexOf(routeName) !== -1) {
+      return (
+        <View style={styles.header}>
+          <TouchableOpacity onPress={this.back}>
+            <Icon name="chevron-left" size={25} color={"#FFFFFF"} />
+          </TouchableOpacity>
+          <Text style={styles.headerText} numberOfLines={1}>
+            this.props.channel.name
+          </Text>
+          {routeName === "DMChannel" ? (
+            <TouchableOpacity onPress={this.more}>
+              <Icon name="more-vertical" size={25} color={"#FFFFFF"} />
+            </TouchableOpacity>
+          ) : (
+            <Icon name="more-vertical" size={25} color={"transparent"} />
+          )}
+        </View>
+      );
+    }
+    // render username and back
+    if (routeName === "ViewOtherUser") {
+      return (
+        <View style={styles.header}>
+          <TouchableOpacity onPress={this.back}>
+            <Icon name="chevron-left" size={25} color={"#FFFFFF"} />
+          </TouchableOpacity>
+          <Text style={styles.headerText} numberOfLines={1}>
+            this.props.user.firstname
+          </Text>
+          <Icon name="more-vertical" size={25} color={"transparent"} />
+        </View>
+      );
+    }
     // render dashboard with user drawer
     return (
       <View style={styles.header}>
@@ -29,9 +118,13 @@ class Header extends Component {
           />
         </TouchableOpacity>
         {!searchOpen ? (
-          <Icon name="search" size={25} color={"#FFFFFF"} />
+          <TouchableOpacity onPress={this.toggleSearch}>
+            <Icon name="search" size={25} color={"#FFFFFF"} />
+          </TouchableOpacity>
         ) : (
-          <Icon name="x" size={25} color={"#FFFFFF"} />
+          <TouchableOpacity onPress={this.toggleSearch}>
+            <Icon name="x" size={25} color={"#FFFFFF"} numberOfLines={1} />
+          </TouchableOpacity>
         )}
       </View>
     );
@@ -49,6 +142,10 @@ const styles = StyleSheet.create({
     width: "100%",
     zIndex: 0
   },
+  headerText: {
+    color: "#FFFFFF",
+    fontSize: 15
+  },
   userIcon: {
     height: 40,
     width: 40,
@@ -58,4 +155,11 @@ const styles = StyleSheet.create({
   }
 });
 
-export default withNavigation(Header);
+function mapStateToProps(state) {
+  return {
+    activeChannel: pull(state, "activeChannel"),
+    activeUser: pull(state, "activeUser"),
+    activeRevision: pull(state, "activeRevision")
+  };
+}
+export default connect(mapStateToProps)(withNavigation(Header));

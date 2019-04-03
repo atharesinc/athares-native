@@ -3,10 +3,11 @@ import React, { Component } from "react";
 import { Text, TouchableOpacity, StyleSheet, View, Image } from "react-native";
 import { withNavigation } from "react-navigation";
 import Icon from "@expo/vector-icons/Feather";
-
 import { connect } from "react-redux";
 import { toggleSearch } from "../redux/ui/actions";
 import { pull } from "../redux/state/reducers";
+import { toggleDMSettings } from "../redux/ui/actions";
+const pullUI = require("../redux/ui/reducers").pull;
 
 class Header extends Component {
   toggleDrawer = () => {
@@ -16,7 +17,8 @@ class Header extends Component {
     this.props.dispatch(toggleSearch());
   };
   back = () => {
-    this.props.navigation.navigate("Dashboard");
+    // this.props.navigation.navigate("Dashboard");
+    this.props.navigation.goBack(null);
   };
   more = () => {
     let {
@@ -26,7 +28,7 @@ class Header extends Component {
     } = this.props;
     let { routeName } = routes[routes.length - 1];
     if (routeName === "DMChannel") {
-      this.props.navigation.navigate("DMSettings");
+      this.props.dispatch(toggleDMSettings());
     }
   };
   render() {
@@ -38,6 +40,7 @@ class Header extends Component {
         state: { routes }
       }
     } = this.props;
+    let { isFocused } = this.state;
 
     const { routeName } = routes[routes.length - 1];
     const routeTitleIndex = /[A-Z]/.exec("createChannel").index;
@@ -63,7 +66,7 @@ class Header extends Component {
     // render screen name and back
     if (simpleChannelsArr.indexOf(routeName) !== -1) {
       return (
-        <View style={styles.header}>
+        <View style={[styles.header, styles.headerThemeDark]}>
           <TouchableOpacity onPress={this.back}>
             <Icon name="chevron-left" size={25} color={"#FFFFFF"} />
           </TouchableOpacity>
@@ -77,7 +80,7 @@ class Header extends Component {
     // render channelName and back
     if (["Channel", "DMChannel"].indexOf(routeName) !== -1) {
       return (
-        <View style={styles.header}>
+        <View style={[styles.header, styles.headerThemeDark]}>
           <TouchableOpacity onPress={this.back}>
             <Icon name="chevron-left" size={25} color={"#FFFFFF"} />
           </TouchableOpacity>
@@ -97,7 +100,7 @@ class Header extends Component {
     // render username and back
     if (routeName === "ViewOtherUser") {
       return (
-        <View style={styles.header}>
+        <View style={[styles.header, styles.headerThemeDark]}>
           <TouchableOpacity onPress={this.back}>
             <Icon name="chevron-left" size={25} color={"#FFFFFF"} />
           </TouchableOpacity>
@@ -131,6 +134,12 @@ class Header extends Component {
   }
 }
 
+var suggestions = [
+  { name: "Jim", id: "123123" },
+  { name: "Dan", id: "!2315" },
+  { name: "Brian", id: "9182763" },
+  { name: "Kyle", id: "48739201" }
+];
 const styles = StyleSheet.create({
   header: {
     backgroundColor: "#282a38",
@@ -141,6 +150,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     width: "100%",
     zIndex: 0
+  },
+  headerThemeDark: {
+    backgroundColor: "#282a3899"
+  },
+  headerTheme: {
+    backgroundColor: "#2f324299"
+  },
+  headerThemeLighter: {
+    backgroundColor: "#3a3e5299"
   },
   headerText: {
     color: "#FFFFFF",
@@ -159,7 +177,8 @@ function mapStateToProps(state) {
   return {
     activeChannel: pull(state, "activeChannel"),
     activeUser: pull(state, "activeUser"),
-    activeRevision: pull(state, "activeRevision")
+    activeRevision: pull(state, "activeRevision"),
+    dmSettings: pullUI(state, "dmSettings")
   };
 }
 export default connect(mapStateToProps)(withNavigation(Header));

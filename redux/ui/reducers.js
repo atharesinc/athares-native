@@ -18,6 +18,8 @@ export default function reduce(state = initialState, action = {}) {
       return { ...state, dmSettings: false };
     case "OPEN_DM_SETTINGS":
       return { ...state, dmSettings: true };
+    case "TOGGLE_DM_SETTINGS":
+      return { ...state, dmSettings: !state.dmSettings };
     case "TOGGLE_ADD_USERS":
       return { ...state, showAddMoreUsers: !state.showAddMoreUsers };
     case "UPDATE_SEARCH":

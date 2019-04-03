@@ -8,6 +8,21 @@ export function closeSearch() {
     dispatch({ type: "CLOSE_SEARCH" });
   };
 }
+export function openDMSettings() {
+  return async dispatch => {
+    dispatch({ type: "OPEN_DM_SETTINGS" });
+  };
+}
+export function toggleDMSettings() {
+  return async dispatch => {
+    dispatch({ type: "TOGGLE_DM_SETTINGS" });
+  };
+}
+export function closeDMSettings() {
+  return async dispatch => {
+    dispatch({ type: "CLOSE_DM_SETTINGS" });
+  };
+}
 export function clearSearch() {
   return async dispatch => {
     dispatch({ type: "CLEAR_SEARCH" });
@@ -21,16 +36,6 @@ export function updateSearchParams(searchParams) {
 export function toggleSearch() {
   return async dispatch => {
     dispatch({ type: "TOGGLE_SEARCH" });
-  };
-}
-export function closeDMSettings() {
-  return async dispatch => {
-    dispatch({ type: "CLOSE_DM_SETTINGS" });
-  };
-}
-export function openDMSettings() {
-  return async dispatch => {
-    dispatch({ type: "OPEN_DM_SETTINGS" });
   };
 }
 export function toggleAddUsers() {

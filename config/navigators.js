@@ -39,6 +39,7 @@ const slidingStackNavigator = {
     animationEnabled: true,
     header: props => <Header {...props} />
   },
+  transparentCard: true,
   headerMode: "float",
   mode: "card",
   transitionConfig: () => ({

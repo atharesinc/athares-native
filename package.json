@@ -11,6 +11,7 @@
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "react-native-global-props": "^1.1.5",
+    "react-native-tag-autocomplete": "^1.0.21",
     "react-native-vector-icons": "^6.4.2",
     "react-navigation": "^3.5.1",
     "react-redux": "^6.0.1",

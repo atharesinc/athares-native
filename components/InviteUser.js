@@ -82,14 +82,7 @@ export default class InviteUser extends Component {
 
 const s = StyleSheet.create({
   autoTags: { backgroundColor: "#3a3e52", color: "#FFF" },
-  autoTagsFocused: {
-    width: "100%",
-    flex: 1,
-    position: "absolute",
-    left: 0,
-    top: 0,
-    zIndex: 1
-  },
+
   suggestion: {
     width: "100%",
     backgroundColor: "#282a38",
@@ -114,12 +107,12 @@ const s = StyleSheet.create({
   },
   base: {},
   autocompleteContainer: {
-    // flex: 1,
-    // left: 0,
-    // position: "absolute",
-    // right: 0,
-    // top: 0,
-    // zIndex: 1,
+    flex: 1,
+    left: 0,
+    position: "absolute",
+    right: 0,
+    top: 0,
+    zIndex: 1,
     backgroundColor: "#3a3e52",
     width: "100%",
     height: 50

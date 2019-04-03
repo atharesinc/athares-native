@@ -40,7 +40,6 @@ class Header extends Component {
         state: { routes }
       }
     } = this.props;
-    let { isFocused } = this.state;
 
     const { routeName } = routes[routes.length - 1];
     const routeTitleIndex = /[A-Z]/.exec("createChannel").index;
@@ -51,7 +50,8 @@ class Header extends Component {
       "Constitution",
       "CreateChannel",
       "AddUser",
-      "Revisions"
+      "Revisions",
+      "CreateDM"
     ];
 
     const simpleChannelsObj = {
@@ -60,7 +60,8 @@ class Header extends Component {
       Constitution: "Constitution",
       CreateChannel: "Create Channel",
       AddUser: "Add User",
-      Revisions: "Revisions"
+      Revisions: "Revisions",
+      CreateDM: "New Message"
     };
 
     // render screen name and back
@@ -134,12 +135,6 @@ class Header extends Component {
   }
 }
 
-var suggestions = [
-  { name: "Jim", id: "123123" },
-  { name: "Dan", id: "!2315" },
-  { name: "Brian", id: "9182763" },
-  { name: "Kyle", id: "48739201" }
-];
 const styles = StyleSheet.create({
   header: {
     backgroundColor: "#282a38",

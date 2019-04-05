@@ -16,13 +16,13 @@ import Menu from "./menu";
 
 const DashboardStackNavigator = createStackNavigator(
   {
+    CreateDM: CreateDM,
     Dashboard: Dashboard,
     CreateCircle: CreateCircle,
     CircleSettings: CircleSettings,
     Constitution: Constitution,
     CreateChannel: CreateChannel,
     Channel: Channel,
-    CreateDM: CreateDM,
     DMChannel: DMChannel,
     AddUser: AddUser,
     ViewOtherUser: ViewOtherUser,

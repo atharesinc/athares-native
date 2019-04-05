@@ -1,8 +1,17 @@
 import React, { Component } from "react";
 import ScreenWrapper from "../../../components/ScreenWrapper";
-import { View, ScrollView, Text, Button, StyleSheet } from "react-native";
+import {
+  View,
+  ScrollView,
+  Text,
+  Button,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform
+} from "react-native";
 import InviteUser from "../../../components/InviteUser";
 import { GiftedChat } from "react-native-gifted-chat";
+import KeyboardSpacer from "react-native-keyboard-spacer";
 
 export default class CreateDM extends Component {
   state = {
@@ -32,14 +41,26 @@ export default class CreateDM extends Component {
       messages: GiftedChat.append(previousState.messages, messages)
     }));
   }
+  handleBottomOffset = () => {
+    if (Platform.OS === "ios") {
+      const tabHeight = Header.HEIGHT; //HEADER is imported from react-navigation
+
+      if (DeviceInfo.hasNotch()) return tabHeight + 20; // "20" is the value of the height of the pill in iphone x, iphone xs .. etc.
+
+      return 50; // "50" was the value that worked on iphone devices REGARDLESS of the actual value of the tabHeight. this was tested on all sizings including SE.
+    }
+    return 0;
+  };
   render() {
     const { tags } = this.state;
+
     return (
-      <ScreenWrapper styles={styles.wrapper}>
+      <ScreenWrapper styles={[styles.wrapper]}>
         <View
           style={{
             flexDirection: "column",
-            alignItems: "stretch"
+            alignItems: "stretch",
+            maxHeight: "20%"
           }}
         >
           {tags.length !== 0 && (
@@ -68,14 +89,19 @@ export default class CreateDM extends Component {
         <GiftedChat
           messages={this.state.messages}
           onSend={messages => this.onSend(messages)}
+          isAnimated={true}
+          alignTop={true}
           user={{
             _id: 1
           }}
         />
+        <KeyboardAvoidingView behavior="padding" />
+        {Platform.OS === "android" ? <KeyboardSpacer /> : null}
       </ScreenWrapper>
     );
   }
 }
+//           {Platform.OS === "android" ? <KeyboardSpacer /> : null}
 var suggestions = [
   { name: "Jim", id: "123123" },
   { name: "Dan", id: "!2315" },

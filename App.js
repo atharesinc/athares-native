@@ -9,6 +9,16 @@ import { Provider } from "react-redux";
 import { store } from "./redux";
 import AppContaner from "./screens";
 
+// apollo graphql
+import { ApolloProvider } from "react-apollo";
+import { ApolloClient } from "apollo-client";
+import { link, cache } from "./graphql";
+
+const client = new ApolloClient({
+  link,
+  cache
+});
+
 export default class App extends Component {
   state = {
     fontsAreLoaded: false
@@ -33,24 +43,26 @@ export default class App extends Component {
       return <AppLoading />;
     }
     return (
-      <Provider store={store}>
-        <SafeAreaView
-          style={styles.container}
-          forceInset={{
-            top: "always",
-            bottom: "always"
-          }}
-        >
-          <ImageBackground
-            source={require("./assets/iss-master.jpg")}
-            style={styles.image}
+      <ApolloProvider client={client}>
+        <Provider store={store}>
+          <SafeAreaView
+            style={styles.container}
+            forceInset={{
+              top: "always",
+              bottom: "always"
+            }}
           >
-            <View style={styles.transparentView}>
-              <AppContaner style={styles.appContainer} />
-            </View>
-          </ImageBackground>
-        </SafeAreaView>
-      </Provider>
+            <ImageBackground
+              source={require("./assets/iss-master.jpg")}
+              style={styles.image}
+            >
+              <View style={styles.transparentView}>
+                <AppContaner style={styles.appContainer} />
+              </View>
+            </ImageBackground>
+          </SafeAreaView>
+        </Provider>
+      </ApolloProvider>
     );
   }
 }

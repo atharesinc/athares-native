@@ -1,0 +1,165 @@
+# projectId: cjrucg3gz1obq0149g3vd7nxh
+# version: 41
+
+type Amendment @model {
+  circle: Circle! @relation(name: "CircleOnAmendments")
+  createdAt: DateTime!
+  id: ID! @isUnique
+  revision: Revision @relation(name: "AmendmentOnRevision")
+  text: String!
+  title: String!
+  updatedAt: DateTime!
+  hash: String! @isUnique
+}
+
+type UserPref @model {
+  id: ID! @isUnique
+  user: User! @relation(name: "UserOnPref")
+  maySendMarketingEmail: Boolean! @defaultValue(value: true)
+  userDisabled: Boolean! @defaultValue(value: false)
+}
+
+type CirclePermission @model {
+  id: ID! @isUnique
+  user: User! @relation(name: "UserOnCirclePermissions")
+  circle: Circle! @relation(name: "CircleOnPermissions")
+  revisions: Boolean!
+  amendments: Boolean!
+  useEmail: Boolean!
+  usePush: Boolean!
+  useSMS: Boolean!
+}
+
+type Channel @model {
+  channelType: String!
+  circle: Circle @relation(name: "CircleOnChannels")
+  createdAt: DateTime!
+  description: String
+  id: ID! @isUnique
+  keys: [Key!]! @relation(name: "ChannelOnKeys")
+  messages: [Message!]! @relation(name: "ChannelOnMessages")
+  name: String!
+  updatedAt: DateTime!
+  users: [User!]! @relation(name: "UsersOnChannels")
+}
+
+type Circle @model {
+  amendments: [Amendment!]! @relation(name: "CircleOnAmendments")
+  channels: [Channel!]! @relation(name: "CircleOnChannels")
+  createdAt: DateTime!
+  icon: String!
+  id: ID! @isUnique
+  invites: [Invite!]! @relation(name: "InviteOnCircle")
+  name: String! @isUnique
+  notices: [Notice!]! @relation(name: "CircleOnNotices")
+  preamble: String!
+  revisions: [Revision!]! @relation(name: "CircleOnRevisions")
+  updatedAt: DateTime!
+  users: [User!]! @relation(name: "UserOnCircles")
+  circlePermissions: [CirclePermission!]! @relation(name: "CircleOnPermissions")
+}
+
+type File @model {
+  contentType: String!
+  createdAt: DateTime!
+  id: ID! @isUnique
+  name: String!
+  secret: String! @isUnique
+  size: Int!
+  updatedAt: DateTime!
+  url: String! @isUnique
+}
+
+type Invite @model {
+  circle: Circle! @relation(name: "InviteOnCircle")
+  hasAccepted: Boolean!
+  id: ID! @isUnique
+  inviter: User! @relation(name: "UserOnInviter")
+}
+
+type Key @model {
+  channel: Channel! @relation(name: "ChannelOnKeys")
+  createdAt: DateTime!
+  id: ID! @isUnique
+  key: String!
+  updatedAt: DateTime!
+  user: User! @relation(name: "UserOnKeys")
+}
+
+type Mailer @model {
+  createdAt: DateTime!
+  email: String! @isUnique
+  id: ID! @isUnique
+  updatedAt: DateTime!
+}
+
+type Message @model {
+  channel: Channel! @relation(name: "ChannelOnMessages")
+  createdAt: DateTime!
+  file: String
+  fileName: String
+  id: ID! @isUnique
+  text: String!
+  updatedAt: DateTime!
+  user: User! @relation(name: "UserOnMessages")
+}
+
+type Notice @model {
+  circle: Circle @relation(name: "CircleOnNotices")
+  createdAt: DateTime!
+  id: ID! @isUnique
+  text: String!
+  title: String!
+  updatedAt: DateTime!
+}
+
+type Revision @model {
+  amendment: Amendment @relation(name: "AmendmentOnRevision")
+  backer: User! @relation(name: "UserOnRevisions")
+  circle: Circle! @relation(name: "CircleOnRevisions")
+  createdAt: DateTime!
+  expires: DateTime!
+  id: ID! @isUnique
+  newText: String!
+  oldText: String
+  passed: Boolean
+  title: String!
+  updatedAt: DateTime!
+  voterThreshold: Int!
+  votes: [Vote!]! @relation(name: "RevisionOnVotes")
+  hash: String! @isUnique
+}
+
+type User @model {
+  channels: [Channel!]! @relation(name: "UsersOnChannels")
+  circles: [Circle!]! @relation(name: "UserOnCircles")
+  createdAt: DateTime!
+  email: String @isUnique
+  firstName: String!
+  icon: String! @defaultValue(value: "img/user-default.png")
+  id: ID! @isUnique
+  inviterTo: [Invite!]! @relation(name: "UserOnInviter")
+  keys: [Key!]! @relation(name: "UserOnKeys")
+  lastName: String!
+  messages: [Message!]! @relation(name: "UserOnMessages")
+  password: String
+  phone: String @isUnique
+  priv: String!
+  pub: String!
+  revisions: [Revision!]! @relation(name: "UserOnRevisions")
+  uname: String @isUnique
+  updatedAt: DateTime!
+  votes: [Vote!]! @relation(name: "UserOnVotes")
+  prefs: UserPref @relation(name: "UserOnPref")
+  circlePermissions: [CirclePermission!]!
+    @relation(name: "UserOnCirclePermissions")
+}
+
+type Vote @model {
+  createdAt: DateTime!
+  id: ID! @isUnique
+  revision: Revision! @relation(name: "RevisionOnVotes")
+  support: Boolean
+  updatedAt: DateTime!
+  user: User! @relation(name: "UserOnVotes")
+}

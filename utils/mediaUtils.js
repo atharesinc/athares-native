@@ -79,3 +79,17 @@ export async function takePictureAsync(onSend) {
     }
   }
 }
+
+// Image Picker if we just want the image URI
+export async function pickImageURIAsync(onSend) {
+  if (await getPermissionAsync(Permissions.CAMERA_ROLL)) {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [1, 1]
+    });
+
+    if (!result.cancelled) {
+      return result.uri;
+    }
+  }
+}

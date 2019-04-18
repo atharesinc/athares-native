@@ -1,9 +1,11 @@
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import { TouchableOpacity, Text, StyleSheet, View } from "react-native";
 import React from "react";
 
 const PortalButton = ({ style = {}, title = "", ...props }) => (
   <TouchableOpacity style={styles.wrapper} {...props}>
-    <Text style={styles.text}>{title.toUpperCase()}</Text>
+    <View style={[styles.wrapper]}>
+      <Text style={styles.text}>{title.toUpperCase()}</Text>
+    </View>
   </TouchableOpacity>
 );
 
@@ -12,18 +14,15 @@ export default PortalButton;
 const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 9999,
-    // borderWidth: 2,
-    // borderColor: "#FFFFFF",
-    // height: 30,
     backgroundColor: "#FFFFFF",
     justifyContent: "center",
     alignItems: "center",
-    width: "100%",
-    padding: "2%"
-    // paddingBottom: "3%"
+    width: "100%"
   },
+
   text: {
     fontSize: 15,
-    color: "#222222"
+    color: "#222222",
+    marginVertical: 10
   }
 });

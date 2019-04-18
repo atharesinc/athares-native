@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   },
   circleLabel: {
     fontSize: 13,
-    color: "#ffffff80"
+    color: "#ffffffb7"
   }
 });
 

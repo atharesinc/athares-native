@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 import React from "react";
-import { TouchableOpacity, TextInput } from "react-native";
+import { TouchableOpacity, TextInput, View } from "react-native";
 import Icon from "@expo/vector-icons/Feather";
 
 class PortalInput extends React.Component {
@@ -12,11 +12,13 @@ class PortalInput extends React.Component {
     let { icon, iconStyles = {}, style = {}, ...props } = this.props;
     return (
       <TouchableOpacity
-        style={{ ...styles.wrapper, ...style }}
+        style={{ ...styles.touchWrap, ...style }}
         onPress={this.handleClick}
       >
-        <Icon name={icon} size={25} color={"#FFFFFF"} styles={styles.icon} />
-        <TextInput {...props} style={styles.input} ref="input" />
+        <View style={[styles.wrapper]}>
+          <Icon name={icon} size={25} color={"#FFFFFF"} styles={styles.icon} />
+          <TextInput {...props} style={styles.input} ref="input" />
+        </View>
       </TouchableOpacity>
     );
   }
@@ -25,19 +27,25 @@ class PortalInput extends React.Component {
 export default PortalInput;
 
 const styles = StyleSheet.create({
-  wrapper: {
+  touchWrap: {
+    // paddingBottom: ,
+    // paddingHorizontal: "2%",
+    marginBottom: 20,
+    width: "100%",
     borderRadius: 9999,
     borderWidth: 2,
     borderColor: "#FFFFFF",
+    backgroundColor: "#3a3e5290"
+  },
+  wrapper: {
+    marginVertical: 5,
+    marginHorizontal: 15,
     width: "100%",
-    paddingBottom: "1%",
-    paddingHorizontal: "2%",
     justifyContent: "center",
     alignItems: "flex-start",
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-    marginBottom: 20,
     overflow: "hidden"
   },
   icon: {

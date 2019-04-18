@@ -12,17 +12,23 @@ export default class AvatarPicker extends React.Component {
     this.setState({
       imageURI: res
     });
-    this.props.onImageChange(res);
+    if (this.props.onImageChange) {
+      this.props.onImageChange(res);
+    }
   };
 
   render() {
     const { imageURI } = this.state;
+    const { rounded = false, uri = null } = this.props;
     return (
       <TouchableOpacity
-        style={styles.previewWrapper}
+        style={[styles.previewWrapper, rounded ? styles.rounded : {}]}
         onPress={this.changeImage}
       >
-        <Image source={{ uri: imageURI }} style={styles.preview} />
+        <Image
+          source={{ uri: uri ? uri : imageURI }}
+          style={[styles.preview, rounded ? styles.noBorder : {}]}
+        />
       </TouchableOpacity>
     );
   }
@@ -38,11 +44,23 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#FFFFFF"
   },
+  rounded: {
+    borderRadius: 9999,
+    borderColor: "#FFFFFF",
+    borderWidth: 5
+  },
+  noBorder: {
+    borderColor: "transparent",
+    borderWidth: 0
+  },
   previewWrapper: {
     backgroundColor: "transparent",
     height: 150,
     width: 150,
     padding: 0,
-    marginBottom: 15
+    marginBottom: 15,
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden"
   }
 });

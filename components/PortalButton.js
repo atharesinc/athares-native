@@ -2,7 +2,7 @@ import { TouchableOpacity, Text, StyleSheet, View } from "react-native";
 import React from "react";
 
 const PortalButton = ({ style = {}, title = "", ...props }) => (
-  <TouchableOpacity style={styles.wrapper} {...props}>
+  <TouchableOpacity style={[styles.wrapper, style]} {...props}>
     <View style={[styles.wrapper]}>
       <Text style={styles.text}>{title.toUpperCase()}</Text>
     </View>

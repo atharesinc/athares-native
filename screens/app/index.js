@@ -11,14 +11,17 @@ import DMChannel from "./dmChannel";
 import AddUser from "./addUser";
 import Revisions from "./revisions";
 import ViewOtherUser from "./viewOtherUser";
+import Me from "./me";
+
 import { slidingStackNavigator } from "../../config/navigators";
 import Menu from "./menu";
 
 const DashboardStackNavigator = createStackNavigator(
   {
-    CreateChannel: CreateChannel,
+    ViewUser: Me,
     Dashboard: Dashboard,
     CreateCircle: CreateCircle,
+    CreateChannel: CreateChannel,
     CreateDM: CreateDM,
     CircleSettings: CircleSettings,
     Constitution: Constitution,

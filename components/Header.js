@@ -99,7 +99,7 @@ class Header extends Component {
       );
     }
     // render username and back
-    if (routeName === "ViewOtherUser") {
+    if (["ViewUser", "ViewOtherUser"].indexOf(routeName) !== -1) {
       return (
         <View style={[styles.header, styles.headerThemeDark]}>
           <TouchableOpacity onPress={this.back}>

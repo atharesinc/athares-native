@@ -1,21 +1,24 @@
 import React, { Component } from "react";
 
-import { View, Text, Button } from "react-native";
+import { StyleSheet } from "react-native";
+import ScreenWrapper from "../../../components/ScreenWrapper";
+import Chat from "../../../components/Chat";
 
 export default class Channel extends Component {
   render() {
     return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "transparent"
-        }}
-      >
-        <Text>Channel</Text>
-        <Button title="Back" onPress={() => this.props.navigation.goBack()} />
-      </View>
+      <ScreenWrapper styles={[styles.wrapper]}>
+        <Chat />
+      </ScreenWrapper>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  wrapper: {
+    alignItems: "stretch",
+    justifyContent: "flex-start",
+    width: "100%",
+    flex: 1
+  }
+});

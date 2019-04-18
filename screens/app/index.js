@@ -16,9 +16,9 @@ import Menu from "./menu";
 
 const DashboardStackNavigator = createStackNavigator(
   {
-    CreateDM: CreateDM,
-    Dashboard: Dashboard,
     CreateCircle: CreateCircle,
+    Dashboard: Dashboard,
+    CreateDM: CreateDM,
     CircleSettings: CircleSettings,
     Constitution: Constitution,
     CreateChannel: CreateChannel,

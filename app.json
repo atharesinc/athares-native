@@ -18,7 +18,30 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "buildNumber": "1",
+      "usesIcloudStorage": true,
+      "bundleIdentifier": "us.athares.app"
+    },
+    "android": {
+      "package": "com.yojimbo.garudapoin.chat",
+      "versionCode": 1,
+      "permissions": [
+        "READ_PHONE_STATE",
+        "READ_EXTERNAL_STORAGE",
+        "READ_INTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "CAMERA",
+        "RECORD_AUDIO",
+        "AUDIO_RECORDING",
+        "VIBRATE",
+        "WAKE_LOCK"
+      ]
+    },
+    "notification": {
+      "icon": "./assets/icon.png",
+      "androidMode": "collapse",
+      "androidCollapsedTitle": "#{unread_notifications} new messages"
     }
   }
 }

@@ -1,23 +1,13 @@
 import React, { Component } from "react";
 import ScreenWrapper from "../../../components/ScreenWrapper";
-import {
-  View,
-  ScrollView,
-  Text,
-  Button,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform
-} from "react-native";
+import { View, ScrollView, Text, StyleSheet } from "react-native";
 import InviteUser from "../../../components/InviteUser";
-import { GiftedChat } from "react-native-gifted-chat";
-import KeyboardSpacer from "react-native-keyboard-spacer";
+import Chat from "../../../components/Chat";
 
 export default class CreateDM extends Component {
   state = {
     isFocused: false,
-    tags: [],
-    messages: []
+    tags: []
   };
   onFocusChange = isFocused => {
     this.setState({
@@ -35,21 +25,6 @@ export default class CreateDM extends Component {
         <Text style={styles.tagText}>{t.name}</Text>
       </View>
     ));
-  };
-  onSend(messages = []) {
-    this.setState(previousState => ({
-      messages: GiftedChat.append(previousState.messages, messages)
-    }));
-  }
-  handleBottomOffset = () => {
-    if (Platform.OS === "ios") {
-      const tabHeight = Header.HEIGHT; //HEADER is imported from react-navigation
-
-      if (DeviceInfo.hasNotch()) return tabHeight + 20; // "20" is the value of the height of the pill in iphone x, iphone xs .. etc.
-
-      return 50; // "50" was the value that worked on iphone devices REGARDLESS of the actual value of the tabHeight. this was tested on all sizings including SE.
-    }
-    return 0;
   };
   render() {
     const { tags } = this.state;
@@ -86,17 +61,7 @@ export default class CreateDM extends Component {
             onFocusChange={this.onFocusChange}
           />
         </View>
-        <GiftedChat
-          messages={this.state.messages}
-          onSend={messages => this.onSend(messages)}
-          isAnimated={true}
-          alignTop={true}
-          user={{
-            _id: 1
-          }}
-        />
-        <KeyboardAvoidingView behavior="padding" />
-        {Platform.OS === "android" ? <KeyboardSpacer /> : null}
+        <Chat />
       </ScreenWrapper>
     );
   }

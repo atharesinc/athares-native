@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import { createDrawerNavigator } from "react-navigation";
 
-import { View, Text, Button } from "react-native";
+import { StyleSheet } from "react-native";
 import Menu from "../dmSettings";
 import { connect } from "react-redux";
 import ScreenWrapper from "../../../components/ScreenWrapper";
+import Chat from "../../../components/Chat";
+
 const pullUI = require("../../../redux/ui/reducers").pull;
 
 class DMChannelWithoutDrawer extends Component {
@@ -15,13 +17,8 @@ class DMChannelWithoutDrawer extends Component {
   }
   render() {
     return (
-      <ScreenWrapper>
-        <Button
-          onPress={() => this.props.navigation.openDrawer()}
-          title="Open Drawer"
-        />
-        <Text>DM Channel</Text>
-        <Button title="Back" onPress={() => this.props.navigation.goBack()} />
+      <ScreenWrapper styles={[styles.wrapper]}>
+        <Chat />
       </ScreenWrapper>
     );
   }
@@ -44,3 +41,12 @@ const DMChannel = createDrawerNavigator(
   }
 );
 export default DMChannel;
+
+const styles = StyleSheet.create({
+  wrapper: {
+    alignItems: "stretch",
+    justifyContent: "flex-start",
+    width: "100%",
+    flex: 1
+  }
+});

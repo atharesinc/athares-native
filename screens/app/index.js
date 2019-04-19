@@ -18,17 +18,17 @@ import Menu from "./menu";
 
 const DashboardStackNavigator = createStackNavigator(
   {
-    ViewUser: Me,
+    CircleSettings: CircleSettings,
     Dashboard: Dashboard,
+    ViewUser: Me,
     CreateCircle: CreateCircle,
     CreateChannel: CreateChannel,
     CreateDM: CreateDM,
-    CircleSettings: CircleSettings,
     Constitution: Constitution,
     Channel: Channel,
     DMChannel: DMChannel,
-    AddUser: AddUser,
     ViewOtherUser: ViewOtherUser,
+    AddUser: AddUser,
     Revisions: Revisions
   },
   slidingStackNavigator

@@ -1,6 +1,11 @@
-import { StyleSheet } from "react-native";
 import React from "react";
-import { TouchableOpacity, TextInput, View, Text } from "react-native";
+import {
+  TouchableOpacity,
+  TextInput,
+  View,
+  Text,
+  StyleSheet
+} from "react-native";
 import Icon from "@expo/vector-icons/Feather";
 
 class InfoLine extends React.Component {

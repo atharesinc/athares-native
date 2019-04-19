@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import ScreenWrapper from "../../../components/ScreenWrapper";
-import Input from "../../../components/Input";
-import InviteUser from "../../../components/InviteUser";
 import AvatarPicker from "../../../components/AvatarPicker";
 import InfoLine from "../../../components/InfoLine";
-
+import Statistic from "../../../components/Statistic";
+import SwitchLine from "../../../components/SwitchLine";
 import {
   Text,
   View,
@@ -47,8 +46,8 @@ export default class Me extends Component {
 
     return (
       <ScreenWrapper styles={[styles.wrapper]}>
-        <ScrollView styles={[styles.wrapper]}>
-          <KeyboardAvoidingView behavior="padding">
+        <KeyboardAvoidingView behavior="position">
+          <ScrollView styles={[styles.wrapper]}>
             <ImageBackground
               source={require("../../../assets/nasa-earth.jpg")}
               style={styles.backgroundImage}
@@ -84,12 +83,29 @@ export default class Me extends Component {
                 onChangeText={this.updateName}
               />
             </View>
+
             {/* Stats */}
             <View style={styles.section}>
               <Text style={styles.sectionHeading}>Statistics</Text>
+              <View style={styles.wrapSection}>
+                <Statistic header="Circles" text={1} />
+                <Statistic header="Revisions Proposed" text={2} />
+                <Statistic header="Revisions Accepted" text={2} />
+                <Statistic header="Times Voted" text={2} />
+                <Statistic
+                  header="User Since"
+                  text={new Date(
+                    "2019-04-19T00:05:18.223Z"
+                  ).toLocaleDateString()}
+                />
+              </View>
             </View>
-          </KeyboardAvoidingView>
-        </ScrollView>
+            <View style={[styles.section, { marginBottom: 50 }]}>
+              <Text style={styles.sectionHeading}>User Preferences</Text>
+              <SwitchLine label={"Allow Marketing Emails"} />
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </ScreenWrapper>
     );
   }
@@ -155,5 +171,9 @@ const styles = StyleSheet.create({
   },
   marginTop: {
     marginTop: 15
+  },
+  wrapSection: {
+    flexDirection: "row",
+    flexWrap: "wrap"
   }
 });

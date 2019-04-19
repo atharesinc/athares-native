@@ -1,8 +1,8 @@
 {
   "devToolsPort": 19002,
   "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 34733,
+  "packagerPort": null,
+  "packagerPid": null,
   "expoServerNgrokUrl": "https://8p-mk8.anonymous.athares-native.exp.direct",
   "packagerNgrokUrl": "https://packager.8p-mk8.anonymous.athares-native.exp.direct",
   "ngrokPid": 34757

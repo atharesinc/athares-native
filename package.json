@@ -23,6 +23,7 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "react-native-gifted-chat": "^0.7.3",
     "react-native-global-props": "^1.1.5",
+    "react-native-indicators": "^0.13.0",
     "react-native-keyboard-spacer": "^0.4.1",
     "react-native-switch-pro": "^1.0.2",
     "react-native-tag-autocomplete": "^1.0.21",

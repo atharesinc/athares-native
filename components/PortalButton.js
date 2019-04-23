@@ -1,10 +1,10 @@
 import { TouchableOpacity, Text, StyleSheet, View } from "react-native";
 import React from "react";
 
-const PortalButton = ({ style = {}, title = "", ...props }) => (
+const PortalButton = ({ style = {}, textStyle = {}, title = "", ...props }) => (
   <TouchableOpacity style={[styles.wrapper, style]} {...props}>
-    <View style={[styles.wrapper]}>
-      <Text style={styles.text}>{title.toUpperCase()}</Text>
+    <View style={[styles.wrapperInner]}>
+      <Text style={[styles.text, textStyle]}>{title.toUpperCase()}</Text>
     </View>
   </TouchableOpacity>
 );
@@ -19,7 +19,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%"
   },
-
+  wrapperInner: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%"
+  },
   text: {
     fontSize: 15,
     color: "#222222",

@@ -7,6 +7,7 @@ import { connect } from "react-redux";
 import { toggleSearch } from "../redux/ui/actions";
 import { pull } from "../redux/state/reducers";
 import { toggleDMSettings } from "../redux/ui/actions";
+
 const pullUI = require("../redux/ui/reducers").pull;
 
 class Header extends Component {
@@ -31,6 +32,9 @@ class Header extends Component {
       this.props.dispatch(toggleDMSettings());
     }
   };
+  createRevision = () => {
+    this.props.navigation.navigate("CreateRevision");
+  };
   render() {
     let {
       loggedIn = false,
@@ -51,7 +55,9 @@ class Header extends Component {
       "CreateChannel",
       "AddUser",
       "Revisions",
-      "CreateDM"
+      "CreateDM",
+      "CreateRevision",
+      "EditAmendment"
     ];
 
     const simpleChannelsObj = {
@@ -61,9 +67,10 @@ class Header extends Component {
       CreateChannel: "Create Channel",
       AddUser: "Add User",
       Revisions: "Revisions",
-      CreateDM: "New Message"
+      CreateDM: "New Message",
+      CreateRevision: "Create Revision",
+      EditAmendment: "Edit Amendment"
     };
-
     // render screen name and back
     if (simpleChannelsArr.indexOf(routeName) !== -1) {
       return (
@@ -74,7 +81,13 @@ class Header extends Component {
           <Text style={styles.headerText} numberOfLines={1}>
             {simpleChannelsObj[routeName]}
           </Text>
-          <Icon name="more-vertical" size={25} color={"transparent"} />
+          {routeName === "Constitution" ? (
+            <TouchableOpacity onPress={this.createRevision}>
+              <Icon name="plus" size={25} color={"#FFFFFF"} />
+            </TouchableOpacity>
+          ) : (
+            <Icon name="more-vertical" size={25} color={"transparent"} />
+          )}
         </View>
       );
     }

@@ -13,17 +13,20 @@ import Revisions from "./revisions";
 import ViewRevision from "./viewRevision";
 import ViewOtherUser from "./viewOtherUser";
 import Me from "./me";
-
+import CreateRevision from "./createRevision";
 import { slidingStackNavigator } from "../../config/navigators";
 import Menu from "./menu";
+import EditAmendment from "./editAmendment";
 
 const DashboardStackNavigator = createStackNavigator(
   {
+    Dashboard: Dashboard,
     Constitution: Constitution,
+    EditAmendment: EditAmendment,
+    CreateRevision: CreateRevision,
     ViewRevision: ViewRevision,
     Revisions: Revisions,
     CircleSettings: CircleSettings,
-    Dashboard: Dashboard,
     ViewUser: Me,
     CreateCircle: CreateCircle,
     CreateChannel: CreateChannel,

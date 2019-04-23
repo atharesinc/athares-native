@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     width: "100%",
     flex: 1,
-    padding: 15,
+    paddingTop: 15,
     backgroundColor: "#2f3242"
   },
   userLink: {

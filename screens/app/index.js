@@ -50,7 +50,8 @@ const DashboardWithDrawer = createDrawerNavigator(
   },
   {
     contentComponent: Menu,
-    drawerPosition: "left"
+    drawerPosition: "left",
+    drawerWidth: 350
   }
 );
 export default DashboardWithDrawer;

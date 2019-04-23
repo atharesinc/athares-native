@@ -8,22 +8,24 @@ const Amendment = props => {
   goToRevision = () => {
     props.navigation.navigate("ViewRevision");
   };
-  goToRevision = () => {
+  editAmendment = () => {
     props.navigation.navigate("EditAmendment");
   };
   return (
     <View style={styles.amendmentWrapperOuter}>
-      <TouchableOpacity onPress={goToRevision}>
+      <TouchableOpacity onPress={editAmendment} style={styles.moreButton}>
         <Icon name={"more-vertical"} size={25} color={"#FFFFFF"} />
       </TouchableOpacity>
       <View style={styles.amendmentWrapperInner}>
         <Text style={styles.header}>First Amendment</Text>
         <View style={styles.timeDataWrapper}>
           <Text style={styles.time}>
-            Created - {new Date("2019-04-23T04:24:21.772Z").toLocaleString()}
+            Created -{" "}
+            {new Date("2019-04-23T04:24:21.772Z").toLocaleDateString()}
           </Text>
           <Text style={styles.time}>
-            Updated - {new Date("2019-04-23T05:24:21.772Z").toLocaleString()}
+            Updated -{" "}
+            {new Date("2019-04-23T05:24:21.772Z").toLocaleDateString()}
           </Text>
         </View>
         <Text style={styles.amendmentText}>
@@ -55,8 +57,14 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "flex-start",
     alignItems: "flex-start",
-    marginLeft: 5,
+    marginLeft: 10,
     width: "100%"
+  },
+  moreButton: {
+    width: 30,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center"
   },
   header: {
     color: "#FFFFFF",

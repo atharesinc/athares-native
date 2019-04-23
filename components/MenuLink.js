@@ -21,14 +21,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingVertical: 10,
+    paddingBottom: 20,
+    paddingTop: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#FFFFFFb7",
     marginVertical: 10
   },
   icon: {
     marginRight: 20,
-    marginLeft: 10
+    marginLeft: 20
   },
   header: {
     fontSize: 18,

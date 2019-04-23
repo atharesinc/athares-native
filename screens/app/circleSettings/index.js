@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import PortalButton from "../../../components/PortalButton";
@@ -11,13 +11,16 @@ import {
   StyleSheet,
   KeyboardAvoidingView
 } from "react-native";
-import {UIActivityIndicator} from 'react-native-indicators';
+import { UIActivityIndicator } from "react-native-indicators";
 
 export default class CircleSettings extends Component {
   state = {
     showLink: false,
     link: "",
-    loading:  false
+    loading: false,
+    email: false,
+    newRevisions: false,
+    newAmendments: false
   };
   generateLink = async () => {
     await this.setState({
@@ -33,8 +36,29 @@ export default class CircleSettings extends Component {
       loading: false
     });
   };
+  updateEmail = value => {
+    this.setState({
+      email: value
+    });
+  };
+  updateNewRevisions = value => {
+    this.setState({
+      newRevisions: value
+    });
+  };
+  updateNewAmendments = value => {
+    this.setState({
+      newAmendments: value
+    });
+  };
   render() {
-    const { loading, showLink} = this.state;
+    const {
+      loading,
+      showLink,
+      email,
+      newRevisions,
+      newAmendments
+    } = this.state;
     return (
       <ScreenWrapper styles={[styles.wrapper]}>
         <KeyboardAvoidingView behavior="position">
@@ -46,7 +70,15 @@ export default class CircleSettings extends Component {
                 Prospective users will have the option to sign up if they don't
                 have an Athares account.
               </Text>
-              {loading ? <UIActivityIndicator color="#FFFFFF"/> : <PortalButton title={"Generate Link"} onPress={}/>}
+              {loading ? (
+                <UIActivityIndicator color="#FFFFFF" />
+              ) : (
+                <PortalButton
+                  title={"Generate Link"}
+                  onPress={this.generateLink}
+                  style={{ marginBottom: 15 }}
+                />
+              )}
               {showLink && <LinkText text={this.state.link} />}
             </View>
             <View style={styles.section}>
@@ -59,9 +91,25 @@ export default class CircleSettings extends Component {
                 created, and when a revision has passed or been rejected.
               </Text>
 
-              <SwitchLine label={"Allow Email Notifications"} />
-              <SwitchLine label={"New Revisions"} />
-              <SwitchLine label={"New Amendments"} />
+              <SwitchLine
+                value={email}
+                onPress={this.updateEmail}
+                label={"Allow Email Notifications"}
+              />
+              {email && (
+                <Fragment>
+                  <SwitchLine
+                    value={newRevisions}
+                    onPress={this.updateNewRevisions}
+                    label={"New Revisions"}
+                  />
+                  <SwitchLine
+                    value={newAmendments}
+                    onPress={this.updateNewAmendments}
+                    label={"New Amendments"}
+                  />
+                </Fragment>
+              )}
             </View>
             <View style={styles.section}>
               <Text style={styles.sectionHeading}>Leave Circle</Text>
@@ -89,9 +137,12 @@ const styles = StyleSheet.create({
     flex: 1
   },
   section: {
-    marginTop: 15,
+    marginTop: 20,
     marginHorizontal: 15,
-    marginBottom: 10
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderColor: "#FFFFFF",
+    paddingBottom: 20
   },
   sectionHeading: {
     fontSize: 20,
@@ -101,6 +152,6 @@ const styles = StyleSheet.create({
   disclaimer: {
     fontSize: 15,
     color: "#FFFFFFb7",
-    marginBottom: 5
+    marginBottom: 20
   }
 });

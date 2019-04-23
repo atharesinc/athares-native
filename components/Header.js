@@ -98,6 +98,20 @@ class Header extends Component {
         </View>
       );
     }
+    // render revision name and back
+    if (routeName === "ViewRevision") {
+      return (
+        <View style={[styles.header, styles.headerThemeDark]}>
+          <TouchableOpacity onPress={this.back}>
+            <Icon name="chevron-left" size={25} color={"#FFFFFF"} />
+          </TouchableOpacity>
+          <Text style={styles.headerText} numberOfLines={1}>
+            this.props.revision.title
+          </Text>
+          <Icon name="more-vertical" size={25} color={"transparent"} />
+        </View>
+      );
+    }
     // render username and back
     if (["ViewUser", "ViewOtherUser"].indexOf(routeName) !== -1) {
       return (

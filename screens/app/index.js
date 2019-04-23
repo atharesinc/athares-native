@@ -10,6 +10,7 @@ import CreateDM from "./createDM";
 import DMChannel from "./dmChannel";
 import AddUser from "./addUser";
 import Revisions from "./revisions";
+import ViewRevision from "./viewRevision";
 import ViewOtherUser from "./viewOtherUser";
 import Me from "./me";
 
@@ -18,18 +19,19 @@ import Menu from "./menu";
 
 const DashboardStackNavigator = createStackNavigator(
   {
+    Constitution: Constitution,
+    ViewRevision: ViewRevision,
+    Revisions: Revisions,
     CircleSettings: CircleSettings,
     Dashboard: Dashboard,
     ViewUser: Me,
     CreateCircle: CreateCircle,
     CreateChannel: CreateChannel,
     CreateDM: CreateDM,
-    Constitution: Constitution,
     Channel: Channel,
     DMChannel: DMChannel,
     ViewOtherUser: ViewOtherUser,
-    AddUser: AddUser,
-    Revisions: Revisions
+    AddUser: AddUser
   },
   slidingStackNavigator
 );

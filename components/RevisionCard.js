@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 
 const RevisionCard = ({ repeal = false, amendment = null, ...props }) => {
   const renderCategory = () => {
@@ -24,9 +24,10 @@ const RevisionCard = ({ repeal = false, amendment = null, ...props }) => {
       </View>
     );
   };
+
   return (
     <TouchableOpacity style={styles.cardWrapper}>
-      <Text style={style.cardHeader}>First Amendment</Text>
+      <Text style={styles.cardHeader}>First Amendment</Text>
       <View style={styles.cardBody}>
         <View style={styles.cardStats}>
           {renderCategory()}
@@ -35,11 +36,14 @@ const RevisionCard = ({ repeal = false, amendment = null, ...props }) => {
             <Text style={styles.slash}>/</Text>
             <Text style={styles.cardVotesReject}>-0</Text>
           </View>
-          <Text style={styles.revisionText}>owowowowowo</Text>
-          <View style={styles.backerWrapper}>
-            <Image style={styles.backerImg} source={{ uri: "" }} />
-            <Text style={styles.proposedDate}>04/18/19 11:30am</Text>
-          </View>
+        </View>
+        <Text style={styles.revisionText}>owowowowowo</Text>
+        <View style={styles.backerWrapper}>
+          <Image
+            style={styles.backerImg}
+            source={require("../assets/user-default.png")}
+          />
+          <Text style={styles.proposedDate}>04/18/19 11:30am</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -50,27 +54,35 @@ export default RevisionCard;
 
 const styles = StyleSheet.create({
   cardWrapper: {
-    width: "100%",
+    width: 300,
     marginBottom: 15
   },
   cardHeader: {
     backgroundColor: "#3a3e52",
-    width: "100%",
-    padding: 10
+    // width: "100%",
+    padding: 10,
+    color: "#FFFFFF"
   },
   cardBody: {
     width: "100%",
-    padding: 10
+    padding: 10,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    backgroundColor: "#282a38"
   },
   cardStats: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start"
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 15
   },
   cardCategory: {
     borderRadius: 9999,
     borderWidth: 2,
-    padding: 2,
+    paddingVertical: 2,
+    paddingHorizontal: 5,
     justifyContent: "center",
     alignItems: "center",
     borderColor: "#00DFFC"
@@ -98,7 +110,8 @@ const styles = StyleSheet.create({
   },
   revisionText: {
     fontSize: 15,
-    color: "#FFFFFF"
+    color: "#FFFFFF",
+    marginBottom: 15
   },
   backerWrapper: {
     width: "100%",

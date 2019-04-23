@@ -21,6 +21,7 @@
     "react": "16.5.0",
     "react-apollo": "^2.5.3",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
+    "react-native-diff-component": "^1.0.3",
     "react-native-gifted-chat": "^0.7.3",
     "react-native-global-props": "^1.1.5",
     "react-native-indicators": "^0.13.0",

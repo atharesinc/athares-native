@@ -13,7 +13,8 @@ export const CREATE_USER = gql`
     createUser(
       firstName: $firstName
       lastName: $lastName
-      authProvider: { email: { email: $email, password: $password } }
+      email: $email
+      password: $password
       icon: $icon
       pub: $pub
       priv: $priv
@@ -26,20 +27,27 @@ export const CREATE_USER = gql`
     }
   }
 `;
+export const CREATE_RESET_REQUEST = gql`
+  mutation($token: String!, $email: String!) {
+    createResetRequest(token: $token, email: $email) {
+      id
+    }
+  }
+`;
+
+export const UPDATE_USER_PASSWORD = gql`
+  mutation($user: ID!, $password: String!) {
+    updateUser(id: $user, password: $password) {
+      id
+    }
+  }
+`;
 
 export const SIGNIN_USER = gql`
   mutation SIGNIN_USER($email: String!, $password: String!) {
-    signinUser(email: { email: $email, password: $password }) {
+    signinUser(email: $email, password: $password) {
       token
-      user {
-        id
-        firstName
-        lastName
-        icon
-        uname
-        phone
-        email
-      }
+      userId
     }
   }
 `;
@@ -467,6 +475,14 @@ export const DELETE_CIRCLE_PERMISSION = gql`
 export const ADD_REVISION_TO_AMENDMENT = gql`
   mutation($revision: ID!, $amendment: ID!, $title: String!) {
     updateAmendment(revisionId: $revision, id: $amendment, title: $title) {
+      id
+    }
+  }
+`;
+
+export const DELETE_RESET_REQUEST = gql`
+  mutation($id: ID!) {
+    deleteResetRequest(id: $id) {
       id
     }
   }

@@ -19,8 +19,8 @@ import DashboardStackNavigator from "./app";
  */
 
 const AppSwitchNavigator = createSwitchNavigator({
-  Dashboard: { screen: DashboardStackNavigator },
-  Portal: { screen: PortalSwitchNavigator }
+  Portal: { screen: PortalSwitchNavigator },
+  Dashboard: { screen: DashboardStackNavigator }
 });
 
 const AppContainer = createAppContainer(AppSwitchNavigator);

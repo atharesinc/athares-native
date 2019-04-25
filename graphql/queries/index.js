@@ -26,6 +26,14 @@ export const GET_USER_BY_ID = gql`
   }
 `;
 
+export const GET_USER_BY_EMAIL = gql`
+  query($email: String!) {
+    User(email: $email) {
+      id
+    }
+  }
+`;
+
 export const GET_USER_BY_ID_ALL = gql`
   query getUserByIdAll($id: ID!) {
     User(id: $id) {
@@ -274,6 +282,17 @@ export const GET_DMS_BY_USER = gql`
   }
 `;
 
+export const GET_RESET_REQUEST = gql`
+  query($id: ID!) {
+    ResetRequest(id: $id) {
+      id
+      token
+      email
+      createdAt
+    }
+  }
+`;
+
 export const GET_USER_KEYS = gql`
   query getUserKeys($user: ID!, $channel: ID) {
     User(id: $user) {
@@ -468,32 +487,6 @@ export const IS_USER_IN_CIRCLE = gql`
       first: 1
     ) {
       id
-    }
-  }
-`;
-
-export const GET_CHANNELS_BY_CIRCLE_ID_WITH_MESSAGE = gql`
-  query($id: ID!) {
-    Circle(id: $id) {
-      id
-      name
-      preamble
-      channels {
-        id
-        name
-        channelType
-        createdAt
-        messages(last: 1) {
-          id
-          text
-          createdAt
-          user {
-            id
-            firstName
-            icon
-          }
-        }
-      }
     }
   }
 `;

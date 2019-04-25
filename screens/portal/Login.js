@@ -1,11 +1,55 @@
 import React, { Component } from "react";
 import PortalInput from "../../components/PortalInput";
-import { View, Text, Image, TouchableOpacity, Linking } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  Linking,
+  Alert,
+  AsyncStorage
+} from "react-native";
 import PortalButton from "../../components/PortalButton";
 import PortalCard from "../../components/PortalCard";
+import {
+  updateUser,
+  updatePub,
+  updateChannel,
+  updateCircle,
+  updateRevision
+} from "../../redux/state/actions";
+import { validateLogin } from "../../utils/validators";
+import { pull } from "../../redux/state/reducers";
+import { connect } from "react-redux";
+import { SIGNIN_USER } from "../../graphql/mutations";
+import { graphql } from "react-apollo";
+import { sha } from "../../utils/crypto";
+import { UIActivityIndicator } from "react-native-indicators";
 
-export default class Login extends Component {
-  updateEmail = text => {};
+class Login extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      password: "",
+      email: "",
+      loading: false
+    };
+  }
+  componentDidMount() {
+    this.props.dispatch(updateChannel(null));
+    this.props.dispatch(updateCircle(null));
+    this.props.dispatch(updateRevision(null));
+  }
+  updateEmail = text => {
+    this.setState({
+      email: text
+    });
+  };
+  updatePassword = text => {
+    this.setState({
+      password: text
+    });
+  };
   tryLogin = () => {
     // whole lotta code
     this.props.navigation.navigate("Dashboard");
@@ -13,7 +57,70 @@ export default class Login extends Component {
   goToPolicy = () => {
     Linking.openURL("https://www.athares.us/policy");
   };
+  tryLogin = async e => {
+    e.preventDefault();
+    await this.setState({ loading: true });
+    const isValid = validateLogin({ ...this.state });
+
+    if (isValid !== undefined) {
+      Alert.alert("Error", isValid[Object.keys(isValid)[0]][0]);
+      this.setState({ loading: false });
+      return false;
+    }
+    const { signinUser } = this.props;
+    let { password, email } = this.state;
+    try {
+      let hashedToken = sha(password);
+
+      const res = await signinUser({
+        variables: {
+          email,
+          password: hashedToken
+        }
+      });
+
+      const {
+        data: {
+          signinUser: { token, userId }
+        }
+      } = res;
+
+      //store in redux
+      await AsyncStorage.setItem("ATHARES_ALIAS", email);
+      await AsyncStorage.setItem("ATHARES_HASH", hashedToken);
+      await AsyncStorage.setItem("ATHARES_TOKEN", token);
+
+      this.props.dispatch(updateUser(userId));
+      this.props.dispatch(updatePub(hashedToken));
+      this.props.navigation.navigate("Dashboard");
+    } catch (err) {
+      if (err.message.indexOf("Invalid Credentials") !== -1) {
+        Alert.alert("Error", "Invalid Credentials");
+      } else {
+        Alert.alert("Error", err.message);
+      }
+      await this.setState({ loading: false });
+    }
+  };
   render() {
+    const { loading, email, password } = this.state;
+    if (loading) {
+      return (
+        <View
+          style={{
+            flex: 1,
+            width: "100%",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "transparent",
+            alignItems: "center",
+            backgroundColor: "transparent"
+          }}
+        >
+          <UIActivityIndicator color="#FFFFFF" />
+        </View>
+      );
+    }
     return (
       <View
         style={{
@@ -46,12 +153,14 @@ export default class Login extends Component {
             icon="at-sign"
             placeholder="email"
             onChangeText={this.updateEmail}
+            value={email}
           />
           <PortalInput
             icon="lock"
             placeholder="password"
             secureTextEntry
-            onChangeText={this.updateEmail}
+            onChangeText={this.updatePassword}
+            value={password}
           />
           <PortalButton title="LOGIN" onPress={this.tryLogin} />
         </PortalCard>
@@ -80,3 +189,12 @@ export default class Login extends Component {
     );
   }
 }
+
+function mapStateToProps(state) {
+  return {
+    user: pull(state, "user")
+  };
+}
+export default graphql(SIGNIN_USER, {
+  name: "signinUser"
+})(connect(mapStateToProps)(Login));

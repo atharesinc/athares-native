@@ -36,8 +36,8 @@ const DMChannel = createDrawerNavigator(
   },
   {
     contentComponent: Menu,
-    drawerPosition: "right"
-    // drawerWidth: 300
+    drawerPosition: "right",
+    drawerWidth: 350
   }
 );
 export default DMChannel;

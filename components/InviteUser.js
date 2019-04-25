@@ -58,10 +58,10 @@ export default class InviteUser extends Component {
     });
   };
   render() {
-    const { suggestions = [], styles = {}, tags } = this.props;
+    const { suggestions = [], style = {}, tags } = this.props;
     const { isFocused } = this.state;
     return (
-      <View styles={[s.autocompleteContainer, styles.wrapper]}>
+      <View styles={[s.autocompleteContainer, style]}>
         <AutoTags
           style={[s.autoTags, isFocused ? s.autoTagsFocused : {}]}
           onFocus={this.focus}

@@ -20,6 +20,7 @@ import EditAmendment from "./editAmendment";
 
 const DashboardStackNavigator = createStackNavigator(
   {
+    DMChannel: DMChannel,
     Dashboard: Dashboard,
     Constitution: Constitution,
     EditAmendment: EditAmendment,
@@ -32,7 +33,6 @@ const DashboardStackNavigator = createStackNavigator(
     CreateChannel: CreateChannel,
     CreateDM: CreateDM,
     Channel: Channel,
-    DMChannel: DMChannel,
     ViewOtherUser: ViewOtherUser,
     AddUser: AddUser
   },

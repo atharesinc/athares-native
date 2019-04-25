@@ -7,6 +7,8 @@ import { connect } from "react-redux";
 import { toggleSearch } from "../redux/ui/actions";
 import { pull } from "../redux/state/reducers";
 import { toggleDMSettings } from "../redux/ui/actions";
+import { Query } from "react-apollo";
+import { GET_USER_BY_ID } from "../graphql/queries";
 
 const pullUI = require("../redux/ui/reducers").pull;
 
@@ -42,7 +44,8 @@ class Header extends Component {
       searchOpen = false,
       navigation: {
         state: { routes }
-      }
+      },
+      user = null
     } = this.props;
 
     const { routeName } = routes[routes.length - 1];
@@ -141,23 +144,45 @@ class Header extends Component {
     }
     // render dashboard with user drawer
     return (
-      <View style={styles.header}>
-        <TouchableOpacity onPress={this.toggleDrawer}>
-          <Image
-            source={require("../assets/user-default.png")}
-            style={styles.userIcon}
-          />
-        </TouchableOpacity>
-        {!searchOpen ? (
-          <TouchableOpacity onPress={this.toggleSearch}>
-            <Icon name="search" size={25} color={"#FFFFFF"} />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity onPress={this.toggleSearch}>
-            <Icon name="x" size={25} color={"#FFFFFF"} numberOfLines={1} />
-          </TouchableOpacity>
-        )}
-      </View>
+      <Query
+        query={GET_USER_BY_ID}
+        variables={{ id: user || "" }}
+        pollInterval={2000}
+      >
+        {({ loading, err, data }) => {
+          if (data.User) {
+            user = data.User;
+          }
+          return (
+            <View style={styles.header}>
+              <TouchableOpacity onPress={this.toggleDrawer}>
+                <Image
+                  source={
+                    user
+                      ? { uri: user.icon }
+                      : require("../assets/user-default.png")
+                  }
+                  style={styles.userIcon}
+                />
+              </TouchableOpacity>
+              {!searchOpen ? (
+                <TouchableOpacity onPress={this.toggleSearch}>
+                  <Icon name="search" size={25} color={"#FFFFFF"} />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={this.toggleSearch}>
+                  <Icon
+                    name="x"
+                    size={25}
+                    color={"#FFFFFF"}
+                    numberOfLines={1}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+          );
+        }}
+      </Query>
     );
   }
 }
@@ -197,6 +222,7 @@ const styles = StyleSheet.create({
 
 function mapStateToProps(state) {
   return {
+    user: pull(state, "user"),
     activeChannel: pull(state, "activeChannel"),
     activeUser: pull(state, "activeUser"),
     activeRevision: pull(state, "activeRevision"),

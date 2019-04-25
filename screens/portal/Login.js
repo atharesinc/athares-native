@@ -16,8 +16,10 @@ import {
   updatePub,
   updateChannel,
   updateCircle,
-  updateRevision
+  updateRevision,
+  logout
 } from "../../redux/state/actions";
+
 import { validateLogin } from "../../utils/validators";
 import { pull } from "../../redux/state/reducers";
 import { connect } from "react-redux";
@@ -35,10 +37,39 @@ class Login extends Component {
       loading: false
     };
   }
-  componentDidMount() {
+  async componentDidMount() {
     this.props.dispatch(updateChannel(null));
     this.props.dispatch(updateCircle(null));
     this.props.dispatch(updateRevision(null));
+    // check if user could log in
+    let alias = await AsyncStorage.getItem("ATHARES_ALIAS");
+    let hash = await AsyncStorage.getItem("ATHARES_HASH");
+    if (!this.props.user && alias && hash) {
+      // indicate that the user is logging in and syncing
+
+      try {
+        const res = await this.props.signinUser({
+          variables: {
+            email: alias,
+            password: hash
+          }
+        });
+
+        const {
+          data: {
+            signinUser: { token, userId }
+          }
+        } = res;
+        this.props.dispatch(updateUser(userId));
+        this.props.dispatch(updatePub(hash));
+        AsyncStorage.setItem("ATHARES_TOKEN", token);
+        this.props.navigation.navigate("Dashboard");
+      } catch (err) {
+        console.log(new Error(err));
+        // there was some sort of error auto-logging in, clear localStorage and redux just in case
+        this.props.dispatch(logout());
+      }
+    }
   }
   updateEmail = text => {
     this.setState({
@@ -49,10 +80,6 @@ class Login extends Component {
     this.setState({
       password: text
     });
-  };
-  tryLogin = () => {
-    // whole lotta code
-    this.props.navigation.navigate("Dashboard");
   };
   goToPolicy = () => {
     Linking.openURL("https://www.athares.us/policy");

@@ -4,16 +4,16 @@ import { Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 
 const CircleIcon = ({ selected = false, circle = {}, ...props }) => {
   const selectCircle = () => {
-    // props.selectCircle(props.circle.id)
+    props.selectCircle(circle.id);
   };
   return (
     <TouchableOpacity style={styles.circleWrapper} onPress={selectCircle}>
       <Image
-        source={require("../assets/Athares-owl-logo-large-white.png")}
+        source={{ uri: circle.icon }}
         style={[styles.circle, selected ? styles.selected : {}]}
       />
       <Text numberOfLines={1} style={styles.circleLabel}>
-        Athares
+        {circle.name}
       </Text>
     </TouchableOpacity>
   );

@@ -3,8 +3,8 @@ import Register from "./Register";
 import { createSwitchNavigator } from "react-navigation";
 
 const PortalSwitchNavigator = createSwitchNavigator({
-  Register: { screen: Register },
-  Login: { screen: Login }
+  Login: { screen: Login },
+  Register: { screen: Register }
 });
 
 export default PortalSwitchNavigator;

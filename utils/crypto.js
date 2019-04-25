@@ -9,7 +9,7 @@ export function sha(text) {
 
 /** Generate and store keypair */
 export function pair() {
-  let crypt = new JSEncrypt();
+  let crypt = new JSEncrypt({ default_key_size: 2048 });
   crypt.getPrivateKey();
 
   // Only return the public key, keep the private key hidden
@@ -18,14 +18,14 @@ export function pair() {
 
 /** Encrypt the provided string with the destination public key */
 export function encrypt(content, publicKey) {
-  let crypt = new JSEncrypt();
+  let crypt = new JSEncrypt({ default_key_size: 2048 });
   crypt.setKey(publicKey);
   return crypt.encrypt(content);
 }
 
 /** Decrypt the provided string with the local private key */
 export function decrypt(content, privateKey) {
-  let crypt = new JSEncrypt();
+  let crypt = new JSEncrypt({ default_key_size: 2048 });
   crypt.setKey(privateKey);
   return crypt.decrypt(content);
 }

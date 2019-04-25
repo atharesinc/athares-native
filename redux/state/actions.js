@@ -1,3 +1,5 @@
+import { AsyncStorage } from "react-native";
+
 export function updateUser(user) {
   return async dispatch => {
     dispatch({ type: "UPDATE_USER", user });
@@ -33,8 +35,11 @@ export function updateRevision(revision) {
 export function logout() {
   return async dispatch => {
     dispatch({ type: "LOGOUT" });
-    sessionStorage.clear();
-    localStorage.clear();
+    Promise.all([
+      AsyncStorage.removeItem("ATHARES_ALIAS"),
+      AsyncStorage.removeItem("ATHARES_TOKEN"),
+      AsyncStorage.removeItem("ATHARES_HASH")
+    ]);
   };
 }
 

@@ -5,42 +5,72 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  View,
-  Image
+  View
 } from "react-native";
 import { withNavigation } from "react-navigation";
 import Icon from "@expo/vector-icons/Feather";
 import CircleIcon from "./CircleIcon";
 
-const Circles = ({ loggedIn = false, ...props }) => {
-  const selectCircle = (id = "") => {
-    console.log("Selected a circle");
-    // props.dispatch(updateCircle(id))
+import { Query } from "react-apollo";
+import { GET_CIRCLES_BY_USER_ID } from "../graphql/queries";
+import { connect } from "react-redux";
+import { updateCircle } from "../redux/state/actions";
+import { pull } from "../redux/state/reducers";
+
+const Circles = ({ loggedIn = false, activeCircle, user, ...props }) => {
+  const selectCircle = (id = null) => {
+    props.dispatch(updateCircle(id));
   };
   const goToCreateCircle = () => {
-    props.navigation.navigate("CreateCircle");
+    if (loggedIn) {
+      props.navigation.navigate("CreateCircle");
+    }
   };
+  let circles = [];
   return (
-    <View style={styles.wrapper}>
-      <TouchableOpacity
-        style={styles.addCircleWrapper}
-        onPress={goToCreateCircle}
-      >
-        <View style={styles.iconWrapper}>
-          <Icon
-            name="plus"
-            color={loggedIn ? "#FFFFFF" : "#282a38"}
-            size={30}
-          />
-        </View>
-        <Text numberOfLines={1} style={styles.circleLabel}>
-          New
-        </Text>
-      </TouchableOpacity>
-      <ScrollView horizontal={true} contentContainerStyle={styles.circlesList}>
-        <CircleIcon selected={true} selectCircle={selectCircle} />
-      </ScrollView>
-    </View>
+    <Query
+      query={GET_CIRCLES_BY_USER_ID}
+      variables={{ id: user || "" }}
+      pollInterval={3000}
+    >
+      {({ data }) => {
+        if (data.User) {
+          circles = data.User.circles;
+        }
+        return (
+          <View style={styles.wrapper}>
+            <TouchableOpacity
+              style={styles.addCircleWrapper}
+              onPress={goToCreateCircle}
+            >
+              <View style={styles.iconWrapper}>
+                <Icon
+                  name="plus"
+                  color={loggedIn ? "#FFFFFF" : "#282a38"}
+                  size={30}
+                />
+              </View>
+              <Text numberOfLines={1} style={styles.circleLabel}>
+                New
+              </Text>
+            </TouchableOpacity>
+            <ScrollView
+              horizontal={true}
+              contentContainerStyle={styles.circlesList}
+            >
+              {circles.map(c => (
+                <CircleIcon
+                  selected={c.id === activeCircle}
+                  selectCircle={selectCircle}
+                  circle={c}
+                  key={c.id}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        );
+      }}
+    </Query>
   );
 };
 
@@ -81,4 +111,10 @@ const styles = StyleSheet.create({
   }
 });
 
-export default withNavigation(Circles);
+function mapStateToProps(state) {
+  return {
+    activeCircle: pull(state, "activeCircle"),
+    user: pull(state, "user")
+  };
+}
+export default connect(mapStateToProps)(withNavigation(Circles));

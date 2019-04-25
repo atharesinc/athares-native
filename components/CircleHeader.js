@@ -4,11 +4,11 @@ import { Text, View, StyleSheet } from "react-native";
 import { pull } from "../redux/state/reducers";
 import { connect } from "react-redux";
 
-const CircleHeader = props => {
+const CircleHeader = ({ name = "No Circle Selected" }) => {
   return (
     <View style={styles.header}>
       <Text style={styles.headerText} numberOfLines={1}>
-        Athares Inc.
+        {name}
       </Text>
     </View>
   );

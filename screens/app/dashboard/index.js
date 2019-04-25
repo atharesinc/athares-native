@@ -1,13 +1,21 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 
 import { ScrollView, View } from "react-native";
-// import { createDrawerNavigator, createStackNavigator } from "react-navigation";
 import Footer from "../../../components/Footer";
 import Circles from "../../../components/Circles";
 import ChannelItem from "../../../components/ChannelItem";
 import ChannelGroupHeader from "../../../components/ChannelGroupHeader";
 import CircleHeader from "../../../components/CircleHeader";
 import GovernanceChannelItem from "../../../components/GovernanceChannelItem";
+import {
+  GET_CHANNELS_BY_CIRCLE_ID,
+  GET_DMS_BY_USER,
+  IS_USER_IN_CIRCLE
+} from "../../../graphql/queries";
+import { Query, graphql, compose } from "react-apollo";
+
+import { connect } from "react-redux";
+import { pull } from "../../../redux/state/reducers";
 
 class Dashboard extends Component {
   state = {
@@ -15,46 +23,143 @@ class Dashboard extends Component {
   };
 
   render() {
+    let {
+      activeCircle,
+      getDMsByUser,
+      unreadDMs,
+      unreadChannels,
+      isUserInCircle
+    } = this.props;
+    let belongsToCircle = false;
+    let user = null;
+    let circle = null;
+    let channels = [];
+    let dms = [];
+    // get channel data, if any
+    if (getDMsByUser.User && getDMsByUser.User.channels) {
+      dms = getDMsByUser.User.channels.map(dm => ({
+        unread: unreadDMs.includes(dm.id),
+        ...dm
+      }));
+      user = getDMsByUser.User;
+      user = {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName
+      };
+      // see if the user actually belongs to this circle
+      if (
+        isUserInCircle.allCircles &&
+        isUserInCircle.allCircles.length !== 0 &&
+        isUserInCircle.allCircles[0].id === activeCircle
+      ) {
+        belongsToCircle = true;
+      }
+    }
     return (
-      <View
-        style={{
-          alignItems: "stretch",
-          justifyContent: "space-between",
-          width: "100%",
-          flex: 1
-        }}
+      <Query
+        query={GET_CHANNELS_BY_CIRCLE_ID}
+        variables={{ id: this.props.activeCircle || "" }}
+        pollInterval={3000}
       >
-        <Circles />
-        <View style={{ backgroundColor: "#282a38", height: "75%" }}>
-          <CircleHeader />
-          <ScrollView>
-            <ChannelGroupHeader title={"GOVERNANCE"} />
-            <GovernanceChannelItem
-              title={"Constitution"}
-              link={"Constitution"}
-            />
-            <GovernanceChannelItem title={"Polls"} link={"Revisions"} />
-            <GovernanceChannelItem title={"Settings"} link={"CircleSettings"} />
-            <ChannelGroupHeader title={"CHANNELS"} displayPlus={true} />
-            <ChannelItem showUnread={true} />
-            <ChannelItem />
-            <ChannelItem showUnread={true} />
-            <ChannelItem />
-            <ChannelItem />
-            <ChannelItem />
-            <ChannelItem />
+        {({ data }) => {
+          if (data.Circle) {
+            circle = data.Circle;
+            channels = circle.channels;
+            channels = channels.map(ch => ({
+              unread: unreadChannels.includes(ch.id),
+              ...ch
+            }));
+          }
+          return (
+            <View
+              style={{
+                alignItems: "stretch",
+                justifyContent: "space-between",
+                width: "100%",
+                flex: 1
+              }}
+            >
+              <Circles loggedIn={user} />
+              <View style={{ backgroundColor: "#282a38", height: "75%" }}>
+                {circle && <CircleHeader name={circle.name} />}
+                <ScrollView>
+                  {circle && (
+                    <Fragment>
+                      <ChannelGroupHeader title={"GOVERNANCE"} />
+                      <GovernanceChannelItem
+                        title={"Constitution"}
+                        link={"Constitution"}
+                      />
+                      <GovernanceChannelItem
+                        title={"Polls"}
+                        link={"Revisions"}
+                      />
+                      {user && belongsToCircle && (
+                        <GovernanceChannelItem
+                          title={"Settings"}
+                          link={"CircleSettings"}
+                        />
+                      )}
+                      <ChannelGroupHeader
+                        title={"CHANNELS"}
+                        displayPlus={user && belongsToCircle}
+                      />
 
-            <ChannelGroupHeader title={"DIRECT MESSAGES"} displayPlus={true} />
-            <ChannelItem
-              showUnread={false}
-              channel={{ name: "Jim", channelType: "dm" }}
-            />
-          </ScrollView>
-        </View>
-        <Footer />
-      </View>
+                      {channels.map(ch => (
+                        <ChannelItem
+                          key={ch.id}
+                          showUnread={ch.unread}
+                          channel={ch}
+                        />
+                      ))}
+                    </Fragment>
+                  )}
+                  <ChannelGroupHeader
+                    title={"DIRECT MESSAGES"}
+                    displayPlus={true}
+                  />
+                  {dms.map(ch => (
+                    <ChannelItem
+                      key={ch.id}
+                      showUnread={ch.unread}
+                      channel={ch}
+                    />
+                  ))}
+                </ScrollView>
+              </View>
+              <Footer loggedIn={user} belongsToCircle={belongsToCircle} />
+            </View>
+          );
+        }}
+      </Query>
     );
   }
 }
 
-export default Dashboard;
+function mapStateToProps(state) {
+  return {
+    user: pull(state, "user"),
+    activeCircle: pull(state, "activeCircle"),
+    unreadDMs: pull(state, "unreadDMs"),
+    unreadChannels: pull(state, "unreadChannels")
+  };
+}
+
+export default connect(mapStateToProps)(
+  compose(
+    graphql(IS_USER_IN_CIRCLE, {
+      name: "isUserInCircle",
+      options: ({ activeCircle, user }) => ({
+        variables: { circle: activeCircle || "", user: user || "" }
+      })
+    }),
+    graphql(GET_DMS_BY_USER, {
+      name: "getDMsByUser",
+      options: ({ user }) => ({
+        pollInterval: 5000,
+        variables: { id: user || "" }
+      })
+    })
+  )(Dashboard)
+);

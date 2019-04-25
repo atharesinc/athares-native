@@ -5,7 +5,7 @@ import { withNavigation } from "react-navigation";
 
 const ChannelItem = ({
   channel = { name: "", channelType: "group" },
-  lastMessage,
+  lastMessage = null,
   showUnread = false,
   ...props
 }) => {
@@ -22,12 +22,14 @@ const ChannelItem = ({
         <Text style={[styles.channelTitle, showUnread ? styles.unread : {}]}>
           {channel.name || "General"}
         </Text>
-        <Text
-          style={[styles.channelText, showUnread ? styles.unread : {}]}
-          numberOfLines={1}
-        >
-          www.example.com/deal/link/that-is-really-long-sdoifs-sdfvsdf-sbd-fbsdfbs
-        </Text>
+        {lastMessage && (
+          <Text
+            style={[styles.channelText, showUnread ? styles.unread : {}]}
+            numberOfLines={1}
+          >
+            {lastMessage.user.firstName + ": " + lastMessage.text}
+          </Text>
+        )}
       </View>
       {showUnread && (
         <Icon

@@ -6,14 +6,27 @@ import {
   Text,
   ScrollView,
   StyleSheet,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  Alert
 } from "react-native";
 import PortalButton from "../../../components/PortalButton";
+import { UIActivityIndicator } from "react-native-indicators";
+import {
+  CREATE_CHANNEL,
+  ADD_CHANNEL_TO_CIRCLE
+} from "../../../graphql/mutations";
+import { GET_CIRCLE_NAME_BY_ID } from "../../../graphql/queries";
+import { compose, graphql, Query } from "react-apollo";
+import { updateChannel } from "../../../redux/state/actions";
 
-export default class CreateChannel extends Component {
+import { connect } from "react-redux";
+import { pull } from "../../../redux/state/reducers";
+
+class CreateChannel extends Component {
   state = {
     name: "",
-    description: ""
+    description: "",
+    loading: false
   };
 
   updateName = text => {
@@ -26,41 +39,105 @@ export default class CreateChannel extends Component {
       description: text
     });
   };
-  submit = () => {
-    console.log("Create Channel!");
-    this.props.navigation.navigate("Channel");
+  submit = async e => {
+    await this.setState({
+      loading: true
+    });
+
+    if (this.state.name.trim().length === 0) {
+      return false;
+    }
+    const { name, description } = this.state;
+    // /* Check if doesn't exist */
+
+    // validate & trim fields
+    // TODO: ???
+    /* create channel */
+    let newChannel = {
+      name,
+      description,
+      channelType: "group"
+    };
+
+    try {
+      let newChannelRes = await this.props.createChannel({
+        variables: {
+          ...newChannel
+        }
+      });
+
+      newChannel.id = newChannelRes.data.createChannel.id;
+
+      let res = await this.props.addChannelToCircle({
+        variables: {
+          circle: this.props.activeCircle,
+          channel: newChannel.id
+        }
+      });
+
+      let { name } = res.data.addToCircleOnChannels.circleCircle;
+
+      Alert.alert(
+        "Channel Created",
+        `${this.state.name} has been created in ${name}.`
+      );
+      this.props.dispatch(updateChannel(newChannel.id));
+
+      this.props.navigation.navigate("Channel");
+    } catch (err) {
+      console.log(new Error(err));
+    }
   };
   render() {
-    const { name, preamble } = this.state;
-
+    const { name, description } = this.state;
+    let circle = null;
     return (
-      <ScreenWrapper styles={[styles.wrapper]}>
-        <ScrollView styles={[styles.wrapper]}>
-          <KeyboardAvoidingView behavior="padding">
-            <Text style={styles.header}>
-              CREATE A NEW CHANNEL WITHIN this.props.Circle.name.
-            </Text>
-            <Input
-              placeholder={"Channel Name"}
-              label={"Channel Name"}
-              onChangeText={this.updateName}
-              value={name}
-            />
-            <Input
-              value={preamble}
-              onChangeText={this.updateDesc}
-              label={"Description"}
-              description={"Describe this channel"}
-              multiline={true}
-            />
-            <Text style={styles.disclaimer}>
-              By pressing "Create Channel" you will create a new channel within
-              this.props.Circle.name.
-            </Text>
-            <PortalButton title="Create Channel" onPress={this.submit} />
-          </KeyboardAvoidingView>
-        </ScrollView>
-      </ScreenWrapper>
+      <Query
+        query={GET_CIRCLE_NAME_BY_ID}
+        variables={{ id: this.props.activeCircle || "" }}
+      >
+        {({ loading, data }) => {
+          if (data) {
+            circle = data.Circle;
+          }
+          if (loading || this.state.loading) {
+            return (
+              <ScreenWrapper styles={[styles.wrapper]}>
+                <UIActivityIndicator color={"#FFFFFF"} />
+              </ScreenWrapper>
+            );
+          }
+          return (
+            <ScreenWrapper styles={[styles.wrapper]}>
+              <ScrollView styles={[styles.wrapper]}>
+                <KeyboardAvoidingView behavior="padding">
+                  <Text style={styles.header}>
+                    CREATE A NEW CHANNEL WITHIN {circle.name}.
+                  </Text>
+                  <Input
+                    placeholder={"Channel Name"}
+                    label={"Channel Name"}
+                    onChangeText={this.updateName}
+                    value={name}
+                  />
+                  <Input
+                    value={description}
+                    onChangeText={this.updateDesc}
+                    label={"Description"}
+                    description={"Describe this channel"}
+                    multiline={true}
+                  />
+                  <Text style={styles.disclaimer}>
+                    By pressing "Create Channel" you will create a new channel
+                    within {circle.name}.
+                  </Text>
+                  <PortalButton title="Create Channel" onPress={this.submit} />
+                </KeyboardAvoidingView>
+              </ScrollView>
+            </ScreenWrapper>
+          );
+        }}
+      </Query>
     );
   }
 }
@@ -91,3 +168,16 @@ const styles = StyleSheet.create({
     color: "#FFF"
   }
 });
+
+function mapStateToProps(state) {
+  return {
+    user: pull(state, "user"),
+    activeCircle: pull(state, "activeCircle"),
+    circles: pull(state, "circles")
+  };
+}
+
+export default compose(
+  graphql(CREATE_CHANNEL, { name: "createChannel" }),
+  graphql(ADD_CHANNEL_TO_CIRCLE, { name: "addChannelToCircle" })
+)(connect(mapStateToProps)(CreateChannel));

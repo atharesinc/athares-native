@@ -9,11 +9,12 @@ import {
   KeyboardAvoidingView,
   Alert
 } from "react-native";
-import { FileSystem, ImageManipulator} from "expo"
+import { ImageManipulator } from "expo";
 import AvatarPicker from "../../../components/AvatarPicker";
 import PortalButton from "../../../components/PortalButton";
 import { CREATE_CIRCLE, ADD_USER_TO_CIRCLE } from "../../../graphql/mutations";
 import { compose, graphql } from "react-apollo";
+import { UIActivityIndicator } from "react-native-indicators";
 
 import { connect } from "react-redux";
 import { pull } from "../../../redux/state/reducers";
@@ -42,52 +43,34 @@ class CreateCircle extends Component {
       preamble: text
     });
   };
-//   convertURIToBase64 = (uri) => {
-//     try {
-//       const content = await FileSystem.readAsStringAsync(uri)
-//       return base64.fromByteArray(stringToUint8Array(content))
-//     } catch (e) {
-//       console.warn('fileToBase64()', e.message)
-//       return ''
-//     }
-//   }
-//   stringToUint8Array(str) {
-//   const length = str.length
-//   const array = new Uint8Array(new ArrayBuffer(length))
-//   for (let i = 0; i < length; i++) array[i] = str.charCodeAt(i)
-//   return array
-// }
-  submit = () => {
+  submit = async () => {
+    await this.setState({ loading: true });
     let { name, preamble, uri } = this.state;
-    
-    
-    if(uri){
-    
+
+    if (uri) {
       uri = await ImageManipulator.manipulateAsync(
         uri,
-        [{resize: {width: 250, height: 250}}],
-        { format: 'png', compress: 0.8, base64: true }
+        [{ resize: { width: 200, height: 200 } }],
+        { format: "png", compress: 0.5, base64: true }
       );
-        console.log(uri)
+      uri = "data:image/png;base64," + uri.base64;
     } else {
-      uri = defaultCircleImage
+      uri = defaultCircleImage;
     }
-    return;
     preamble = preamble.trim();
     name = name.trim();
-    
+
     // replace with Validate.js
     if (preamble === "" || name === "") {
       Alert.alert("Sorry", "Circles must have a name and preamble.", "error");
       return false;
     }
-    await this.setState({ loading: true });
 
     // create circle
     let newCircle = {
       name: name,
       preamble: preamble,
-      icon: base64Small
+      icon: uri
     };
 
     let newCircleRes = await this.props.createCircle({
@@ -108,19 +91,18 @@ class CreateCircle extends Component {
     this.props.dispatch(updateCircle(newCircle.id));
 
     await this.setState({ loading: false });
-    swal("Circle Created", `${name} has been created successfully.`, "success");
-
-    this.props.history.push("/app/circle/" + newCircle.id + "/constitution");    this.props.navigation.goBack(null);
+    Alert.alert("Circle Created", `${name} has been created successfully.`);
+    this.props.navigation.goBack(null);
   };
   render() {
     const { name, preamble, loading } = this.state;
 
-    if(loading){
+    if (loading) {
       return (
         <ScreenWrapper styles={[styles.wrapper]}>
-        <UIActivityIndicator color={"#FFFFFF"}/>
+          <UIActivityIndicator color={"#FFFFFF"} />
         </ScreenWrapper>
-      )
+      );
     }
     return (
       <ScreenWrapper styles={[styles.wrapper]}>
@@ -187,7 +169,6 @@ const styles = StyleSheet.create({
     color: "#FFF"
   }
 });
-
 
 function mapStateToProps(state) {
   return {

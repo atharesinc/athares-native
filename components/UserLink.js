@@ -1,6 +1,6 @@
 import React from "react";
 import { TouchableOpacity, Image, View, Text, StyleSheet } from "react-native";
-import defaultCircleImage from "./defaultCircleImage";
+// import defaultCircleImage from "./defaultCircleImage";
 
 const UserLink = ({ user }) => {
   return (

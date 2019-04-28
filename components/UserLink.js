@@ -2,12 +2,14 @@ import React from "react";
 import { TouchableOpacity, Image, View, Text, StyleSheet } from "react-native";
 import defaultCircleImage from "./defaultCircleImage";
 
-const UserLink = props => {
+const UserLink = ({ user }) => {
   return (
     <TouchableOpacity style={styles.userLink} {...props}>
-      <Image style={styles.image} source={{ uri: defaultCircleImage }} />
+      <Image style={styles.image} source={{ uri: user.icon }} />
       <View>
-        <Text style={styles.header}>Dan Kral</Text>
+        <Text style={styles.header}>
+          {user.firstName + " " + user.lastName}
+        </Text>
         <Text style={styles.disclaimer}>View Profile</Text>
       </View>
     </TouchableOpacity>

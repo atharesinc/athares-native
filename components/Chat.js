@@ -41,10 +41,7 @@ export default class Chat extends Component {
     ]
   };
   onSend = (messages = []) => {
-    // do createDMChannel stuff
-    this.setState({
-      messages: [...messages, ...(this.state.messages || [])]
-    });
+    this.props.sendMessages(messages);
   };
   renderSend = props => {
     return (
@@ -90,37 +87,37 @@ export default class Chat extends Component {
     );
   };
 
-  onSend = (messages = []) => {
-    this.setState(previousState => {
-      const sentMessages = [{ ...messages[0] }];
-      return {
-        messages: GiftedChat.append(previousState.messages, sentMessages)
-      };
-    });
-  };
+  // onSend = (messages = []) => {
+  //   this.setState(previousState => {
+  //     const sentMessages = [{ ...messages[0] }];
+  //     return {
+  //       messages: GiftedChat.append(previousState.messages, sentMessages)
+  //     };
+  //   });
+  // };
 
-  onReceive = text => {
-    this.setState(previousState => {
-      return {
-        messages: GiftedChat.append(previousState.messages, {
-          _id: Math.round(Math.random() * 1000000),
-          text,
-          createdAt: new Date(),
-          user: otherUser
-        })
-      };
-    });
-  };
+  // onReceive = text => {
+  //   this.setState(previousState => {
+  //     return {
+  //       messages: GiftedChat.append(previousState.messages, {
+  //         _id: Math.round(Math.random() * 1000000),
+  //         text,
+  //         createdAt: new Date(),
+  //         user: otherUser
+  //       })
+  //     };
+  //   });
+  // };
 
   onSendFromUser = (messages = []) => {
-    const createdAt = new Date();
-    const messagesToUpload = messages.map(message => ({
-      ...message,
-      user,
-      createdAt,
-      _id: Math.round(Math.random() * 1000000)
-    }));
-    this.onSend(messagesToUpload);
+    // const createdAt = new Date();
+    // const messagesToUpload = messages.map(message => ({
+    //   ...message,
+    //   user,
+    //   createdAt,
+    //   _id: Math.round(Math.random() * 1000000)
+    // }));
+    this.onSend(messages);
   };
 
   renderCustomActions = props => {
@@ -135,16 +132,14 @@ export default class Chat extends Component {
           renderComposer={this.renderComposer}
           isAnimated={true}
           alignTop={true}
-          messages={this.state.messages}
+          messages={this.props.messages}
           onSend={this.onSend}
           //   keyboardShouldPersistTaps="never"
           //   loadEarlier={this.state.loadEarlier}
           //   onLoadEarlier={this.onLoadEarlier}
           //   isLoadingEarlier={this.state.isLoadingEarlier}
           //   parsePatterns={this.parsePatterns}
-          user={{
-            _id: 1
-          }}
+          user={this.props.user || { _id: null }}
           //   renderAccessory={this.renderAccessory}
           renderMessage={this.renderMessage}
           renderActions={this.renderCustomActions}

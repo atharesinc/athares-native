@@ -60,7 +60,7 @@ export default class MessageBubble extends React.Component {
       if (this.props.renderMessageText) {
         return this.props.renderMessageText(messageTextProps);
       }
-      let me = this.props.currentMessage.user._id === this.props.user._id;
+      let me = this.props.currentMessage.user.id === this.props.user.id;
 
       return (
         <MessageText
@@ -81,7 +81,7 @@ export default class MessageBubble extends React.Component {
   }
 
   renderMessageImage() {
-    if (this.props.currentMessage.image) {
+    if (this.props.currentMessage.file) {
       const { containerStyle, wrapperStyle, ...messageImageProps } = this.props;
       if (this.props.renderMessageImage) {
         return this.props.renderMessageImage(messageImageProps);
@@ -101,7 +101,7 @@ export default class MessageBubble extends React.Component {
     if (this.props.renderTicks) {
       return this.props.renderTicks(currentMessage);
     }
-    if (currentMessage.user._id !== this.props.user._id) {
+    if (currentMessage.user.id !== this.props.user.id) {
       return null;
     }
     if (currentMessage.sent || currentMessage.received) {
@@ -128,7 +128,10 @@ export default class MessageBubble extends React.Component {
   }
 
   renderUsername() {
-    const username = this.props.currentMessage.user.name;
+    const username =
+      this.props.currentMessage.user.firstName +
+      " " +
+      this.props.currentMessage.user.lastName;
     if (username) {
       const { containerStyle, wrapperStyle, ...usernameProps } = this.props;
       if (this.props.renderUsername) {
@@ -190,7 +193,6 @@ export default class MessageBubble extends React.Component {
       <View style={styles.headerView}>
         {this.renderUsername()}
         {this.renderTime()}
-        {this.renderTicks()}
       </View>
     );
 

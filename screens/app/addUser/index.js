@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import ScreenWrapper from "../../../components/ScreenWrapper";
-import Input from "../../../components/Input";
 import InviteUser from "../../../components/InviteUser";
 
 import {
@@ -8,12 +7,19 @@ import {
   View,
   ScrollView,
   StyleSheet,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  Alert
 } from "react-native";
 
 import PortalButton from "../../../components/PortalButton";
+import { graphql, compose } from "react-apollo";
+import { ADD_USER_TO_CIRCLE } from "../../../graphql/mutations";
 
-export default class Me extends Component {
+import { connect } from "react-redux";
+import { pull } from "../../../redux/state/reducers";
+import { UIActivityIndicator } from "react-native-indicators";
+
+class AddUser extends Component {
   state = {
     isFocused: false,
     tags: []
@@ -35,13 +41,48 @@ export default class Me extends Component {
       </View>
     ));
   };
-  submit = () => {
-    console.log("Create Circle!");
-    this.props.navigation.goBack(null);
+  submit = async e => {
+    // add each user to circle
+    let { tags } = this.state;
+    if (tags.length === 0) {
+      return;
+    }
+    try {
+      let invites = tags.map(user => {
+        return this.props.addUserToCircle({
+          variables: {
+            user: user.id,
+            circle: this.props.activeCircle
+          }
+        });
+      });
+
+      Promise.all(invites).then(() => {
+        Alert.alert(
+          `${tags.length > 1 ? "Users Added" : "User Added"}`,
+          `${
+            tags.length > 1 ? "These users have" : "This user has"
+          } been added.`
+        );
+        this.props.navigation.goBack(null);
+      });
+    } catch (err) {
+      console.error(new Error(err));
+      Alert.alert("Error", "There was an error inviting users.");
+    }
   };
   render() {
-    const { tags } = this.state;
+    const { tags, loading } = this.state;
 
+    if (loading) {
+      return (
+        <ScreenWrapper
+          styles={{ justifyContent: "center", alignItems: "center" }}
+        >
+          <UIActivityIndicator color={"#FFFFFF"} />
+        </ScreenWrapper>
+      );
+    }
     return (
       <ScreenWrapper styles={[styles.wrapper]}>
         <ScrollView styles={[styles.wrapper]}>
@@ -68,7 +109,6 @@ export default class Me extends Component {
                 </View>
               )}
               <InviteUser
-                suggestions={suggestions}
                 tags={tags}
                 updateTags={this.updateTags}
                 onFocusChange={this.onFocusChange}
@@ -93,12 +133,6 @@ export default class Me extends Component {
     );
   }
 }
-var suggestions = [
-  { name: "Jim", id: "123123" },
-  { name: "Dan", id: "!2315" },
-  { name: "Brian", id: "9182763" },
-  { name: "Kyle", id: "48739201" }
-];
 
 const styles = StyleSheet.create({
   header: {
@@ -162,3 +196,14 @@ const styles = StyleSheet.create({
     marginTop: 15
   }
 });
+
+function mapStateToProps(state) {
+  return {
+    user: pull(state, "user"),
+    pub: pull(state, "pub"),
+    activeCircle: pull(state, "activeCircle")
+  };
+}
+export default connect(mapStateToProps)(
+  compose(graphql(ADD_USER_TO_CIRCLE, { name: "addUserToCircle" }))(AddUser)
+);

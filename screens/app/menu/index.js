@@ -4,6 +4,12 @@ import { ScrollView, StyleSheet } from "react-native";
 import UserLink from "../../../components/UserLink";
 import MenuLink from "../../../components/MenuLink";
 import ScreenWrapper from "../../../components/ScreenWrapper";
+import { Linking } from "expo";
+
+import { connect } from "react-redux";
+import { pull } from "../../../redux/state/reducers";
+import { Query } from "react-apollo";
+import { GET_USER_BY_ID } from "../../../graphql/queries";
 
 class SideMenu extends Component {
   navigateToScreen = route => () => {
@@ -12,33 +18,78 @@ class SideMenu extends Component {
     });
     this.props.navigation.dispatch(navigateAction);
   };
+  logoutUser = async () => {
+    this.props.dispatch(logout());
+    this.props.navigation.navigate("Login");
+  };
+  goToLogin = () => {
+    this.props.navigation.navigate("Login");
+  };
   goToProfile = () => {
     const navigateAction = NavigationActions.navigate({
       routeName: "ViewUser"
     });
     this.props.navigation.dispatch(navigateAction);
   };
+  goToAbout = () => {
+    Linking.openURL("https://www.athares.us/about");
+  };
+  goToPolicy = () => {
+    Linking.openURL("https://www.athares.us/policy");
+  };
   render() {
     return (
-      <ScreenWrapper styles={[styles.wrapper]}>
-        {/* User */}
-        <UserLink onPress={this.goToProfile} />
-        <ScrollView>
-          {/* Links */}
-          <MenuLink icon="help-circle" label="About" details="FAQs and Us" />
-          <MenuLink
-            icon="info"
-            label="Privacy"
-            details="Privacy Policy and Terms of Use"
-          />
-          <MenuLink icon="log-out" label="Log out" />
-        </ScrollView>
-      </ScreenWrapper>
+      <Query
+        query={GET_USER_BY_ID}
+        variables={{ id: props.userId || "" }}
+        pollInterval={30000}
+      >
+        {({ data }) => {
+          let user = null;
+          if (data.User) {
+            user = data.User;
+          }
+          return (
+            <ScreenWrapper styles={[styles.wrapper]}>
+              {/* User */}
+              {user ? (
+                <UserLink onPress={this.goToProfile} user={user} />
+              ) : (
+                <MenuLink
+                  icon="log-in"
+                  label="Login"
+                  onPress={this.goToLogin}
+                />
+              )}
+              <ScrollView>
+                {/* Links */}
+                <MenuLink
+                  icon="help-circle"
+                  label="About"
+                  details="FAQs and Us"
+                  onPress={this.goToAbout}
+                />
+                <MenuLink
+                  icon="info"
+                  label="Privacy"
+                  details="Privacy Policy and Terms of Use"
+                  onPress={this.goToPolicy}
+                />
+                {user && (
+                  <MenuLink
+                    icon="log-out"
+                    label="Log out"
+                    onPress={this.logoutUser}
+                  />
+                )}{" "}
+              </ScrollView>
+            </ScreenWrapper>
+          );
+        }}
+      </Query>
     );
   }
 }
-
-export default SideMenu;
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -69,3 +120,10 @@ const styles = StyleSheet.create({
     color: "#FFFFFFb7"
   }
 });
+
+function mapStateToProps(state) {
+  return {
+    userId: pull(state, "user")
+  };
+}
+export default connect(mapStateToProps)(SideMenu);

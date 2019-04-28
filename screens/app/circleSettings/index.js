@@ -1,9 +1,10 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import PortalButton from "../../../components/PortalButton";
-import SwitchLine from "../../../components/SwitchLine";
 import LinkText from "../../../components/LinkText";
+import CirclePrefs from "./CirclePrefs";
+
 import {
   Text,
   View,
@@ -13,7 +14,10 @@ import {
 } from "react-native";
 import { UIActivityIndicator } from "react-native-indicators";
 
-export default class CircleSettings extends Component {
+import { connect } from "react-redux";
+import { pull } from "../../../redux/state/reducers";
+
+class CircleSettings extends Component {
   state = {
     showLink: false,
     link: "",
@@ -36,19 +40,32 @@ export default class CircleSettings extends Component {
       loading: false
     });
   };
-  updateEmail = value => {
-    this.setState({
-      email: value
-    });
-  };
-  updateNewRevisions = value => {
-    this.setState({
-      newRevisions: value
-    });
-  };
-  updateNewAmendments = value => {
-    this.setState({
-      newAmendments: value
+
+  leaveCircle = e => {
+    e.preventDefault();
+    let { activeCircle, user } = this.props;
+
+    swal("Are you sure you'd like to leave this Circle?", {
+      buttons: {
+        cancel: "Not yet",
+        confirm: true
+      }
+    }).then(async value => {
+      if (value === true) {
+        this.props.deleteUserFomCircle({
+          variables: {
+            user,
+            circle: activeCircle
+          }
+        });
+        swal(
+          "Removed From Circle",
+          `You have left this Circle. You will have to be re-invited to participate at a later time.`,
+          "warning"
+        );
+        this.props.dispatch(updateCircle(null));
+        this.props.history.push(`/app`);
+      }
     });
   };
   render() {
@@ -81,36 +98,7 @@ export default class CircleSettings extends Component {
               )}
               {showLink && <LinkText text={this.state.link} />}
             </View>
-            <View style={styles.section}>
-              <Text style={styles.sectionHeading}>
-                Notification Preferences
-              </Text>
-              <Text style={styles.disclaimer}>
-                Set your communication preferences for this Circle. By default
-                you will receive an email notification when a new revision is
-                created, and when a revision has passed or been rejected.
-              </Text>
-
-              <SwitchLine
-                value={email}
-                onPress={this.updateEmail}
-                label={"Allow Email Notifications"}
-              />
-              {email && (
-                <Fragment>
-                  <SwitchLine
-                    value={newRevisions}
-                    onPress={this.updateNewRevisions}
-                    label={"New Revisions"}
-                  />
-                  <SwitchLine
-                    value={newAmendments}
-                    onPress={this.updateNewAmendments}
-                    label={"New Amendments"}
-                  />
-                </Fragment>
-              )}
-            </View>
+            <CirclePrefs user={user} activeCircle={activeCircle} />
             <View style={styles.section}>
               <Text style={styles.sectionHeading}>Leave Circle</Text>
               <Text style={styles.disclaimer}>
@@ -155,3 +143,12 @@ const styles = StyleSheet.create({
     marginBottom: 20
   }
 });
+
+function mapStateToProps(state) {
+  return {
+    user: pull(state, "user"),
+    activeCircle: pull(state, "activeCircle")
+  };
+}
+
+export default connect(mapStateToProps)(CircleSettings);

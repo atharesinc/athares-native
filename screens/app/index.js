@@ -21,13 +21,13 @@ import EditAmendment from "./editAmendment";
 const DashboardStackNavigator = createStackNavigator(
   {
     Dashboard: Dashboard,
+    CircleSettings: CircleSettings,
     DMChannel: DMChannel,
     Constitution: Constitution,
     EditAmendment: EditAmendment,
     CreateRevision: CreateRevision,
     ViewRevision: ViewRevision,
     Revisions: Revisions,
-    CircleSettings: CircleSettings,
     ViewUser: Me,
     CreateCircle: CreateCircle,
     CreateChannel: CreateChannel,

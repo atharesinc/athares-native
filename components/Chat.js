@@ -11,37 +11,34 @@ import Message from "./Message";
 import CustomActions from "./CustomActions";
 
 export default class Chat extends Component {
-  state = {
-    text: "",
-    messages: [],
-    loadEarlier: true,
-    typingText: null,
-    isLoadingEarlier: false,
-    messages: [
-      {
-        _id: 1,
-        text: "Hello developer",
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: "Brian",
-          avatar: "https://placeimg.com/139/139/any"
-        }
-      },
-      {
-        _id: 2,
-        text: "Hello developer",
-        createdAt: new Date(),
-        user: {
-          _id: 1,
-          name: "Dan",
-          avatar: "https://placeimg.com/140/140/any"
-        }
-      }
-    ]
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      text: "",
+      messages: this.props.messages,
+      loadEarlier: true,
+      typingText: null,
+      isLoadingEarlier: false
+    };
+  }
   onSend = (messages = []) => {
     this.props.sendMessages(messages);
+    const step = this.state.step + 1;
+    this.setState(previousState => {
+      let newMessage = {
+        _id: new Date().getTime() + "-" + (Math.random() * 100000).toString(16),
+        ...messages[0],
+        user: {
+          _id: this.props.user
+        }
+      };
+      const sentMessages = [newMessage];
+      return {
+        messages: GiftedChat.append(previousState.messages, sentMessages),
+        step
+      };
+    });
   };
   renderSend = props => {
     return (
@@ -87,44 +84,37 @@ export default class Chat extends Component {
     );
   };
 
-  // onSend = (messages = []) => {
-  //   this.setState(previousState => {
-  //     const sentMessages = [{ ...messages[0] }];
-  //     return {
-  //       messages: GiftedChat.append(previousState.messages, sentMessages)
-  //     };
-  //   });
-  // };
-
-  // onReceive = text => {
-  //   this.setState(previousState => {
-  //     return {
-  //       messages: GiftedChat.append(previousState.messages, {
-  //         _id: Math.round(Math.random() * 1000000),
-  //         text,
-  //         createdAt: new Date(),
-  //         user: otherUser
-  //       })
-  //     };
-  //   });
-  // };
-
-  onSendFromUser = (messages = []) => {
-    // const createdAt = new Date();
-    // const messagesToUpload = messages.map(message => ({
-    //   ...message,
-    //   user,
-    //   createdAt,
-    //   _id: Math.round(Math.random() * 1000000)
-    // }));
-    this.onSend(messages);
+  onReceive = text => {
+    console.log(text);
+    this.setState(previousState => {
+      return {
+        messages: GiftedChat.append(previousState.messages, {
+          _id: Math.round(Math.random() * 1000000),
+          text,
+          createdAt: new Date(),
+          user: { _id: "1" }
+        })
+      };
+    });
   };
 
+  // onSendFromUser = (messages = []) => {
+  //   // const createdAt = new Date();
+  //   // const messagesToUpload = messages.map(message => ({
+  //   //   ...message,
+  //   //   user,
+  //   //   createdAt,
+  //   //   _id: Math.round(Math.random() * 1000000)
+  //   // }));
+  //   this.onSend(messages);
+  // };
+
   renderCustomActions = props => {
-    return <CustomActions {...props} onSend={this.onSendFromUser} />;
+    return <CustomActions {...props} onSend={this.onSend} />;
   };
 
   render() {
+    console.log(this.state.messages.length);
     return (
       <Fragment>
         <GiftedChat
@@ -132,14 +122,15 @@ export default class Chat extends Component {
           renderComposer={this.renderComposer}
           isAnimated={true}
           alignTop={true}
-          messages={this.props.messages}
+          messages={this.state.messages}
           onSend={this.onSend}
+          inverted={false}
           //   keyboardShouldPersistTaps="never"
           //   loadEarlier={this.state.loadEarlier}
           //   onLoadEarlier={this.onLoadEarlier}
           //   isLoadingEarlier={this.state.isLoadingEarlier}
           //   parsePatterns={this.parsePatterns}
-          user={this.props.user || { _id: null }}
+          user={{ _id: this.props.user || null }}
           //   renderAccessory={this.renderAccessory}
           renderMessage={this.renderMessage}
           renderActions={this.renderCustomActions}

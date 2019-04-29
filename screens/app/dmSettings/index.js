@@ -15,7 +15,7 @@ import { NavigationActions } from "react-navigation";
 import InviteUser from "../../../components/InviteUser";
 import Icon from "@expo/vector-icons/Feather";
 
-export default class CircleSettings extends Component {
+export default class DMSettings extends Component {
   state = {
     loading: false,
     showAddUsers: false,
@@ -78,7 +78,6 @@ export default class CircleSettings extends Component {
               </View>
             )}
             <InviteUser
-              suggestions={suggestions}
               tags={tags}
               updateTags={this.updateTags}
               onFocusChange={this.onFocusChange}
@@ -105,12 +104,6 @@ export default class CircleSettings extends Component {
     );
   }
 }
-var suggestions = [
-  { name: "Jim", id: "123123" },
-  { name: "Dan", id: "!2315" },
-  { name: "Brian", id: "9182763" },
-  { name: "Kyle", id: "48739201" }
-];
 
 const styles = StyleSheet.create({
   wrapper: {

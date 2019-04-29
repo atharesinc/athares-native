@@ -41,7 +41,7 @@ class SideMenu extends Component {
     return (
       <Query
         query={GET_USER_BY_ID}
-        variables={{ id: props.userId || "" }}
+        variables={{ id: this.props.userId || "" }}
         pollInterval={30000}
       >
         {({ data }) => {
@@ -81,7 +81,7 @@ class SideMenu extends Component {
                     label="Log out"
                     onPress={this.logoutUser}
                   />
-                )}{" "}
+                )}
               </ScrollView>
             </ScreenWrapper>
           );

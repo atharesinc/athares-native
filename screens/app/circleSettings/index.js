@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import PortalButton from "../../../components/PortalButton";
 import CirclePrefs from "./CirclePrefs";
+import ShareCircle from "./ShareCircle";
 
 import {
   Text,
@@ -51,6 +52,7 @@ class CircleSettings extends Component {
     );
   };
   render() {
+    const { activeCircle, user } = this.props;
     return (
       <ScreenWrapper styles={[styles.wrapper]}>
         <KeyboardAvoidingView behavior="position">
@@ -66,7 +68,11 @@ class CircleSettings extends Component {
                 Circle at a later date, you will need to be re-invited by
                 someone inside the Circle.
               </Text>
-              <PortalButton title={"Leave Circle"} />
+              <PortalButton
+                title={"Leave Circle"}
+                style={styles.repealButton}
+                textStyle={styles.repealText}
+              />
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -99,6 +105,15 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#FFFFFFb7",
     marginBottom: 20
+  },
+  repealButton: {
+    marginTop: 20,
+    borderColor: "#ff725c",
+    borderWidth: 2,
+    backgroundColor: "#282a38"
+  },
+  repealText: {
+    color: "#ff725c"
   }
 });
 

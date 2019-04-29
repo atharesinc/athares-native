@@ -1,8 +1,7 @@
 import React from "react";
 import { TouchableOpacity, Image, View, Text, StyleSheet } from "react-native";
-// import defaultCircleImage from "./defaultCircleImage";
 
-const UserLink = ({ user }) => {
+const UserLink = ({ user, ...props }) => {
   return (
     <TouchableOpacity style={styles.userLink} {...props}>
       <Image style={styles.image} source={{ uri: user.icon }} />

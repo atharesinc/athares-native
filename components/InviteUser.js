@@ -3,12 +3,9 @@ import { View, StyleSheet, Text, Image } from "react-native";
 import AutoTags from "react-native-tag-autocomplete";
 
 import { connect } from "react-redux";
-import { pull } from "../../../store/state/reducers";
-import {
-  SEARCH_FOR_USER,
-  GET_USERS_BY_CIRCLE_ID
-} from "../../../graphql/queries";
-import { compose, graphql, Query } from "react-apollo";
+import { pull } from "../redux/state/reducers";
+import { SEARCH_FOR_USER, GET_USERS_BY_CIRCLE_ID } from "../graphql/queries";
+import { compose, graphql } from "react-apollo";
 
 class InviteUser extends Component {
   constructor(props) {
@@ -161,5 +158,5 @@ export default connect(mapStateToProps)(
       name: "searchForUser",
       options: props => ({ variables: { text: "s7d9f87vs69d8fv7" } })
     })
-  )(CircleInviteList)
+  )(InviteUser)
 );

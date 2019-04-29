@@ -4,21 +4,24 @@ import { StyleSheet, Alert } from "react-native";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import Chat from "../../../components/Chat";
 
-import { pull } from "../../../store/state/reducers";
-import { removeUnreadChannel } from "../../../store/state/actions";
+import { pull } from "../../../redux/state/reducers";
+import { removeUnreadChannel } from "../../../redux/state/actions";
 import { connect } from "react-redux";
 import { CREATE_MESSAGE } from "../../../graphql/mutations";
 import { SUB_TO_MESSAGES_BY_CHANNEL_ID } from "../../../graphql/subscriptions";
 import { GET_MESSAGES_FROM_CHANNEL_ID } from "../../../graphql/queries";
 import { compose, graphql, Query } from "react-apollo";
-import uploadToIPFS from "../../../utils/ipfs";
+import { uploadToIPFS, uploadFileToIPFS } from "../../../utils/ipfs";
 
 import { UIActivityIndicator } from "react-native-indicators";
 
 class Channel extends Component {
+  state = {
+    uploadInProgress: false
+  };
   componentDidMount() {
     if (this.props.activeChannel) {
-      this.props.dispatch(removeUnreadChannel(this.props.match.params.id));
+      this.props.dispatch(removeUnreadChannel(this.props.activeChannel));
     }
   }
   componentDidUpdate(prevProps) {
@@ -26,7 +29,7 @@ class Channel extends Component {
       this.props.activeChannel &&
       this.props.activeChannel !== prevProps.activeChannel
     ) {
-      this.props.dispatch(removeUnreadChannel(this.props.match.params.id));
+      this.props.dispatch(removeUnreadChannel(this.props.activeChannel));
     }
   }
   updateProgress = (prog, length) => {
@@ -34,26 +37,30 @@ class Channel extends Component {
   };
   submit = async messages => {
     messages.forEach(async message => {
-      let { text, image: file } = message;
-
-      if (file) {
-        await this.setState({
-          uploadInProgress: true
-        });
-      }
-
+      let { text = "", image, file } = message;
+      let response = null;
       try {
-        let url =
-          file === null ? null : await uploadToIPFS(file, this.updateProgress);
-        if (file) {
-          fetch(url);
+        if (file || image) {
+          await this.setState({
+            uploadInProgress: true
+          });
+          if (file) {
+            response = await uploadFileToIPFS(file);
+          }
+          if (image) {
+            response = await uploadToIPFS(image);
+          }
+        }
+        // preload the file in the cache if we uploaded something
+        if (response) {
+          fetch(response.url);
         }
         let newMessage = {
           text: text.trim(),
           channel: this.props.activeChannel,
           user: this.props.user,
-          file: url,
-          fileName: file !== null ? file.name : null
+          file: response ? response.url : null,
+          fileName: response !== null ? response.hash : null
         };
 
         await this.props.createMessage({
@@ -109,7 +116,12 @@ class Channel extends Component {
           if (data.Channel) {
             this._subToMore(subscribeToMore);
             channel = data.Channel;
-            messages = data.Channel.messages.map(m => ({ ...m, _id: m.id }));
+            // Normalize for Gifted Chat
+            messages = data.Channel.messages.map(m => ({
+              ...m,
+              user: { ...m.user, _id: m.user.id, avatar: m.user.icon },
+              _id: m.id
+            }));
           }
 
           if (channel) {
@@ -119,6 +131,7 @@ class Channel extends Component {
                   user={user}
                   messages={messages}
                   sendMessages={this.submit}
+                  uploadInProgress={this.state.uploadInProgress}
                 />
               </ScreenWrapper>
             );

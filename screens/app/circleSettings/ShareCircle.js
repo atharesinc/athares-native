@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import LinkText from "../../../components/LinkText";
 
 import { Text, View, StyleSheet, Alert } from "react-native";
+import PortalButton from "../../../components/PortalButton";
 
 import { CREATE_INVITE } from "../../../graphql/mutations";
 import { GET_CIRCLE_NAME_BY_ID } from "../../../graphql/queries";
@@ -9,6 +10,7 @@ import { graphql, Query } from "react-apollo";
 
 import { connect } from "react-redux";
 import { pull } from "../../../redux/state/reducers";
+import { UIActivityIndicator } from "react-native-indicators";
 
 class ShareCircle extends Component {
   state = {
@@ -35,6 +37,7 @@ class ShareCircle extends Component {
 
       this.setState({
         link: "https://www.athares.us/invite/" + id,
+        showLink: true,
         loading: false
       });
     } catch (err) {
@@ -47,12 +50,13 @@ class ShareCircle extends Component {
   };
   render() {
     const { showLink, link } = this.state;
+    let circle = null;
     return (
       <Query
         query={GET_CIRCLE_NAME_BY_ID}
         variables={{ id: this.props.activeCircle }}
       >
-        {({ loading, data: { Circle: circle } }) => {
+        {({ loading, data }) => {
           if (loading) {
             return (
               <View style={{ justifyContent: "center", alignItems: "center" }}>
@@ -60,11 +64,14 @@ class ShareCircle extends Component {
               </View>
             );
           }
+          if (data.Circle) {
+            circle = data.Circle;
+          }
           return (
             <View style={styles.section}>
               <Text style={styles.sectionHeading}>Share Circle</Text>
               <Text style={styles.disclaimer}>
-                Invite someone to Athares Inc with a single-use link.
+                Invite someone to {circle.name} with a single-use link.
                 Prospective users will have the option to sign up if they don't
                 have an Athares account.
               </Text>
@@ -114,4 +121,4 @@ function mapStateToProps(state) {
 }
 export default graphql(CREATE_INVITE, {
   name: "createInvite"
-})(connect(mapStateToProps)(withRouter(ShareCircle)));
+})(connect(mapStateToProps)(ShareCircle));

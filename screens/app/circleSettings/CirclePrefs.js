@@ -12,6 +12,8 @@ import {
 } from "../../../graphql/mutations";
 import { GET_CIRCLE_PREFS_FOR_USER } from "../../../graphql/queries";
 import { compose, graphql } from "react-apollo";
+import { UIActivityIndicator } from "react-native-indicators";
+import ScreenWrapper from "../../../components/ScreenWrapper";
 
 class CirclePrefs extends Component {
   updateEmail = async value => {
@@ -43,6 +45,9 @@ class CirclePrefs extends Component {
       }
     });
   };
+  componentDidCatch() {
+    console.log("hwhw");
+  }
   render() {
     let {
       loading,
@@ -51,9 +56,11 @@ class CirclePrefs extends Component {
 
     if (loading || !user) {
       return (
-        <div className="w-100 flex justify-center items-center">
-          <Loader />
-        </div>
+        <ScreenWrapper
+          styles={{ justifyContent: "center", alignItems: "center" }}
+        >
+          <UIActivityIndicator color={"#FFFFFF"} />
+        </ScreenWrapper>
       );
     }
     let perm = user.circlePermissions[0];
@@ -71,7 +78,7 @@ class CirclePrefs extends Component {
           onPress={this.updateEmail}
           label={"Allow Email Notifications"}
         />
-        {email && (
+        {perm.useEmail && (
           <Fragment>
             <SwitchLine
               value={perm.revisions}
@@ -111,6 +118,13 @@ const styles = StyleSheet.create({
   }
 });
 
+function Uh() {
+  return (
+    <View>
+      <Text>lsdkflskdmf</Text>
+    </View>
+  );
+}
 export default compose(
   graphql(UPDATE_AMENDEMENT_PERMISSION_FOR_CIRCLE, {
     name: "updateAmendmentPref"
@@ -126,4 +140,4 @@ export default compose(
       variables: { user: user || "", circle: activeCircle || "" }
     })
   })
-)(withRouter(CirclePrefs));
+)(CirclePrefs);

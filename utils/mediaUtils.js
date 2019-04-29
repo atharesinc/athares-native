@@ -31,25 +31,24 @@ export default async function getPermissionAsync(permission) {
   return true;
 }
 
-export async function getLocationAsync(onSend) {
-  if (await getPermissionAsync(Permissions.LOCATION)) {
-    const location = await Location.getCurrentPositionAsync({});
-    if (location) {
-      onSend([{ location: location.coords }]);
-    }
-  }
-}
+// export async function getLocationAsync(onSend) {
+//   if (await getPermissionAsync(Permissions.LOCATION)) {
+//     const location = await Location.getCurrentPositionAsync({});
+//     if (location) {
+//       onSend([{ location: location.coords }]);
+//     }
+//   }
+// }
 
 export async function pickImageAsync(onSend) {
   if (await getPermissionAsync(Permissions.CAMERA_ROLL)) {
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
-      mediaTypes: "All",
-      aspect: [4, 3]
+      mediaTypes: "All"
     });
 
     if (!result.cancelled) {
-      onSend([{ image: result.uri }]);
+      onSend([{ image: result }]);
       return result.uri;
     }
   }
@@ -60,7 +59,7 @@ export async function pickFileAsync(onSend) {
     const result = await DocumentPicker.getDocumentAsync({ type: "*/*" });
 
     if (!result.cancelled) {
-      onSend([{ file: result.uri }]);
+      onSend([{ file: result }]);
       return result.uri;
     }
   }
@@ -69,12 +68,12 @@ export async function pickFileAsync(onSend) {
 export async function takePictureAsync(onSend) {
   if (await getPermissionAsync(Permissions.CAMERA)) {
     const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [4, 3]
+      allowsEditing: true
+      // aspect: [4, 3]
     });
 
     if (!result.cancelled) {
-      onSend([{ image: result.uri }]);
+      onSend([{ image: result }]);
       return result.uri;
     }
   }

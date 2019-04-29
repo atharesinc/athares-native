@@ -2,17 +2,23 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "@expo/vector-icons/Feather";
 import { withNavigation } from "react-navigation";
+import { updateChannel } from "../redux/state/actions";
+import { connect } from "react-redux";
 
 const ChannelItem = ({
   channel = { name: "", channelType: "group" },
   lastMessage = null,
   showUnread = false,
+  dispatch,
   ...props
 }) => {
   const nav = () => {
+    console.log(channel.id);
     if (channel.channelType === "dm") {
+      dispatch(updateChannel(channel.id));
       props.navigation.navigate("DMChannel");
     } else if (channel.channelType === "group") {
+      dispatch(updateChannel(channel.id));
       props.navigation.navigate("Channel");
     }
   };
@@ -43,7 +49,10 @@ const ChannelItem = ({
   );
 };
 
-export default withNavigation(ChannelItem);
+function mapStateToProps(state) {
+  return {};
+}
+export default connect(mapStateToProps)(withNavigation(ChannelItem));
 
 const styles = StyleSheet.create({
   row: {

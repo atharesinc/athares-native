@@ -257,5 +257,5 @@ export default connect(mapStateToProps)(
     graphql(GET_USER_BY_ID, {
       options: ({ user }) => ({ variables: { id: user || "" } })
     })
-  )(withRouter(CreateDM))
+  )(CreateDM)
 );

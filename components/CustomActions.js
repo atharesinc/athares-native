@@ -18,7 +18,7 @@ import Icon from "@expo/vector-icons/Feather";
 export default class CustomActions extends React.Component {
   onActionsPress = () => {
     const options = [
-      "Media From Library",
+      "Image From Library",
       "Take Picture",
       "Upload File",
       "Cancel"
@@ -45,17 +45,6 @@ export default class CustomActions extends React.Component {
       }
     );
   };
-
-  //   renderIcon = () => {
-  //     // if (this.props.renderIcon) {
-  //     //   return this.props.renderIcon();
-  //     // }
-  //     return (
-  //       <View style={[styles.wrapper]}>
-  //         <Text style={[styles.iconText, this.props.iconTextStyle]}>+</Text>
-  //       </View>
-  //     );
-  //   };
 
   render() {
     return (
@@ -88,13 +77,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center"
   }
-  //   iconText: {
-  //     color: "#FFFFFF",
-  //     fontWeight: "bold",
-  //     fontSize: 16,
-  //     backgroundColor: "transparent",
-  //     textAlign: "center"
-  //   }
 });
 
 CustomActions.contextTypes = {

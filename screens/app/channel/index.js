@@ -18,7 +18,6 @@ import { GET_MESSAGES_FROM_CHANNEL_ID } from "../../../graphql/queries";
 import { compose, graphql, Query } from "react-apollo";
 import { uploadImage, uploadDocument } from "../../../utils/upload";
 import KeyboardSpacer from "react-native-keyboard-spacer";
-import defaultUserImage from "../../../components/defaultUserImage";
 import { UIActivityIndicator } from "react-native-indicators";
 
 class Channel extends Component {

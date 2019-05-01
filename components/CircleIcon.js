@@ -1,6 +1,7 @@
 import React from "react";
 
-import { Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
+import AsyncImageAnimated from "react-native-async-image-animated";
 
 const CircleIcon = ({ selected = false, circle = {}, ...props }) => {
   const selectCircle = () => {
@@ -8,10 +9,15 @@ const CircleIcon = ({ selected = false, circle = {}, ...props }) => {
   };
   return (
     <TouchableOpacity style={styles.circleWrapper} onPress={selectCircle}>
-      <Image
-        source={{ uri: circle.icon }}
-        style={[styles.circle, selected ? styles.selected : {}]}
-      />
+      <View
+        style={{ ...styles.circleIconWrapper, borderWidth: selected ? 4 : 0 }}
+      >
+        <AsyncImageAnimated
+          source={{ uri: circle.icon }}
+          style={styles.circle}
+          placeholderColor={"#3a3e52"}
+        />
+      </View>
       <Text numberOfLines={1} style={styles.circleLabel}>
         {circle.name}
       </Text>
@@ -29,18 +35,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 15
   },
+  circleIconWrapper: {
+    width: 60,
+    height: 60,
+    borderRadius: 9999,
+    marginBottom: 5,
+    borderColor: "#00dffc",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden"
+  },
   circle: {
     width: 60,
     height: 60,
     borderRadius: 9999,
-    marginBottom: 5
+    resizeMode: "cover"
   },
   circleLabel: {
     fontSize: 13,
     color: "#ffffffb7"
-  },
-  selected: {
-    borderWidth: 4,
-    borderColor: "#00dffc"
   }
 });

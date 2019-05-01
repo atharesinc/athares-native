@@ -16,7 +16,7 @@ import {
   ADD_USER_TO_CHANNEL
 } from "../../../graphql/mutations";
 import { graphql, compose } from "react-apollo";
-import uploadToIPFS from "../../../utils/ipfs";
+import { uploadImage, uploadDocument } from "../../../utils/upload";
 import { UIActivityIndicator } from "react-native-indicators";
 
 class CreateDM extends Component {
@@ -198,7 +198,15 @@ class CreateDM extends Component {
             onFocusChange={this.onFocusChange}
           />
         </View>
-        <Chat user={user} messages={[]} sendMessages={this.submit} />
+        <Chat user={user} messages={messages} />
+        <ChatInput
+          onSend={this.submit}
+          uploadInProgress={this.state.uploadInProgress}
+        />
+        <KeyboardAvoidingView behavior="padding" />
+        {Platform.OS === "android" ? (
+          <KeyboardSpacer topSpacing={-130} />
+        ) : null}{" "}
       </ScreenWrapper>
     );
   }

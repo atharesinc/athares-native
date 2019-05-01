@@ -5,7 +5,8 @@ import {
   Text,
   TouchableOpacity,
   View,
-  ViewPropTypes
+  ViewPropTypes,
+  Keyboard
 } from "react-native";
 
 import {
@@ -16,66 +17,53 @@ import {
 import Icon from "@expo/vector-icons/Feather";
 
 export default class CustomActions extends React.Component {
-  onActionsPress = () => {
-    const options = [
-      "Image From Library",
-      "Take Picture",
-      "Upload File",
-      "Cancel"
-    ];
-    const cancelButtonIndex = options.length - 1;
-    this.context.actionSheet().showActionSheetWithOptions(
-      {
-        options,
-        cancelButtonIndex
-      },
-      async buttonIndex => {
-        const { onSend } = this.props;
-        switch (buttonIndex) {
-          case 0:
-            pickImageAsync(onSend);
-            return;
-          case 1:
-            takePictureAsync(onSend);
-            return;
-          case 2:
-            pickFileAsync(onSend);
-          default:
-        }
-      }
-    );
+  getImage = async () => {
+    Keyboard.dismiss();
+    let file = await pickImageAsync();
+    this.props.updateFile(file);
   };
-
+  getPhoto = async () => {
+    Keyboard.dismiss();
+    let file = await takePictureAsync();
+    this.props.updateFile(file);
+  };
+  getFile = async () => {
+    Keyboard.dismiss();
+    let file = await pickFileAsync();
+    this.props.updateFile(file);
+  };
   render() {
     return (
-      <TouchableOpacity
-        style={[styles.container]}
-        onPress={this.onActionsPress}
-      >
-        <View style={[styles.wrapper]}>
-          <Icon name="plus" size={16} color={"#FFFFFF"} />
-        </View>
-      </TouchableOpacity>
+      <View style={[styles.container]}>
+        <TouchableOpacity style={[styles.wrapper]} onPress={this.getImage}>
+          <Icon name="image" size={20} color={"#FFFFFF"} />
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.wrapper]} onPress={this.getPhoto}>
+          <Icon name="camera" size={20} color={"#FFFFFF"} />
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.wrapper]} onPress={this.getFile}>
+          <Icon name="paperclip" size={20} color={"#FFFFFF"} />
+        </TouchableOpacity>
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    width: 40,
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#3a3e52"
+    marginTop: 10,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    backgroundColor: "#3a3e52",
+    marginLeft: 15
   },
   wrapper: {
-    borderRadius: 13,
-    borderColor: "#FFFFFF",
-    borderWidth: 2,
     width: 26,
     height: 26,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    marginRight: 15
   }
 });
 

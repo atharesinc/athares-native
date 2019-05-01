@@ -1,125 +1,114 @@
-import PropTypes from "prop-types";
 import React from "react";
-import { View, ViewPropTypes, StyleSheet } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
+import moment from "moment";
+import ImageMessage from "./ImageMessage";
+import FileMessage from "./FileMessage";
+import AsyncImageAnimated from "react-native-async-image-animated";
+import FadeInView from "./FadeInView";
 
-import { Avatar, Day, utils } from "react-native-gifted-chat";
-import MessageBubble from "./MessageBubble";
+const Message = props => {
+  const timestamp =
+    props.timestamp.substring(0, 10) === moment().format("YYYY-MM-DD")
+      ? "Today " + moment(props.timestamp).format("h:mma")
+      : moment(props.timestamp).format("dddd h:mma");
 
-const { isSameUser, isSameDay } = utils;
+  const isImage = (file, fileName) => {
+    const imgs = ["gif", "png", "jpg", "jpeg", "bmp"];
 
-export default class Message extends React.Component {
-  getInnerComponentProps() {
-    const { containerStyle, ...props } = this.props;
-    return {
-      ...props,
-      position: "left",
-      isSameUser,
-      isSameDay
-    };
-  }
+    let extension = fileName.match(/\.(.{1,4})$/i)[1];
 
-  renderDay = () => {
-    if (this.props.currentMessage.createdAt) {
-      const dayProps = this.getInnerComponentProps();
-      if (this.props.renderDay) {
-        return this.props.renderDay(dayProps);
-      }
-      return <Day {...dayProps} />;
+    if (imgs.findIndex(i => i === extension.toLowerCase()) !== -1) {
+      return <ImageMessage file={file} fileName={fileName} />;
+    } else {
+      return <FileMessage file={file} fileName={fileName} />;
     }
-    return null;
   };
 
-  renderBubble = () => {
-    const bubbleProps = this.getInnerComponentProps();
-    if (this.props.renderBubble) {
-      return this.props.renderBubble(bubbleProps);
-    }
-    return <MessageBubble {...bubbleProps} />;
-  };
-
-  renderAvatar = () => {
-    let extraStyle;
-    if (
-      isSameUser(this.props.currentMessage, this.props.previousMessage) &&
-      isSameDay(this.props.currentMessage, this.props.previousMessage)
-    ) {
-      // Set the invisible avatar height to 0, but keep the width, padding, etc.
-      extraStyle = { height: 0 };
-    }
-
-    const avatarProps = this.getInnerComponentProps();
-    return (
-      <Avatar
-        {...avatarProps}
-        imageStyle={{
-          left: [styles.slackAvatar, avatarProps.imageStyle, extraStyle]
-        }}
-      />
-    );
-  };
-
-  render() {
-    const marginBottom = isSameUser(
-      this.props.currentMessage,
-      this.props.nextMessage
-    )
-      ? 2
-      : 10;
-
-    return (
-      <View>
-        {this.renderDay()}
-        <View
-          style={[
-            styles.container,
-            { marginBottom },
-            this.props.containerStyle
-          ]}
-        >
-          {this.renderAvatar()}
-          {this.renderBubble()}
+  const { message: msg, isMine, multiMsg } = props;
+  return (
+    <FadeInView style={styles.messageWrapper}>
+      {multiMsg === false && (
+        <Text style={styles.messageUserText}>
+          {msg.user.firstName + " " + msg.user.lastName}
+        </Text>
+      )}
+      <View style={styles.messageAvatarAndContentWrapper}>
+        {multiMsg === false ? (
+          <AsyncImageAnimated
+            source={{ uri: msg.user.icon }}
+            style={styles.messageAvatar}
+            placeholderColor={"#3a3e52"}
+          />
+        ) : null}
+        <View style={styles.messageContentWrapper}>
+          {msg.text ? (
+            <Text
+              style={[
+                styles.messageText,
+                isMine ? styles.me : styles.otherUser
+              ]}
+            >
+              {msg.text}
+            </Text>
+          ) : null}
         </View>
       </View>
-    );
-  }
-}
+      {msg.file && isImage(msg.file, msg.fileName)}
+
+      <Text style={styles.timestamp}>{timestamp}</Text>
+    </FadeInView>
+  );
+};
+export default Message;
 
 const styles = StyleSheet.create({
-  container: {
+  messageAvatarAndContentWrapper: {
     flexDirection: "row",
-    alignItems: "flex-start",
     justifyContent: "flex-start",
-    marginLeft: 8,
-    marginRight: 0
+    alignItems: "flex-start",
+    marginBottom: 5
   },
-  slackAvatar: {
-    height: 50,
-    width: 50,
-    borderRadius: 0
+  messageContentWrapper: {
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "flex-start"
+  },
+  me: {
+    backgroundColor: "#00DFFC30",
+    borderColor: "#00dffc",
+    borderWidth: 1
+  },
+  otherUser: {
+    backgroundColor: "#ffffff30",
+    borderColor: "#ffffff",
+    borderWidth: 1
+  },
+  messageWrapper: {
+    margin: 15,
+    marginTop: 5,
+    marginBottom: 10
+  },
+  messageUserText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    marginBottom: 10
+  },
+  messageAvatar: {
+    height: 40,
+    width: 40,
+    borderRadius: 9999,
+    marginRight: 15,
+    borderWidth: 2,
+    borderColor: "#FFFFFF"
+  },
+  messageText: {
+    color: "#FFFFFF",
+    paddingVertical: 5,
+    paddingHorizontal: 10
+    // borderRadius: 20
+  },
+  timestamp: {
+    color: "#FFFFFFb7",
+    fontSize: 10
   }
 });
-
-Message.defaultProps = {
-  renderAvatar: undefined,
-  renderBubble: null,
-  renderDay: null,
-  currentMessage: {},
-  nextMessage: {},
-  previousMessage: {},
-  user: {},
-  containerStyle: {}
-};
-
-Message.propTypes = {
-  renderAvatar: PropTypes.func,
-  renderBubble: PropTypes.func,
-  renderDay: PropTypes.func,
-  currentMessage: PropTypes.object,
-  nextMessage: PropTypes.object,
-  previousMessage: PropTypes.object,
-  user: PropTypes.object,
-  containerStyle: PropTypes.shape({
-    left: ViewPropTypes.style,
-    right: ViewPropTypes.style
-  })
-};

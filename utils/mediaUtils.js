@@ -40,7 +40,7 @@ export default async function getPermissionAsync(permission) {
 //   }
 // }
 
-export async function pickImageAsync(onSend) {
+export async function pickImageAsync() {
   if (await getPermissionAsync(Permissions.CAMERA_ROLL)) {
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
@@ -48,24 +48,22 @@ export async function pickImageAsync(onSend) {
     });
 
     if (!result.cancelled) {
-      onSend([{ image: result }]);
-      return result.uri;
+      return result;
     }
   }
 }
 
-export async function pickFileAsync(onSend) {
+export async function pickFileAsync() {
   if (await getPermissionAsync(Permissions.CAMERA_ROLL)) {
     const result = await DocumentPicker.getDocumentAsync({ type: "*/*" });
 
     if (!result.cancelled) {
-      onSend([{ file: result }]);
-      return result.uri;
+      return result;
     }
   }
 }
 
-export async function takePictureAsync(onSend) {
+export async function takePictureAsync() {
   if (await getPermissionAsync(Permissions.CAMERA)) {
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true
@@ -73,14 +71,13 @@ export async function takePictureAsync(onSend) {
     });
 
     if (!result.cancelled) {
-      onSend([{ image: result }]);
-      return result.uri;
+      return result;
     }
   }
 }
 
 // Image Picker if we just want the image URI
-export async function pickImageURIAsync(onSend) {
+export async function pickImageURIAsync() {
   if (await getPermissionAsync(Permissions.CAMERA_ROLL)) {
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,

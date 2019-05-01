@@ -13,7 +13,6 @@ const ChannelItem = ({
   ...props
 }) => {
   const nav = () => {
-    console.log(channel.id);
     if (channel.channelType === "dm") {
       dispatch(updateChannel(channel.id));
       props.navigation.navigate("DMChannel");

@@ -100,7 +100,7 @@ export const GET_MESSAGES_FROM_CHANNEL_ID = gql`
       id
       name
       description
-      messages {
+      messages(orderBy: createdAt_DESC) {
         id
         text
         createdAt

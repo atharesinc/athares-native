@@ -3,8 +3,8 @@ import { createDrawerNavigator } from "react-navigation";
 
 import { StyleSheet, AsyncStorage } from "react-native";
 import Menu from "../dmSettings";
-import { pull } from "../../../store/state/reducers";
-import { removeUnreadDM } from "../../../store/state/actions";
+import { pull } from "../../../redux/state/reducers";
+import { removeUnreadDM } from "../../../redux/state/actions";
 import { connect } from "react-redux";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import Chat from "../../../components/Chat";

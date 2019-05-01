@@ -46,11 +46,16 @@ export const uploadDocument = async ({ uri, name }) => {
 
 async function uploadToAWS(file) {
   try {
+    let API_KEYS = await fetch("https://soulful-egret.actuallydan.now.sh").then(
+      res => res.json()
+    );
+    const { accessKey, secretKey } = API_KEYS;
+
     const options = {
       bucket: "athares-images",
       region: "us-east-2",
-      accessKey: "AKIAVRJIUFTJAHUYIH7O",
-      secretKey: "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",
+      accessKey,
+      secretKey,
       successActionStatus: 201
     };
 

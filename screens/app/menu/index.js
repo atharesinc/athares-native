@@ -7,6 +7,7 @@ import ScreenWrapper from "../../../components/ScreenWrapper";
 import { Linking } from "expo";
 
 import { connect } from "react-redux";
+import { logout } from "../../../redux/state/actions";
 import { pull } from "../../../redux/state/reducers";
 import { Query } from "react-apollo";
 import { GET_USER_BY_ID } from "../../../graphql/queries";

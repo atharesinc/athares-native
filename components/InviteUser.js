@@ -1,102 +1,92 @@
 import React, { Component } from "react";
-import { View, StyleSheet, Text, Image } from "react-native";
-import AutoTags from "react-native-tag-autocomplete";
+import {
+  View,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity
+} from "react-native";
+import AsyncImageAnimated from "react-native-async-image-animated";
 
 import { connect } from "react-redux";
 import { pull } from "../redux/state/reducers";
 import { SEARCH_FOR_USER, GET_USERS_BY_CIRCLE_ID } from "../graphql/queries";
-import { compose, graphql } from "react-apollo";
+import { compose, graphql, Query } from "react-apollo";
 
 class InviteUser extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isFocused: false
+      input: ""
     };
   }
-
-  handleDelete = index => {
-    let tagsSelected = this.props.tags;
-    tagsSelected.splice(index, 1);
-    this.props.updateTags(tagsSelected);
-  };
 
   handleAddition = suggestion => {
     let newTags = this.props.tags.concat([suggestion]);
     this.props.updateTags(newTags);
-  };
-  // render tags from array of selected objects
-  _renderTags = tags => {
-    // return tags.map(t => (
-    //   <View style={s.tag} key={t.id}>
-    //     <Text style={s.tagText}>{t.name}</Text>
-    //   </View>
-    // ));
-  };
-  //react function to render each suggestions
-  _renderSuggestion = item => {
-    return (
-      <View style={s.suggestion}>
-        <Text style={s.suggestionText}>{item.name}</Text>
-      </View>
-    );
-  };
-  _filterData = async val => {
-    const { getUsers, tags } = this.props;
-    // display some results to the user
-    // filter out names that don't meet criteria and filter out alreadys selected users
-    let res = await this.props.searchForUser.updateQuery(
-      this.props.searchForUser,
-      {
-        variables: { text: val }
-      }
-    );
-    console.log(res);
-    let { allUsers } = res;
-    return allUsers
-      .filter(s => getUsers.Circle.users.findIndex(su => su.id === s.id) === -1)
-      .filter(s => tags.findIndex(su => su.id === s.id) === -1)
-      .filter(s => s.id !== this.props.user)
-      .map(s => ({ name: s.firstName + " " + s.lastName, ...s }));
-  };
-  focus = () => {
-    if (this.props.onFocusChange) {
-      this.props.onFocusChange(true);
-    }
     this.setState({
-      isFocused: true
+      input: ""
     });
   };
-  blur = () => {
-    if (this.props.onFocusChange) {
-      this.props.onFocusChange(false);
-    }
+  _renderSuggestion = item => {
+    return (
+      <TouchableOpacity
+        key={item.id}
+        style={s.suggestion}
+        onPress={() => {
+          this.handleAddition(item);
+        }}
+      >
+        <AsyncImageAnimated
+          source={{ uri: item.icon }}
+          style={s.miniIcon}
+          placeholderColor={"#3a3e52"}
+        />
+        <Text style={s.suggestionText}>{item.name}</Text>
+        {item.uname && <Text style={s.suggestionText}>@{item.uname}</Text>}
+      </TouchableOpacity>
+    );
+  };
+  updateInput = text => {
     this.setState({
-      isFocused: false
+      input: text
     });
   };
   render() {
-    const { style = {} } = this.props;
-    const { isFocused, suggestions = [] } = this.state;
-
+    const { style = {}, getUsers, tags, circle } = this.props;
+    const { input } = this.state;
+    let suggestions = [];
     return (
-      <View styles={[s.autocompleteContainer, style]}>
-        <AutoTags
-          style={[s.autoTags, isFocused ? s.autoTagsFocused : {}]}
-          onFocus={this.focus}
-          onBlur={this.blur}
-          suggestions={suggestions}
-          tagsSelected={this.state.tagsSelected}
-          handleAddition={this.handleAddition}
-          handleDelete={this.handleDelete}
-          placeholder="Enter a name"
-          filterData={this._filterData}
-          renderTags={this._renderTags}
-          renderSuggestion={this._renderSuggestion}
-          inputContainerStyle={s.inputStyle}
-          containerStyle={s.container}
-        />
-      </View>
+      <Query
+        query={SEARCH_FOR_USER}
+        variables={{ text: input || "s7d9f87vs69d8fv7" }}
+      >
+        {({ data: { allUsers } }) => {
+          // filter data.suggestions by users that are in tags list, and if in addUser, users already in this circle
+          if (input.trim().length >= 1 && tags.length < 7 && allUsers) {
+            suggestions = allUsers
+              .filter(u => tags.findIndex(su => su.id === u.id) === -1)
+              .map(u => ({ name: u.firstName + " " + u.lastName, ...u }));
+            if (circle) {
+              suggestions = suggestions.filter(
+                u =>
+                  getUsers.Circle.users.findIndex(su => su.id === u.id) === -1
+              );
+            }
+          }
+          return (
+            <View styles={[s.autocompleteContainer, style]}>
+              <TextInput
+                value={input}
+                onChangeText={this.updateInput}
+                style={s.inputStyle}
+                placeholder="Enter a name"
+              />
+              {suggestions.map(u => this._renderSuggestion(u))}
+            </View>
+          );
+        }}
+      </Query>
     );
   }
 }
@@ -112,7 +102,8 @@ const s = StyleSheet.create({
     borderColor: "transparent",
     alignItems: "stretch",
     backgroundColor: "#3a3e5299",
-    width: "100%"
+    width: "100%",
+    color: "#FFFFFF"
   },
   // suggestions container
   container: {
@@ -132,7 +123,16 @@ const s = StyleSheet.create({
     borderBottomColor: "#3a3e5299",
     borderBottomWidth: 1,
     paddingHorizontal: 15,
-    paddingVertical: 10
+    paddingVertical: 10,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center"
+  },
+  miniIcon: {
+    height: 30,
+    width: 30,
+    marginRight: 10,
+    borderRadius: 9999
   },
   suggestionText: {
     color: "#FFFFFF"
@@ -144,19 +144,14 @@ const s = StyleSheet.create({
 
 function mapStateToProps(state) {
   return {
-    user: pull(state, "user"),
-    activeCircle: pull(state, "activeCircle")
+    user: pull(state, "user")
   };
 }
 export default connect(mapStateToProps)(
   compose(
     graphql(GET_USERS_BY_CIRCLE_ID, {
       name: "getUsers",
-      options: ({ activeCircle }) => ({ variables: { id: activeCircle || "" } })
-    }),
-    graphql(SEARCH_FOR_USER, {
-      name: "searchForUser",
-      options: props => ({ variables: { text: "s7d9f87vs69d8fv7" } })
+      options: ({ circle }) => ({ variables: { id: circle || "" } })
     })
   )(InviteUser)
 );

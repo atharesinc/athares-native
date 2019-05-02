@@ -73,7 +73,7 @@ class AddUser extends Component {
   };
   render() {
     const { tags, loading } = this.state;
-
+    const { activeCircle } = this.props;
     if (loading) {
       return (
         <ScreenWrapper
@@ -112,6 +112,7 @@ class AddUser extends Component {
                 tags={tags}
                 updateTags={this.updateTags}
                 onFocusChange={this.onFocusChange}
+                circle={activeCircle}
               />
             </View>
 

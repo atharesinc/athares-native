@@ -1,13 +1,28 @@
 import React, { Component } from "react";
+import {
+  View,
+  ScrollView,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  Alert
+} from "react-native";
+import Icon from "@expo/vector-icons/Feather";
 import ScreenWrapper from "../../../components/ScreenWrapper";
-import { View, ScrollView, Text, StyleSheet } from "react-native";
 import InviteUser from "../../../components/InviteUser";
 import Chat from "../../../components/Chat";
+import ChatInput from "../../../components/ChatInput";
+import { encrypt } from "../../../utils/crypto";
+import { uploadImage, uploadDocument } from "../../../utils/upload";
+import KeyboardSpacer from "react-native-keyboard-spacer";
+import { UIActivityIndicator } from "react-native-indicators";
 
 import { pull } from "../../../redux/state/reducers";
 import { connect } from "react-redux";
-import { encrypt } from "../../../utils/crypto";
 import SimpleCrypto from "simple-crypto-js";
+
 import { GET_USER_BY_ID } from "../../../graphql/queries";
 import {
   CREATE_CHANNEL,
@@ -16,8 +31,6 @@ import {
   ADD_USER_TO_CHANNEL
 } from "../../../graphql/mutations";
 import { graphql, compose } from "react-apollo";
-import { uploadImage, uploadDocument } from "../../../utils/upload";
-import { UIActivityIndicator } from "react-native-indicators";
 
 class CreateDM extends Component {
   state = {
@@ -37,10 +50,23 @@ class CreateDM extends Component {
       tags
     });
   };
+  handleDelete = index => {
+    let tagsSelected = this.state.tags;
+    tagsSelected.splice(index, 1);
+    this.updateTags(tagsSelected);
+  };
   renderTags = tags => {
-    return tags.map(t => (
+    return tags.map((t, i) => (
       <View style={styles.tag} key={t.id}>
         <Text style={styles.tagText}>{t.name}</Text>
+        <TouchableOpacity
+          style={{ justifyContent: "center", alignItems: "center" }}
+          onPress={() => {
+            this.handleDelete(i);
+          }}
+        >
+          <Icon name="x" size={20} color={styles.tagText.color} />
+        </TouchableOpacity>
       </View>
     ));
   };
@@ -51,6 +77,9 @@ class CreateDM extends Component {
     if (!data.User) {
       return false;
     }
+    await this.setState({
+      uploadInProgress: true
+    });
     // We're going to allow users to have no recipients because they always get added to a channel on creation
     // This defaults to a "just you" channel but they can later add users if they like
     // if (selectedUsers.length === 0) {
@@ -64,15 +93,12 @@ class CreateDM extends Component {
     if (text.trim().length === 0 && file === null) {
       return false;
     }
-    await this.setState({
-      uploadInProgress: true
-    });
-    let { User: user } = this.props.data;
+    let { User: user } = data;
 
     // create a symmetric key for the new channel
     var _secretKey = SimpleCrypto.generateRandom({ length: 256 });
 
-    // var simpleCrypto = new SimpleCrypto(_secretKey);
+    var simpleCrypto = new SimpleCrypto(_secretKey);
 
     // add this user to the list of selectedUsers
     tags.push(user);
@@ -97,7 +123,8 @@ class CreateDM extends Component {
 
       // give each user an encrypted copy of this keypair and store it in
       let promiseList = tags.map(async u => {
-        const encryptedKey = await encrypt(_secretKey, u.pub);
+        let encryptedKey = encrypt(_secretKey, u.pub);
+        console.log(encryptedKey, _secretKey, u.pub);
         return this.props.createKey({
           variables: {
             key: encryptedKey,
@@ -120,10 +147,8 @@ class CreateDM extends Component {
       await Promise.all(promiseList);
       await Promise.all(promiseList2);
 
+      // get to sending the first message for the newly created DMChannel
       if (file) {
-        this.setState({
-          uploadInProgress: true
-        });
         const imgs = ["gif", "png", "jpg", "jpeg", "bmp"];
         let extension = file.name.match(/\.(.{1,4})$/i);
 
@@ -142,14 +167,16 @@ class CreateDM extends Component {
       if (text.trim() === "" && !response.url) {
         return false;
       }
+
+      // encrypt the relevant parts of the message
       let newMessage = {
-        text: text.trim(),
-        channel: this.props.activeChannel,
+        text: simpleCrypto.encrypt(text.trim()),
+        channel: id,
         user: this.props.user,
-        file: response ? response.url : null,
+        file: response ? simpleCrypto.encrypt(response.url) : null,
         fileName: response ? response.name : null
       };
-      console.log(newMessage);
+
       await this.props.createMessage({
         variables: {
           ...newMessage
@@ -158,16 +185,20 @@ class CreateDM extends Component {
 
       this.props.navigation.navigate(`DMChannel`);
     } catch (err) {
+      await this.setState({
+        uploadInProgress: true
+      });
       console.error(new Error(err));
       Alert.alert(
         "Error",
-        "We were unable to send your message, please try again later"
+        "We were unable to create this Channel, please try again later"
       );
     }
   };
   render() {
-    const { tags, loading } = this.state;
-    if (loading || uploadInProgress) {
+    const { tags, uploadInProgress } = this.state;
+    const { user } = this.props;
+    if (uploadInProgress) {
       return (
         <ScreenWrapper
           styles={{ justifyContent: "center", alignItems: "center" }}
@@ -207,7 +238,7 @@ class CreateDM extends Component {
             onFocusChange={this.onFocusChange}
           />
         </View>
-        <Chat user={user} messages={messages} />
+        <Chat user={user} messages={[]} />
         <ChatInput
           onSend={this.submit}
           uploadInProgress={this.state.uploadInProgress}
@@ -251,11 +282,15 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
     paddingVertical: 3,
     paddingHorizontal: 10,
-    marginRight: 5
+    marginRight: 5,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center"
   },
   tagText: {
     color: "#00DFFC",
-    fontSize: 15
+    fontSize: 15,
+    marginRight: 15
   }
 });
 

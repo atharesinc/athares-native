@@ -20,6 +20,7 @@ export function pair() {
 export function encrypt(content, publicKey) {
   let crypt = new JSEncrypt({ default_key_size: 2048 });
   crypt.setKey(publicKey);
+  console.log(crypt, publicKey, content);
   return crypt.encrypt(content);
 }
 

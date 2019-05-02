@@ -157,7 +157,11 @@ class Register extends Component {
             backgroundColor: "transparent"
           }}
         >
-          <UIActivityIndicator color="#FFFFFF" />
+          <UIActivityIndicator
+            color="#FFFFFF"
+            style={{ flex: 1, marginBottom: 15 }}
+          />
+          <Text>Building Profile...</Text>
         </View>
       );
     }

@@ -4,6 +4,11 @@ import { SafeAreaView } from "react-navigation";
 import { Font, AppLoading } from "expo";
 import { setCustomText, setCustomTextInput } from "react-native-global-props";
 
+// Faux multi-threading app monitoring
+import RevisionMonitor from "./components/RevisionMonitor";
+import ChannelUpdateMonitor from "./components/ChannelUpdateMonitor";
+import DMUpdateMonitor from "./components/DMUpdateMonitor";
+
 // redux tomfoolery
 import { Provider } from "react-redux";
 import { store } from "./redux";
@@ -59,6 +64,10 @@ export default class App extends Component {
               <View style={styles.transparentView}>
                 <AppContaner style={styles.appContainer} />
               </View>
+              {/* Fun Stuff! */}
+              <RevisionMonitor />
+              <ChannelUpdateMonitor />
+              <DMUpdateMonitor />
             </ImageBackground>
           </SafeAreaView>
         </Provider>

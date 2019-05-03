@@ -53,7 +53,9 @@ export default class ViewOtherUser extends Component {
                     style={styles.backgroundImage}
                   >
                     <View style={styles.userAndImageWrapper}>
-                      <Text style={styles.userNameText}>{user.name}</Text>
+                      <Text style={styles.userNameText}>
+                        {user.firstName + " " + user.lastName}
+                      </Text>
                       <View style={[styles.previewWrapper]}>
                         <Image
                           source={{ uri: user.icon }}

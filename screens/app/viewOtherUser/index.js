@@ -11,56 +11,104 @@ import {
   ImageBackground,
   Image
 } from "react-native";
-import defaultCircleImage from "../../../components/defaultCircleImage";
+import { UIActivityIndicator } from "react-native-indicators";
+
+import { Query } from "react-apollo";
+import { GET_USER_BY_ID_ALL } from "../../../graphql/queries";
 
 export default class ViewOtherUser extends Component {
   render() {
-    const { phone = null, email = null, uname = null } = {};
     return (
-      <ScreenWrapper styles={[styles.wrapper]}>
-        <KeyboardAvoidingView behavior="position">
-          <ScrollView styles={[styles.wrapper]}>
-            <ImageBackground
-              source={require("../../../assets/nasa-earth.jpg")}
-              style={styles.backgroundImage}
-            >
-              <View style={styles.userAndImageWrapper}>
-                <Text style={styles.userNameText}>this.props.user.name</Text>
-                <View style={[styles.previewWrapper]}>
-                  <Image
-                    source={{ uri: defaultCircleImage }}
-                    style={[styles.preview]}
-                  />
-                </View>
-              </View>
-            </ImageBackground>
-            {/* Info */}
-            <View style={styles.section}>
-              <Text style={styles.sectionHeading}>Info</Text>
-              <InfoLineStatic icon={"phone"} label="Phone" value={phone} />
-              <InfoLineStatic icon={"at-sign"} label="Email" value={email} />
-              <InfoLineStatic icon={"hash"} label="Unique Name" value={uname} />
-            </View>
+      <Query
+        query={GET_USER_BY_ID_ALL}
+        variables={{ id: this.props.activeUser || "" }}
+      >
+        {({ loading, data }) => {
+          let user,
+            stats = null;
+          if (data.User) {
+            user = data.User;
+            stats = {
+              voteCount: user.votes.length,
+              circleCount: user.circles.length,
+              revisionCount: user.revisions.length,
+              passedRevisionCount: user.revisions.filter(r => r.passed).length
+            };
+          }
+          if (loading) {
+            return (
+              <ScreenWrapper
+                styles={{ justifyContent: "center", alignItems: "center" }}
+              >
+                <UIActivityIndicator color={"#FFFFFF"} />
+              </ScreenWrapper>
+            );
+          }
+          return (
+            <ScreenWrapper styles={[styles.wrapper]}>
+              <KeyboardAvoidingView behavior="position">
+                <ScrollView styles={[styles.wrapper]}>
+                  <ImageBackground
+                    source={require("../../../assets/nasa-earth.jpg")}
+                    style={styles.backgroundImage}
+                  >
+                    <View style={styles.userAndImageWrapper}>
+                      <Text style={styles.userNameText}>{user.name}</Text>
+                      <View style={[styles.previewWrapper]}>
+                        <Image
+                          source={{ uri: user.icon }}
+                          style={[styles.preview]}
+                        />
+                      </View>
+                    </View>
+                  </ImageBackground>
+                  {/* Info */}
+                  <View style={styles.section}>
+                    <Text style={styles.sectionHeading}>Info</Text>
+                    <InfoLineStatic
+                      icon={"phone"}
+                      label="Phone"
+                      value={user.phone}
+                    />
+                    <InfoLineStatic
+                      icon={"at-sign"}
+                      label="Email"
+                      value={user.email}
+                    />
+                    <InfoLineStatic
+                      icon={"hash"}
+                      label="Unique Name"
+                      value={user.uname}
+                    />
+                  </View>
 
-            {/* Stats */}
-            <View style={styles.section}>
-              <Text style={styles.sectionHeading}>Statistics</Text>
-              <View style={styles.wrapSection}>
-                <Statistic header="Circles" text={1} />
-                <Statistic header="Revisions Proposed" text={2} />
-                <Statistic header="Revisions Accepted" text={2} />
-                <Statistic header="Times Voted" text={2} />
-                <Statistic
-                  header="User Since"
-                  text={new Date(
-                    "2019-04-19T00:05:18.223Z"
-                  ).toLocaleDateString()}
-                />
-              </View>
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </ScreenWrapper>
+                  {/* Stats */}
+                  <View style={styles.section}>
+                    <Text style={styles.sectionHeading}>Statistics</Text>
+                    <View style={styles.wrapSection}>
+                      <Statistic header="Circles" text={stats.circleCount} />
+                      <Statistic
+                        header="Revisions Proposed"
+                        text={stats.revisionCount}
+                      />
+                      <Statistic
+                        header="Revisions Accepted"
+                        text={stats.passedRevisionCount}
+                      />
+                      <Statistic header="Times Voted" text={stats.voteCount} />
+                      <Statistic
+                        header="User Since"
+                        text={new Date(user.createdAt).toLocaleDateString()}
+                      />
+                    </View>
+                  </View>
+                </ScrollView>
+              </KeyboardAvoidingView>
+            </ScreenWrapper>
+          );
+        }}
+        }
+      </Query>
     );
   }
 }

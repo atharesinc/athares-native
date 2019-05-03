@@ -1,7 +1,21 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { connect } from "react-redux";
+import { updateRevision } from "../redux/state/actions";
 
-const RevisionCard = ({ repeal = false, amendment = null, ...props }) => {
+const RevisionCard = (
+  {
+    amendment = null,
+    newText,
+    createdAt,
+    backer,
+    votes,
+    title,
+    id,
+    repeal = false
+  },
+  ...props
+) => {
   const renderCategory = () => {
     if (repeal) {
       return (
@@ -24,33 +38,49 @@ const RevisionCard = ({ repeal = false, amendment = null, ...props }) => {
       </View>
     );
   };
+  const goToRevision = () => {
+    props.dispatch(updateRevision(id));
+    props.navigation.navigate("ViewRevision");
+  };
+  const support = votes.filter(({ support }) => support).length;
 
   return (
-    <TouchableOpacity style={styles.cardWrapper}>
-      <Text style={styles.cardHeader}>First Amendment</Text>
+    <TouchableOpacity style={styles.cardWrapper} onPress={goToRevision}>
+      <Text style={styles.cardHeader}>{title}</Text>
       <View style={styles.cardBody}>
         <View style={styles.cardStats}>
           {renderCategory()}
           <View style={styles.cardVotesWrapper}>
-            <Text style={styles.cardVotesSupport}>+1</Text>
+            <Text style={styles.cardVotesSupport}>+{support}</Text>
             <Text style={styles.slash}>/</Text>
-            <Text style={styles.cardVotesReject}>-0</Text>
+            <Text style={styles.cardVotesReject}>
+              -{votes.length - support}
+            </Text>
           </View>
         </View>
-        <Text style={styles.revisionText}>owowowowowo</Text>
+        <Text
+          style={styles.revisionText}
+          ellipsizeMode={"tail"}
+          numberOfLines={3}
+        >
+          {newText}
+        </Text>
         <View style={styles.backerWrapper}>
-          <Image
-            style={styles.backerImg}
-            source={require("../assets/user-default.png")}
-          />
-          <Text style={styles.proposedDate}>04/18/19 11:30am</Text>
+          <Image style={styles.backerImg} source={{ uri: backer.icon }} />
+          <Text style={styles.proposedDate}>
+            {new Date(createdAt).toLocaleString()}
+          </Text>
         </View>
       </View>
     </TouchableOpacity>
   );
 };
 
-export default RevisionCard;
+function mapStateToProps(state) {
+  return {};
+}
+
+export default connect(mapStateToProps)(RevisionCard);
 
 const styles = StyleSheet.create({
   cardWrapper: {

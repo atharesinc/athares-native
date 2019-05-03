@@ -116,7 +116,17 @@ export const GET_MESSAGES_FROM_CHANNEL_ID = gql`
     }
   }
 `;
-
+export const GET_AMENDMENT_BY_ID = gql`
+  query getAmendmentById($id: ID!) {
+    Amendment(id: $id) {
+      id
+      title
+      text
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const GET_AMENDMENTS_FROM_CIRCLE_ID = gql`
   query getAmendmentsFromCircleId($id: ID!) {
     Circle(id: $id) {

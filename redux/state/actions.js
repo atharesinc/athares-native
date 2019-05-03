@@ -15,7 +15,11 @@ export function updatePub(pub) {
     dispatch({ type: "UPDATE_PUB", pub });
   };
 }
-
+export function updateAmendment(amendment) {
+  return async dispatch => {
+    dispatch({ type: "UPDATE_AMENDMENT", amendment });
+  };
+}
 export function updateCircle(circle) {
   return async dispatch => {
     dispatch({ type: "UPDATE_CIRCLE", circle });

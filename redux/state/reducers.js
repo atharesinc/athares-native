@@ -3,6 +3,7 @@ const initialState = {
   activeCircle: null,
   activeChannel: null,
   activeRevision: null,
+  activeAmendment: null,
   pub: null,
   circles: [],
   channels: [],
@@ -30,6 +31,8 @@ export default function reduce(state = initialState, action = {}) {
       return { ...state, pub: action.pub };
     case "UPDATE_CHANNEL":
       return { ...state, activeChannel: action.channel };
+    case "UPDATE_AMENDMENT":
+      return { ...state, activeAmendment: action.amendment };
     case "UPDATE_REVISION":
       return { ...state, activeRevision: action.revision };
     case "UPDATE_DMS":

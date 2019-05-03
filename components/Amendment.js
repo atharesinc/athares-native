@@ -1,49 +1,60 @@
 import React from "react";
 import { withNavigation } from "react-navigation";
 import Icon from "@expo/vector-icons/Feather";
+import { updateRevision, updateAmendment } from "../redux/state/actions";
+import { connect } from "react-redux";
 
 import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
 
-const Amendment = props => {
+const Amendment = ({ amendment, ...props }) => {
   goToRevision = () => {
+    props.dispatch(updateRevision(amendment.revision.id));
     props.navigation.navigate("ViewRevision");
   };
   editAmendment = () => {
+    if (hasOutstandingRevision) {
+      return false;
+    }
+    props.dispatch(updateAmendment(amendment.id));
     props.navigation.navigate("EditAmendment");
   };
+  const hasOutstandingRevision =
+    amendment.revision !== null && amendment.revision.passed === null;
   return (
     <View style={styles.amendmentWrapperOuter}>
-      <TouchableOpacity onPress={editAmendment} style={styles.moreButton}>
-        <Icon name={"more-vertical"} size={25} color={"#FFFFFF"} />
-      </TouchableOpacity>
+      {hasOutstandingRevision === false && (
+        <TouchableOpacity onPress={editAmendment} style={styles.moreButton}>
+          <Icon name={"more-vertical"} size={25} color={"#FFFFFF"} />
+        </TouchableOpacity>
+      )}
       <View style={styles.amendmentWrapperInner}>
-        <Text style={styles.header}>First Amendment</Text>
+        <Text style={styles.header}>{amendment.title}</Text>
         <View style={styles.timeDataWrapper}>
           <Text style={styles.time}>
-            Created -{" "}
-            {new Date("2019-04-23T04:24:21.772Z").toLocaleDateString()}
+            Created - {new Date(amendment.createdAt).toLocaleDateString()}
           </Text>
           <Text style={styles.time}>
-            Updated -{" "}
-            {new Date("2019-04-23T05:24:21.772Z").toLocaleDateString()}
+            Updated - {new Date(amendment.updatedAt).toLocaleDateString()}
           </Text>
         </View>
-        <Text style={styles.amendmentText}>
-          {`Let me tel ya somethin about the government
-            They're fukcing up 
-            the environment
-            taking all the beautiful animals
-            and making them fuckin extinct!`}
-        </Text>
-        <TouchableOpacity style={styles.discreteButton} onPress={goToRevision}>
-          <Text style={styles.disclaimer}>Current Revision</Text>
-        </TouchableOpacity>
+        <Text style={styles.amendmentText}>{amendment.text}</Text>
+        {hasOutstandingRevision && (
+          <TouchableOpacity
+            style={styles.discreteButton}
+            onPress={goToRevision}
+          >
+            <Text style={styles.disclaimer}>Current Revision</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
 };
 
-export default withNavigation(Amendment);
+function mapStateToProps(state) {
+  return {};
+}
+export default connect(mapStateToProps)(withNavigation(Amendment));
 
 const styles = StyleSheet.create({
   amendmentWrapperOuter: {

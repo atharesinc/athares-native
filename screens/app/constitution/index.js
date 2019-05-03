@@ -17,27 +17,6 @@ import { SUB_TO_CIRCLES_AMENDMENTS } from "../../../graphql/subscriptions";
 import { UIActivityIndicator } from "react-native-indicators";
 
 class Constitution extends Component {
-  toggleEdit = () => {
-    this.setState({
-      edit: !this.state.edit
-    });
-  };
-
-  componentDidMount() {
-    // we only need to manually fetch the circle and it's amendments if the user isn't signed in
-    // we should always make sure that the currently navigated-to circle is the activeCircle in redux
-    this._isMounted = true;
-    if (this.props.activeCircle) {
-      this.props.dispatch(updateChannel(null));
-      this.props.dispatch(updateRevision(null));
-    } else {
-      let circleID = this.props.match.params.id;
-
-      this.props.dispatch(updateCircle(circleID));
-      this.props.dispatch(updateChannel(null));
-      this.props.dispatch(updateRevision(null));
-    }
-  }
   _subToMore = subscribeToMore => {
     subscribeToMore({
       document: SUB_TO_CIRCLES_AMENDMENTS,
@@ -100,7 +79,7 @@ class Constitution extends Component {
                 <Text style={styles.preamble}>{circle.preamble}</Text>
                 <ScrollView styles={[styles.wrapper]}>
                   {amendments.map((amendment, i) => (
-                    <Amendment key={i} user={user} />
+                    <Amendment key={i} user={user} amendment={amendment} />
                   ))}
                 </ScrollView>
               </ScreenWrapper>

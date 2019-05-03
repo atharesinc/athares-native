@@ -78,7 +78,7 @@ class DMChannelWithoutDrawer extends Component {
           this.props.getUserKeys.User.priv
         );
 
-        let decryptedChannelSecret = await decrypt(
+        let decryptedChannelSecret = decrypt(
           this.props.getUserKeys.User.keys[0].key,
           userPriv
         );
@@ -101,7 +101,7 @@ class DMChannelWithoutDrawer extends Component {
     let response = null;
     try {
       if (file) {
-        this.setState({
+        await this.setState({
           uploadInProgress: true
         });
         const imgs = ["gif", "png", "jpg", "jpeg", "bmp"];
@@ -114,21 +114,22 @@ class DMChannelWithoutDrawer extends Component {
       }
       if (response) {
         if (response.error) {
-          console.log(new Error(response.error));
+          console.error(new Error(response.error));
           return false;
         }
       }
       if (text.trim() === "" && !response.url) {
         return false;
       }
+      // encrypt the relevant parts of the message
       let newMessage = {
         text: this.simpleCrypto.encrypt(text.trim()),
-        user,
-        channel,
-        file: response ? response.url : null,
+        channel: id,
+        user: this.props.user,
+        file: response ? simpleCrypto.encrypt(response.url) : null,
         fileName: response ? response.name : null
       };
-      console.log(newMessage);
+
       await this.props.createMessage({
         variables: {
           ...newMessage
@@ -181,14 +182,11 @@ class DMChannelWithoutDrawer extends Component {
       document: SUB_TO_MESSAGES_BY_CHANNEL_ID,
       variables: { id: this.props.activeChannel || "" },
       updateQuery: (prev, { subscriptionData }) => {
-        // this.props.getChannelMessages.refetch({
-        //   id: activeChannel
-        // });
         let newMsg = subscriptionData.data.Message.node;
-        if (!prev.Channel.messages.find(m => m.id === newMsg.id)) {
-          // merge new messages into prev.messages
-          prev.Channel.messages = [...prev.Channel.messages, newMsg];
-        }
+        // if (!prev.Channel.messages.find(m => m.id === newMsg.id)) {
+        // merge new messages into prev.messages
+        prev.Channel.messages = [...prev.Channel.messages, newMsg];
+        // }
 
         return prev;
       }

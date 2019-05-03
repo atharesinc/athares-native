@@ -134,7 +134,7 @@ class Register extends Component {
       this.props.navigation.navigate("Dashboard");
     } catch (err) {
       await this.setState({ loading: false });
-      console.log(err);
+      console.error(err);
       if (err.message.indexOf("Field name = email") !== -1) {
         Alert.alert("Error", "A user already exists with this email address.");
       } else {

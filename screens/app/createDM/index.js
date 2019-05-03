@@ -159,7 +159,7 @@ class CreateDM extends Component {
       }
       if (response) {
         if (response.error) {
-          console.log(new Error(response.error));
+          console.error(new Error(response.error));
           return false;
         }
       }

@@ -45,9 +45,6 @@ class CirclePrefs extends Component {
       }
     });
   };
-  componentDidCatch() {
-    console.log("hwhw");
-  }
   render() {
     let {
       loading,

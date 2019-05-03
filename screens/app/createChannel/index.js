@@ -85,7 +85,7 @@ class CreateChannel extends Component {
 
       this.props.navigation.navigate("Channel");
     } catch (err) {
-      console.log(new Error(err));
+      console.error(new Error(err));
     }
   };
   render() {

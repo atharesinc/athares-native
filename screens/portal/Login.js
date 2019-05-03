@@ -65,7 +65,7 @@ class Login extends Component {
         AsyncStorage.setItem("ATHARES_TOKEN", token);
         this.props.navigation.navigate("Dashboard");
       } catch (err) {
-        console.log(new Error(err));
+        console.error(new Error(err));
         // there was some sort of error auto-logging in, clear localStorage and redux just in case
         this.props.dispatch(logout());
       }

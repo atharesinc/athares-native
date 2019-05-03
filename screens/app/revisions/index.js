@@ -11,7 +11,7 @@ import RevisionBoard from "../../../components/RevisionBoard";
 
 export default class Revisions extends Component {
   goToSettings = () => {
-    console.log("go to settings");
+    this.props.navigation.navigate("CircleSettings");
   };
   render() {
     return (

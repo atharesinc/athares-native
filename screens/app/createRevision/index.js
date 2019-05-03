@@ -107,7 +107,7 @@ class CreateRevision extends Component {
       ) {
         await this.setState({ loading: false });
 
-        console.log(err);
+        console.error(err);
         Alert.alert(
           "Error",
           "There was an error connecting to the Athares network. Please try again later."

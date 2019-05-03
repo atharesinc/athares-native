@@ -20,11 +20,9 @@ export default class EditAmendment extends Component {
     });
   };
   repeal = () => {
-    console.log("Getting rid of this Revision!");
     this.props.navigation.navigate("ViewRevision");
   };
   submit = () => {
-    console.log("Updated Revision!");
     this.props.navigation.navigate("ViewRevision");
   };
   render() {

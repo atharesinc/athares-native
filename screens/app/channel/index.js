@@ -55,7 +55,7 @@ class Channel extends Component {
       }
       if (response) {
         if (response.error) {
-          console.log(new Error(response.error));
+          console.error(new Error(response.error));
           return false;
         }
       }
@@ -69,7 +69,6 @@ class Channel extends Component {
         file: response ? response.url : null,
         fileName: response ? response.name : null
       };
-      console.log(newMessage);
       await this.props.createMessage({
         variables: {
           ...newMessage

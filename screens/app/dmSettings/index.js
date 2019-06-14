@@ -41,6 +41,7 @@ class DMSettings extends Component {
     showAddUsers: false,
     tags: []
   };
+
   confirmLeave = () => {
     Alert.alert(
       "Leave Circle?",
@@ -209,7 +210,7 @@ class DMSettings extends Component {
             <Icon name={"x"} size={25} color={"#FFFFFF"} />
           </TouchableOpacity>
         </View>
-        <KeyboardAvoidingView behavior="position">
+        {/* <KeyboardAvoidingView behavior="position">
           <ScrollView styles={[styles.wrapper]}>
             <View style={styles.lineItem}>
               <Text style={styles.sectionHeading}>Add User</Text>
@@ -259,7 +260,7 @@ class DMSettings extends Component {
               />
             </View>
           </ScrollView>
-        </KeyboardAvoidingView>
+        </KeyboardAvoidingView> */}
       </ScreenWrapper>
     );
   }
@@ -287,8 +288,8 @@ export default connect(mapStateToProps)(
       options: ({ activeChannel }) => ({
         variables: { id: activeChannel || "" }
       })
-    })(DMSettings)
-  )
+    })
+  )(DMSettings)
 );
 
 const styles = StyleSheet.create({

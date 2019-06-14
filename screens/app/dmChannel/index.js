@@ -1,13 +1,19 @@
 import React, { Component } from "react";
 import { createDrawerNavigator } from "react-navigation";
 
-import { StyleSheet, AsyncStorage } from "react-native";
+import {
+  StyleSheet,
+  AsyncStorage,
+  KeyboardAvoidingView,
+  Platform
+} from "react-native";
 import Menu from "../dmSettings";
 import { pull } from "../../../redux/state/reducers";
 import { removeUnreadDM } from "../../../redux/state/actions";
 import { connect } from "react-redux";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import Chat from "../../../components/Chat";
+import ChatInput from "../../../components/ChatInput";
 import { decrypt } from "../../../utils/crypto";
 import SimpleCrypto from "simple-crypto-js";
 import { CREATE_MESSAGE } from "../../../graphql/mutations";
@@ -219,6 +225,7 @@ class DMChannelWithoutDrawer extends Component {
               text: this.simpleCrypto.decrypt(m.text),
               file: m.file ? this.simpleCrypto.decrypt(m.file) : null
             }));
+
             return (
               <ScreenWrapper styles={[styles.wrapper]}>
                 <Chat user={user} messages={messages} />

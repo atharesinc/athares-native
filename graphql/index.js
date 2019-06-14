@@ -51,7 +51,7 @@ const withToken = setContext(async request => {
   }
   return {
     headers: {
-      authorization: token
+      authorization: "Bearer " + token
     }
   };
 });

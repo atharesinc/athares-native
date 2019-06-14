@@ -16,7 +16,7 @@ import moment from "moment";
 import { pull } from "../../../redux/state/reducers";
 import { connect } from "react-redux";
 import { graphql, compose } from "react-apollo";
-
+import { withNavigation } from "react-navigation";
 import { CREATE_VOTE, UPDATE_VOTE } from "../../../graphql/mutations";
 
 import {

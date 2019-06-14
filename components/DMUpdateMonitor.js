@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { pull } from "../store/state/reducers";
+import { pull } from "../redux/state/reducers";
 import { GET_DMS_BY_USER } from "../graphql/queries";
 import { SUB_TO_DMS_BY_USER } from "../graphql/subscriptions";
 import { Query, graphql } from "react-apollo";
-import { updateDMs, addUnreadDM } from "../store/state/actions";
+import { updateDMs, addUnreadDM } from "../redux/state/actions";
 
 class ChannelUpdateMonitor extends Component {
   constructor() {

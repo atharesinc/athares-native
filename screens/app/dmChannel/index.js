@@ -265,7 +265,7 @@ const DMChannelWithAllGarbage = connect(mapStateToProps)(
   )(DMChannelWithoutDrawer)
 );
 
-const DMChannel = createDrawerNavigator(
+export default createDrawerNavigator(
   {
     DMChannel: {
       screen: DMChannelWithAllGarbage
@@ -277,7 +277,6 @@ const DMChannel = createDrawerNavigator(
     drawerWidth: 350
   }
 );
-export default DMChannel;
 
 const styles = StyleSheet.create({
   wrapper: {

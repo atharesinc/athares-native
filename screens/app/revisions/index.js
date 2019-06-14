@@ -13,14 +13,12 @@ import {
   IS_USER_IN_CIRCLE
 } from "../../../graphql/queries";
 import { Query, graphql } from "react-apollo";
-import {
-  updateChannel
-} from "../../../redux/state/actions";
+import { updateChannel } from "../../../redux/state/actions";
 import { pull } from "../../../redux/state/reducers";
 import { connect } from "react-redux";
 import { UIActivityIndicator } from "react-native-indicators";
 
-export default class Revisions extends Component {
+class Revisions extends Component {
   componentDidMount() {
     this.props.dispatch(updateChannel(null));
   }
@@ -135,12 +133,13 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps)(
-    graphql(IS_USER_IN_CIRCLE, {
-      name: "isUserInCircle",
-      options: ({ activeCircle, user }) => ({
-        variables: { circle: activeCircle || "", user: user || "" }
-      })
-    })(RevisionBoard));
+  graphql(IS_USER_IN_CIRCLE, {
+    name: "isUserInCircle",
+    options: ({ activeCircle, user }) => ({
+      variables: { circle: activeCircle || "", user: user || "" }
+    })
+  })(RevisionBoard)
+);
 
 const styles = StyleSheet.create({
   wrapper: {

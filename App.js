@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { StyleSheet, View, ImageBackground } from "react-native";
 import { SafeAreaView } from "react-navigation";
-import { Font, AppLoading } from "expo";
+import { AppLoading } from "expo";
+import * as Font from 'expo-font';
 import { setCustomText, setCustomTextInput } from "react-native-global-props";
 
 // Faux multi-threading app monitoring

@@ -11,9 +11,9 @@ import {
 } from "react-native";
 import PortalButton from "../../../components/PortalButton";
 
-import { updateRevision } from "../../../store/state/actions";
+import { updateRevision } from "../../../redux/state/actions";
 import { connect } from "react-redux";
-import { pull } from "../../../store/state/reducers";
+import { pull } from "../../../redux/state/reducers";
 import { compose, graphql } from "react-apollo";
 import {
   CREATE_REVISION,

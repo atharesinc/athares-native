@@ -77,57 +77,58 @@ class Dashboard extends Component {
                 alignItems: "stretch",
                 justifyContent: "space-between",
                 width: "100%",
-                flex: 1
+                flex: 1,
+                backgroundColor: "#282a38"
               }}
             >
               <Circles loggedIn={user} />
-              <View style={{ backgroundColor: "#282a38", height: "75%" }}>
+              <ScrollView
+                contentContainerStyle={{
+                  backgroundColor: "#282a38",
+                  flexGrow: 1
+                }}
+              >
                 {circle && <CircleHeader name={circle.name} />}
-                <ScrollView>
-                  {circle && (
-                    <Fragment>
-                      <ChannelGroupHeader title={"GOVERNANCE"} />
-                      <GovernanceChannelItem
-                        title={"Constitution"}
-                        link={"Constitution"}
-                      />
-                      <GovernanceChannelItem
-                        title={"Polls"}
-                        link={"Revisions"}
-                      />
-                      {user && belongsToCircle && (
-                        <GovernanceChannelItem
-                          title={"Settings"}
-                          link={"CircleSettings"}
-                        />
-                      )}
-                      <ChannelGroupHeader
-                        title={"CHANNELS"}
-                        displayPlus={user && belongsToCircle}
-                      />
-
-                      {channels.map(ch => (
-                        <ChannelItem
-                          key={ch.id}
-                          showUnread={ch.unread}
-                          channel={ch}
-                        />
-                      ))}
-                    </Fragment>
-                  )}
-                  <ChannelGroupHeader
-                    title={"DIRECT MESSAGES"}
-                    displayPlus={true}
-                  />
-                  {dms.map(ch => (
-                    <ChannelItem
-                      key={ch.id}
-                      showUnread={ch.unread}
-                      channel={ch}
+                {circle && (
+                  <Fragment>
+                    <ChannelGroupHeader title={"GOVERNANCE"} />
+                    <GovernanceChannelItem
+                      title={"Constitution"}
+                      link={"Constitution"}
                     />
-                  ))}
-                </ScrollView>
-              </View>
+                    <GovernanceChannelItem title={"Polls"} link={"Revisions"} />
+                    {user && belongsToCircle && (
+                      <GovernanceChannelItem
+                        title={"Settings"}
+                        link={"CircleSettings"}
+                      />
+                    )}
+                    <ChannelGroupHeader
+                      title={"CHANNELS"}
+                      displayPlus={user && belongsToCircle}
+                    />
+
+                    {channels.map(ch => (
+                      <ChannelItem
+                        key={ch.id}
+                        showUnread={ch.unread}
+                        channel={ch}
+                      />
+                    ))}
+                  </Fragment>
+                )}
+                <ChannelGroupHeader
+                  title={"DIRECT MESSAGES"}
+                  displayPlus={true}
+                />
+                {dms.map(ch => (
+                  <ChannelItem
+                    key={ch.id}
+                    showUnread={ch.unread}
+                    channel={ch}
+                  />
+                ))}
+              </ScrollView>
               <Footer loggedIn={user} belongsToCircle={belongsToCircle} />
             </View>
           );

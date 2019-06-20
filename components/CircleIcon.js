@@ -2,6 +2,7 @@ import React from "react";
 
 import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import AsyncImageAnimated from "react-native-async-image-animated";
+import { Image as SvgImage } from "react-native-svg";
 
 const CircleIcon = ({ selected = false, circle = {}, ...props }) => {
   const selectCircle = () => {
@@ -12,13 +13,18 @@ const CircleIcon = ({ selected = false, circle = {}, ...props }) => {
       <View
         style={{ ...styles.circleIconWrapper, borderWidth: selected ? 4 : 0 }}
       >
-        <AsyncImageAnimated
+        {/* <AsyncImageAnimated
           source={{ uri: circle.icon }}
           style={styles.circle}
           placeholderColor={"#3a3e52"}
-        />
+        /> */}
+        <SvgImage href={{ uri: circle.icon }} style={styles.circle} />
       </View>
-      <Text numberOfLines={1} style={styles.circleLabel}>
+      <Text
+        numberOfLines={1}
+        style={styles.circleLabel}
+        ellipsizeMode={"middle"}
+      >
         {circle.name}
       </Text>
     </TouchableOpacity>

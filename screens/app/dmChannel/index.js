@@ -130,9 +130,9 @@ class DMChannelWithoutDrawer extends Component {
       // encrypt the relevant parts of the message
       let newMessage = {
         text: this.simpleCrypto.encrypt(text.trim()),
-        channel: id,
+        channel,
         user: this.props.user,
-        file: response ? simpleCrypto.encrypt(response.url) : null,
+        file: response ? this.simpleCrypto.encrypt(response.url) : null,
         fileName: response ? response.name : null
       };
 

@@ -5,6 +5,7 @@ import {
   Linking,
   DocumentPicker
 } from "expo";
+import Constants from "expo-constants";
 
 import { Alert } from "react-native";
 

@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import PortalButton from "../../components/PortalButton";
 import PortalCard from "../../components/PortalCard";
+import PortalWrapper from "../../components/PortalWrapper";
+import PortalToggle from "../../components/PortalToggle";
 import {
   updateUser,
   updatePub,
@@ -73,7 +75,7 @@ class Login extends Component {
   }
   updateEmail = text => {
     this.setState({
-      email: text
+      email: text.toLowerCase()
     });
   };
   updatePassword = text => {
@@ -149,16 +151,7 @@ class Login extends Component {
       );
     }
     return (
-      <View
-        style={{
-          flex: 1,
-          width: "100%",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "transparent",
-          alignItems: "center"
-        }}
-      >
+      <PortalWrapper>
         <PortalCard>
           <Image
             style={{ height: 60, width: 60, marginBottom: 10 }}
@@ -191,28 +184,20 @@ class Login extends Component {
           />
           <PortalButton title="LOGIN" onPress={this.tryLogin} />
         </PortalCard>
-        <TouchableOpacity
-          style={{
-            width: "100%",
-            height: 15,
-            alignItems: "center",
-            marginBottom: 50
-          }}
+        <PortalToggle
           onPress={() => this.props.navigation.navigate("Register")}
-        >
-          <Text style={{ color: "#FFF" }}>I need to register</Text>
-        </TouchableOpacity>
-
+          text={"I need to register"}
+        />
         <TouchableOpacity
-          style={{ width: "90%", height: 15, alignItems: "center" }}
+          style={{ width: "100%", paddingHorizontal: 15, alignItems: "center" }}
           onPress={() => this.props.navigation.navigate("Register")}
         >
           <Text style={{ color: "#FFF", alignItems: "center" }}>
             By logging in you acknowledge that you agree to the Terms of Use and
-            have read the Privacy Policy.
+            Privacy Policy.
           </Text>
         </TouchableOpacity>
-      </View>
+      </PortalWrapper>
     );
   }
 }

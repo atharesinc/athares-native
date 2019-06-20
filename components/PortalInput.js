@@ -16,8 +16,13 @@ class PortalInput extends React.Component {
         onPress={this.handleClick}
       >
         <View style={[styles.wrapper]}>
-          <Icon name={icon} size={25} color={"#FFFFFF"} styles={styles.icon} />
-          <TextInput {...props} style={styles.input} ref="input" />
+          <Icon name={icon} size={20} color={"#FFFFFF"} styles={styles.icon} />
+          <TextInput
+            {...props}
+            style={styles.input}
+            ref="input"
+            placeholderTextColor={"#FFFFFFb7"}
+          />
         </View>
       </TouchableOpacity>
     );
@@ -28,9 +33,7 @@ export default PortalInput;
 
 const styles = StyleSheet.create({
   touchWrap: {
-    // paddingBottom: ,
-    // paddingHorizontal: "2%",
-    marginBottom: 20,
+    marginBottom: 10,
     width: "100%",
     borderRadius: 9999,
     borderWidth: 2,
@@ -39,7 +42,8 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     marginVertical: 5,
-    marginHorizontal: 15,
+    marginRight: 15,
+    marginLeft: 7,
     width: "100%",
     justifyContent: "center",
     alignItems: "flex-start",
@@ -54,6 +58,6 @@ const styles = StyleSheet.create({
   input: {
     color: "#FFF",
     marginLeft: 20,
-    fontSize: 18
+    fontSize: 15
   }
 });

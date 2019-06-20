@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { StyleSheet, View, ImageBackground } from "react-native";
+import { StyleSheet, View, ImageBackground, StatusBar } from "react-native";
 import { SafeAreaView } from "react-navigation";
 import { AppLoading } from "expo";
-import * as Font from 'expo-font';
+import * as Font from "expo-font";
 import { setCustomText, setCustomTextInput } from "react-native-global-props";
 
 // Faux multi-threading app monitoring
@@ -51,6 +51,7 @@ export default class App extends Component {
     return (
       <ApolloProvider client={client}>
         <Provider store={store}>
+          <StatusBar barStyle="light-content" />
           <SafeAreaView
             style={styles.container}
             forceInset={{

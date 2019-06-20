@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import PortalInput from "../../components/PortalInput";
 import PortalButton from "../../components/PortalButton";
 import PortalCard from "../../components/PortalCard";
+import PortalWrapper from "../../components/PortalWrapper";
+import PortalToggle from "../../components/PortalToggle";
+
 import {
   TouchableOpacity,
   Linking,
@@ -61,7 +64,7 @@ class Register extends Component {
   };
   updateEmail = text => {
     this.setState({
-      email: text
+      email: text.toLowerCase()
     });
   };
   updatePassword = text => {
@@ -166,17 +169,7 @@ class Register extends Component {
       );
     }
     return (
-      <View
-        style={{
-          flex: 1,
-          width: "100%",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "transparent",
-          alignItems: "center",
-          backgroundColor: "transparent"
-        }}
-      >
+      <PortalWrapper>
         <PortalCard>
           <Image
             style={{
@@ -229,22 +222,15 @@ class Register extends Component {
           />
           <PortalButton title="REGISTER" onPress={this.tryRegister} />
         </PortalCard>
-        <TouchableOpacity
-          style={{
-            width: "100%",
-            height: 15,
-            alignItems: "center",
-            marginBottom: 50
-          }}
+        <PortalToggle
           onPress={() => this.props.navigation.navigate("Login")}
-        >
-          <Text style={{ color: "#FFF" }}>I already have an account</Text>
-        </TouchableOpacity>
+          text={"I already have an account"}
+        />
 
         <TouchableOpacity
           style={{
-            width: "90%",
-            height: 15,
+            width: "100%",
+            paddingHorizontal: 15,
             alignItems: "center"
           }}
           onPress={() => this.props.navigation.navigate("Register")}
@@ -256,10 +242,10 @@ class Register extends Component {
             }}
           >
             By registering you acknowledge that you agree to the Terms of Use
-            and have read the Privacy Policy.
+            and Privacy Policy.
           </Text>
         </TouchableOpacity>
-      </View>
+      </PortalWrapper>
     );
   }
 }

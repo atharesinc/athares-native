@@ -5,7 +5,8 @@ import {
   StyleSheet,
   AsyncStorage,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  Keyboard
 } from "react-native";
 import Menu from "../dmSettings";
 import { pull } from "../../../redux/state/reducers";
@@ -35,11 +36,15 @@ class DMChannelWithoutDrawer extends Component {
     this.state = {
       cryptoEnabled: false,
       text: "",
+      footerLocation: 0,
       uploadInProgress: false
     };
     this.simpleCrypto = new SimpleCrypto("nope");
   }
   async componentDidMount() {
+    Keyboard.addListener("keyboardWillShow", this.keyboardWillShow);
+    Keyboard.addListener("keyboardWillHide", this.keyboardWillHide);
+
     if (this.props.activeChannel) {
       this.props.dispatch(removeUnreadDM(this.props.activeChannel));
     }
@@ -65,6 +70,13 @@ class DMChannelWithoutDrawer extends Component {
       }
     }
   }
+  keyboardWillShow = e => {
+    this.setState({ footerLocation: e.endCoordinates.height });
+  };
+
+  keyboardWillHide = e => {
+    this.setState({ footerLocation: 0 });
+  };
   async componentDidUpdate(prevProps) {
     if (prevProps.dmSettings !== this.props.dmSettings) {
       this.props.navigation.toggleDrawer();
@@ -229,14 +241,24 @@ class DMChannelWithoutDrawer extends Component {
             return (
               <ScreenWrapper styles={[styles.wrapper]}>
                 <Chat user={user} messages={messages} />
-                <ChatInput
-                  onSend={this.submit}
-                  uploadInProgress={this.state.uploadInProgress}
-                />
-                <KeyboardAvoidingView behavior="padding" />
-                {Platform.OS === "android" ? (
+                <KeyboardAvoidingView
+                  behavior="padding"
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    bottom: this.state.btnLocation || 0,
+                    backgroundColor: "#0090FF"
+                  }}
+                >
+                  <ChatInput
+                    onSend={this.submit}
+                    uploadInProgress={this.state.uploadInProgress}
+                  />
+                </KeyboardAvoidingView>
+                {/* {Platform.OS === "android" ? (
                   <KeyboardSpacer topSpacing={-130} />
-                ) : null}
+                ) : null} */}
               </ScreenWrapper>
             );
           } else {
@@ -287,9 +309,9 @@ export default createDrawerNavigator(
 
 const styles = StyleSheet.create({
   wrapper: {
-    alignItems: "stretch",
-    justifyContent: "flex-start",
-    width: "100%",
+    // alignItems: "stretch",
+    // justifyContent: "flex-start",
+    // width: "100%",
     flex: 1
   }
 });

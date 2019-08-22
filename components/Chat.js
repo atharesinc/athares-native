@@ -29,6 +29,7 @@ export default class Chat extends Component {
         renderItem={this._renderItem}
         inverted
         keyExtractor={this._keyExtractor}
+        contentContainerStyle={{ paddingBottom: 40 }}
       />
     );
   }

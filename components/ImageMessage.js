@@ -63,7 +63,11 @@ const ImageMessage = ({ file, fileName }) => {
         />
       </Lightbox>
       <TouchableOpacity onPress={requestDownload}>
-        <Text style={styles.labelText}>{fileName}</Text>
+        <View style={styles.labelTextWrapper}>
+          <Text style={styles.labelText} ellipsizeMode={"middle"}>
+            {fileName}
+          </Text>
+        </View>
       </TouchableOpacity>
     </View>
   );
@@ -86,11 +90,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: "#3a3e52"
   },
+  labelTextWrapper: {
+    backgroundColor: "#3a3e52",
+    borderRadius: 9999
+  },
   labelText: {
     color: "#FFFFFF",
     fontSize: 12,
-    backgroundColor: "#3a3e52",
-    borderRadius: 9999,
     padding: 5,
     paddingHorizontal: 10
   }

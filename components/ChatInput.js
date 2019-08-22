@@ -123,7 +123,9 @@ export default class ChatInput extends Component {
         {file && (
           <View style={styles.filePreviewWrapper}>
             {this.state.showFilePreview ? this.shouldRenderImage() : null}
-            <Text style={styles.sendingText}>{file.name}</Text>
+            <Text style={styles.sendingText} ellipsizeMode={"middle"}>
+              {file.name}
+            </Text>
 
             <TouchableOpacity onPress={this.deleteImage}>
               <Icon name="x" color={"#FFFFFFb7"} size={20} />
@@ -140,6 +142,7 @@ export default class ChatInput extends Component {
             placeholder={"Enter Message"}
             multiline={true}
             onSubmitEditing={Keyboard.dismiss}
+            placeholderTextColor={"#FFFFFFb7"}
           />
           {(input !== "" || file !== null) && (
             <TouchableOpacity

@@ -1,12 +1,12 @@
-import sha256 from "hash.js/lib/hash/sha/256";
-import { Crypt } from "hybrid-crypto-js";
+import sha256 from 'hash.js/lib/hash/sha/256';
+import { Crypt } from 'hybrid-crypto-js';
 
 const crypt = new Crypt();
 
 export function sha(text) {
   return sha256()
     .update(text)
-    .digest("hex");
+    .digest('hex');
 }
 
 /** Generate and store keypair */
@@ -17,7 +17,7 @@ export function pair() {
   //   }, 2048);
   // });
   return fetch(
-    "https://ny6zfikugf.execute-api.us-east-1.amazonaws.com/dev"
+    'https://m2nx3qjlb2.execute-api.us-east-1.amazonaws.com/dev/',
   ).then(res => {
     return res.json();
   });

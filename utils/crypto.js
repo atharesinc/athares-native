@@ -1,6 +1,9 @@
 import sha256 from 'hash.js/lib/hash/sha/256';
 import { Crypt } from 'hybrid-crypto-js';
 
+import getEnvVars from '../env';
+const { AUTH_URL } = getEnvVars();
+
 const crypt = new Crypt();
 
 export function sha(text) {
@@ -11,14 +14,7 @@ export function sha(text) {
 
 /** Generate and store keypair */
 export function pair() {
-  // return new Promise(resolve => {
-  //   rsa.generateKeypair(function(keypair) {
-  //     resolve({ pub: keypair.publicKey, priv: keypair.privateKey });
-  //   }, 2048);
-  // });
-  return fetch(
-    'https://m2nx3qjlb2.execute-api.us-east-1.amazonaws.com/dev/',
-  ).then(res => {
+  return fetch(`${AUTH_URL}/pair`).then(res => {
     return res.json();
   });
 }

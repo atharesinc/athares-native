@@ -1,13 +1,23 @@
-import React from "react";
-import { TouchableOpacity, Image, View, Text, StyleSheet } from "react-native";
+import React from 'react';
+import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import AsyncImageAnimated from 'react-native-async-image-animated';
 
 const UserLink = ({ user, ...props }) => {
+  const userImage = user.icon
+    ? { uri: user.icon }
+    : require('../assets/user-default.png');
   return (
     <TouchableOpacity style={styles.userLink} {...props}>
-      <Image style={styles.image} source={{ uri: user.icon }} />
+      <View style={styles.imageWrapper}>
+        <AsyncImageAnimated
+          source={userImage}
+          style={styles.image}
+          placeholderColor={'#3a3e52'}
+        />
+      </View>
       <View>
         <Text style={styles.header}>
-          {user.firstName + " " + user.lastName}
+          {user.firstName + ' ' + user.lastName}
         </Text>
         <Text style={styles.disclaimer}>View Profile</Text>
       </View>
@@ -19,23 +29,30 @@ export default UserLink;
 
 const styles = StyleSheet.create({
   userLink: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    padding: 10
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    padding: 10,
   },
   image: {
+    height: 55,
+    width: 55,
+  },
+  imageWrapper: {
+    marginRight: 15,
+    borderRadius: 9999,
     height: 60,
     width: 60,
-    borderRadius: 9999,
-    marginRight: 15
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   header: {
     fontSize: 18,
-    color: "#FFFFFF"
+    color: '#FFFFFF',
   },
   disclaimer: {
     fontSize: 14,
-    color: "#FFFFFFb7"
-  }
+    color: '#FFFFFFb7',
+  },
 });

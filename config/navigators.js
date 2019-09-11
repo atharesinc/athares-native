@@ -1,18 +1,18 @@
-import React from "react";
-import Header from "../components/Header";
+import React from 'react';
+import Header from '../components/Header';
 
 const fadingStackNavigator = {
-  headerMode: "none",
+  headerMode: 'none',
   navigationOptions: {
-    headerVisible: false
+    headerVisible: false,
   },
   cardStyle: {
-    backgroundColor: "transparent",
-    opacity: 1
+    backgroundColor: 'transparent',
+    opacity: 1,
   },
   transitionConfig: () => ({
     containerStyle: {
-      backgroundColor: "transparent"
+      backgroundColor: 'transparent',
     },
     screenInterpolator: sceneProps => {
       const { layout, position, scene } = sceneProps;
@@ -22,26 +22,26 @@ const fadingStackNavigator = {
       return {
         opacity: position.interpolate({
           inputRange: [index - 1, index, index + 1],
-          outputRange: [0, 1, 0]
-        })
+          outputRange: [0, 1, 0],
+        }),
       };
-    }
-  })
+    },
+  }),
 };
 
 const slidingStackNavigator = {
   defaultNavigationOptions: {
     containerStyle: {
-      backgroundColor: "transparent"
+      backgroundColor: 'transparent',
     },
     gesturesEnabled: true,
-    gesturesDirection: "inverted",
+    gesturesDirection: 'inverted',
     animationEnabled: true,
-    header: props => <Header {...props} />
+    header: props => <Header {...props} />,
   },
   transparentCard: true,
-  headerMode: "float",
-  mode: "card",
+  headerMode: 'float',
+  mode: 'card',
   transitionConfig: () => ({
     screenInterpolator: sceneProps => {
       const { layout, position, scene } = sceneProps;
@@ -51,16 +51,16 @@ const slidingStackNavigator = {
       return {
         opacity: position.interpolate({
           inputRange: [index - 1, index, index + 1],
-          outputRange: [0, 1, 0]
+          outputRange: [0, 1, 0],
         }),
         transform: [
           {
             translateX: position.interpolate({
               inputRange: [index - 1, index, index + 1],
-              outputRange: [width, 0, -width]
-            })
-          }
-        ]
+              outputRange: [width, 0, -width],
+            }),
+          },
+        ],
       };
     },
     headerTitleInterpolator: sceneProps => {
@@ -70,19 +70,19 @@ const slidingStackNavigator = {
       return {
         opacity: position.interpolate({
           inputRange: [index - 1, index, index + 1],
-          outputRange: [0, 1, 0]
+          outputRange: [0, 1, 0],
         }),
         transform: [
           {
             translateX: position.interpolate({
               inputRange: [index - 1, index, index + 1],
-              outputRange: [-50, 0, 50]
-            })
-          }
-        ]
+              outputRange: [-50, 0, 50],
+            }),
+          },
+        ],
       };
-    }
-  })
+    },
+  }),
 };
 
 export { fadingStackNavigator, slidingStackNavigator };

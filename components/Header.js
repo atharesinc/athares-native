@@ -29,12 +29,8 @@ class Header extends Component {
     this.props.navigation.goBack(null);
   };
   more = () => {
-    let {
-      navigation: {
-        state: { routes },
-      },
-    } = this.props;
-    let { routeName } = routes[routes.length - 1];
+    let { scene } = this.props;
+    let { routeName } = scene.route;
     if (routeName === 'DMChannel') {
       this.props.dispatch(toggleDMSettings());
     }
@@ -47,15 +43,13 @@ class Header extends Component {
       loggedIn = false,
       belongsToCircle = false,
       searchOpen = false,
-      navigation: {
-        state: { routes },
-      },
+      scene,
       user = null,
       activeChannel,
       activeRevision,
       activeUser,
     } = this.props;
-    const { routeName } = routes[routes.length - 1];
+    const { routeName } = scene.route;
     const routeTitleIndex = /[A-Z]/.exec('createChannel').index;
 
     const simpleChannelsArr = [

@@ -1,23 +1,23 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import {
   View,
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity
-} from "react-native";
-import AsyncImageAnimated from "react-native-async-image-animated";
+  TouchableOpacity,
+} from 'react-native';
+import AsyncImageAnimated from 'react-native-async-image-animated';
 
-import { connect } from "react-redux";
-import { pull } from "../redux/state/reducers";
-import { SEARCH_FOR_USER, GET_USERS_BY_CIRCLE_ID } from "../graphql/queries";
-import { compose, graphql, Query } from "react-apollo";
+import { connect } from 'react-redux';
+import { pull } from '../redux/state/reducers';
+import { SEARCH_FOR_USER, GET_USERS_BY_CIRCLE_ID } from '../graphql/queries';
+import { compose, graphql, Query } from 'react-apollo';
 
 class InviteUser extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      input: ""
+      input: '',
     };
   }
 
@@ -25,7 +25,7 @@ class InviteUser extends Component {
     let newTags = this.props.tags.concat([suggestion]);
     this.props.updateTags(newTags);
     this.setState({
-      input: ""
+      input: '',
     });
   };
   _renderSuggestion = item => {
@@ -40,7 +40,7 @@ class InviteUser extends Component {
         <AsyncImageAnimated
           source={{ uri: item.icon }}
           style={s.miniIcon}
-          placeholderColor={"#3a3e52"}
+          placeholderColor={'#3a3e52'}
         />
         <Text style={s.suggestionText}>{item.name}</Text>
         {item.uname && <Text style={s.suggestionText}>@{item.uname}</Text>}
@@ -49,7 +49,7 @@ class InviteUser extends Component {
   };
   updateInput = text => {
     this.setState({
-      input: text
+      input: text,
     });
   };
   render() {
@@ -59,18 +59,18 @@ class InviteUser extends Component {
     return (
       <Query
         query={SEARCH_FOR_USER}
-        variables={{ text: input || "s7d9f87vs69d8fv7" }}
+        variables={{ text: input || 's7d9f87vs69d8fv7' }}
       >
         {({ data: { allUsers } }) => {
           // filter data.suggestions by users that are in tags list, and if in addUser, users already in this circle
           if (input.trim().length >= 1 && tags.length < 7 && allUsers) {
             suggestions = allUsers
               .filter(u => tags.findIndex(su => su.id === u.id) === -1)
-              .map(u => ({ name: u.firstName + " " + u.lastName, ...u }));
+              .map(u => ({ name: u.firstName + ' ' + u.lastName, ...u }));
             if (circle) {
               suggestions = suggestions.filter(
                 u =>
-                  getUsers.Circle.users.findIndex(su => su.id === u.id) === -1
+                  getUsers.Circle.users.findIndex(su => su.id === u.id) === -1,
               );
             }
           }
@@ -80,7 +80,8 @@ class InviteUser extends Component {
                 value={input}
                 onChangeText={this.updateInput}
                 style={s.inputStyle}
-                placeholder="Enter a name"
+                placeholder='Enter a name'
+                placeholderTextColor={'#FFFFFFb7'}
               />
               {suggestions.map(u => this._renderSuggestion(u))}
             </View>
@@ -98,60 +99,60 @@ const s = StyleSheet.create({
     paddingHorizontal: 15,
     height: 40,
     width: 300,
-    justifyContent: "center",
-    borderColor: "transparent",
-    alignItems: "stretch",
-    backgroundColor: "#3a3e5299",
-    width: "100%",
-    color: "#FFFFFF"
+    justifyContent: 'center',
+    borderColor: 'transparent',
+    alignItems: 'stretch',
+    backgroundColor: '#3a3e5299',
+    width: '100%',
+    color: '#FFFFFF',
   },
   // suggestions container
   container: {
-    alignItems: "stretch",
+    alignItems: 'stretch',
     padding: 0,
-    backgroundColor: "transparent",
-    width: "100%"
+    backgroundColor: 'transparent',
+    width: '100%',
   },
   autoTags: {
-    backgroundColor: "transparent",
-    color: "#FFF",
-    flex: 1
+    backgroundColor: 'transparent',
+    color: '#FFF',
+    flex: 1,
   },
   suggestion: {
-    width: "100%",
-    backgroundColor: "#282a38",
-    borderBottomColor: "#3a3e5299",
+    width: '100%',
+    backgroundColor: '#282a38',
+    borderBottomColor: '#3a3e5299',
     borderBottomWidth: 1,
     paddingHorizontal: 15,
     paddingVertical: 10,
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "center"
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   miniIcon: {
     height: 30,
     width: 30,
     marginRight: 10,
-    borderRadius: 9999
+    borderRadius: 9999,
   },
   suggestionText: {
-    color: "#FFFFFF"
+    color: '#FFFFFF',
   },
   autocompleteContainer: {
-    width: "100%"
-  }
+    width: '100%',
+  },
 });
 
 function mapStateToProps(state) {
   return {
-    user: pull(state, "user")
+    user: pull(state, 'user'),
   };
 }
 export default connect(mapStateToProps)(
   compose(
     graphql(GET_USERS_BY_CIRCLE_ID, {
-      name: "getUsers",
-      options: ({ circle }) => ({ variables: { id: circle || "" } })
-    })
-  )(InviteUser)
+      name: 'getUsers',
+      options: ({ circle }) => ({ variables: { id: circle || '' } }),
+    }),
+  )(InviteUser),
 );

@@ -31,23 +31,49 @@ const fadingStackNavigator = {
 
 const slidingStackNavigator = {
   defaultNavigationOptions: {
-    containerStyle: {
-      backgroundColor: 'transparent',
-    },
     gesturesEnabled: true,
     gesturesDirection: 'inverted',
     animationEnabled: true,
     header: props => <Header {...props} />,
+    cardTransparent: true,
+    backgroundColor: 'transparent',
   },
   transparentCard: true,
-  headerMode: 'float',
+  headerMode: 'screen',
   mode: 'card',
+  navigationOptions: {
+    transitionSpec: {
+      open: { opacity: 1 },
+      close: {
+        opacity: 0,
+      },
+    },
+  },
   transitionConfig: () => ({
-    screenInterpolator: sceneProps => {
+    // screenInterpolator: sceneProps => {
+    //   const { layout, position, scene } = sceneProps;
+    //   const { index } = scene;
+    //   const width = layout.initWidth;
+
+    //   return {
+    //     opacity: position.interpolate({
+    //       inputRange: [index - 1, index, index + 1],
+    //       outputRange: [0, 1, 0],
+    //     }),
+    //     transform: [
+    //       {
+    //         translateX: position.interpolate({
+    //           inputRange: [index - 1, index, index + 1],
+    //           outputRange: [width, 0, -width],
+    //         }),
+    //       },
+    //     ],
+    //   };
+    // },
+    headerTitleInterpolator: sceneProps => {
       const { layout, position, scene } = sceneProps;
       const { index } = scene;
       const width = layout.initWidth;
-
       return {
         opacity: position.interpolate({
           inputRange: [index - 1, index, index + 1],
@@ -58,25 +84,6 @@ const slidingStackNavigator = {
             translateX: position.interpolate({
               inputRange: [index - 1, index, index + 1],
               outputRange: [width, 0, -width],
-            }),
-          },
-        ],
-      };
-    },
-    headerTitleInterpolator: sceneProps => {
-      const { layout, position, scene } = sceneProps;
-      const { index } = scene;
-
-      return {
-        opacity: position.interpolate({
-          inputRange: [index - 1, index, index + 1],
-          outputRange: [0, 1, 0],
-        }),
-        transform: [
-          {
-            translateX: position.interpolate({
-              inputRange: [index - 1, index, index + 1],
-              outputRange: [-50, 0, 50],
             }),
           },
         ],

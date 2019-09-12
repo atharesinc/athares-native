@@ -1,33 +1,33 @@
-import React, { Component } from "react";
-import { createDrawerNavigator } from "react-navigation";
+import React, { Component } from 'react';
+import { createDrawerNavigator } from 'react-navigation-drawer';
 
 import {
   StyleSheet,
   AsyncStorage,
   KeyboardAvoidingView,
   Platform,
-  Keyboard
-} from "react-native";
-import Menu from "../dmSettings";
-import { pull } from "../../../redux/state/reducers";
-import { removeUnreadDM } from "../../../redux/state/actions";
-import { connect } from "react-redux";
-import ScreenWrapper from "../../../components/ScreenWrapper";
-import Chat from "../../../components/Chat";
-import ChatInput from "../../../components/ChatInput";
-import { decrypt } from "../../../utils/crypto";
-import SimpleCrypto from "simple-crypto-js";
-import { CREATE_MESSAGE } from "../../../graphql/mutations";
+  Keyboard,
+} from 'react-native';
+import Menu from '../dmSettings';
+import { pull } from '../../../redux/state/reducers';
+import { removeUnreadDM } from '../../../redux/state/actions';
+import { connect } from 'react-redux';
+import ScreenWrapper from '../../../components/ScreenWrapper';
+import Chat from '../../../components/Chat';
+import ChatInput from '../../../components/ChatInput';
+import { decrypt } from '../../../utils/crypto';
+import SimpleCrypto from 'simple-crypto-js';
+import { CREATE_MESSAGE } from '../../../graphql/mutations';
 import {
   GET_MESSAGES_FROM_CHANNEL_ID,
-  GET_USER_KEYS
-} from "../../../graphql/queries";
-import { SUB_TO_MESSAGES_BY_CHANNEL_ID } from "../../../graphql/subscriptions";
-import { compose, graphql, Query } from "react-apollo";
-import { uploadImage, uploadDocument } from "../../../utils/upload";
-import KeyboardSpacer from "react-native-keyboard-spacer";
-import { UIActivityIndicator } from "react-native-indicators";
-const pullUI = require("../../../redux/ui/reducers").pull;
+  GET_USER_KEYS,
+} from '../../../graphql/queries';
+import { SUB_TO_MESSAGES_BY_CHANNEL_ID } from '../../../graphql/subscriptions';
+import { compose, graphql, Query } from 'react-apollo';
+import { uploadImage, uploadDocument } from '../../../utils/upload';
+import KeyboardSpacer from 'react-native-keyboard-spacer';
+import { UIActivityIndicator } from 'react-native-indicators';
+const pullUI = require('../../../redux/ui/reducers').pull;
 
 class DMChannelWithoutDrawer extends Component {
   constructor(props) {
@@ -35,35 +35,35 @@ class DMChannelWithoutDrawer extends Component {
 
     this.state = {
       cryptoEnabled: false,
-      text: "",
+      text: '',
       footerLocation: 0,
-      uploadInProgress: false
+      uploadInProgress: false,
     };
-    this.simpleCrypto = new SimpleCrypto("nope");
+    this.simpleCrypto = new SimpleCrypto('nope');
   }
   async componentDidMount() {
-    Keyboard.addListener("keyboardWillShow", this.keyboardWillShow);
-    Keyboard.addListener("keyboardWillHide", this.keyboardWillHide);
+    Keyboard.addListener('keyboardWillShow', this.keyboardWillShow);
+    Keyboard.addListener('keyboardWillHide', this.keyboardWillHide);
 
     if (this.props.activeChannel) {
       this.props.dispatch(removeUnreadDM(this.props.activeChannel));
     }
     if (this.props.getUserKeys.User) {
       try {
-        let hashed = await AsyncStorage.getItem("ATHARES_HASH");
+        let hashed = await AsyncStorage.getItem('ATHARES_HASH');
         let simpleCryptoForUserPriv = new SimpleCrypto(hashed);
         const userPriv = simpleCryptoForUserPriv.decrypt(
-          this.props.getUserKeys.User.priv
+          this.props.getUserKeys.User.priv,
         );
 
         let decryptedChannelSecret = await decrypt(
           this.props.getUserKeys.User.keys[0].key,
-          userPriv
+          userPriv,
         );
 
         this.simpleCrypto.setSecret(decryptedChannelSecret);
         this.setState({
-          cryptoEnabled: true
+          cryptoEnabled: true,
         });
       } catch (err) {
         console.error(new Error(err));
@@ -89,29 +89,29 @@ class DMChannelWithoutDrawer extends Component {
     }
     if (prevProps.getUserKeys.User !== this.props.getUserKeys.User) {
       try {
-        let hashed = await AsyncStorage.getItem("ATHARES_HASH");
+        let hashed = await AsyncStorage.getItem('ATHARES_HASH');
         let simpleCryptoForUserPriv = new SimpleCrypto(hashed);
 
         let userPriv = simpleCryptoForUserPriv.decrypt(
-          this.props.getUserKeys.User.priv
+          this.props.getUserKeys.User.priv,
         );
 
         let decryptedChannelSecret = decrypt(
           this.props.getUserKeys.User.keys[0].key,
-          userPriv
+          userPriv,
         );
 
         this.simpleCrypto.setSecret(decryptedChannelSecret);
         this.setState({
-          cryptoEnabled: true
+          cryptoEnabled: true,
         });
       } catch (err) {
         console.error(new Error(err));
       }
     }
   }
-  submit = async (text = "", file = null) => {
-    if (text.trim() === "" && file === null) {
+  submit = async (text = '', file = null) => {
+    if (text.trim() === '' && file === null) {
       return false;
     }
     let { user, activeChannel: channel } = this.props;
@@ -120,9 +120,9 @@ class DMChannelWithoutDrawer extends Component {
     try {
       if (file) {
         await this.setState({
-          uploadInProgress: true
+          uploadInProgress: true,
         });
-        const imgs = ["gif", "png", "jpg", "jpeg", "bmp"];
+        const imgs = ['gif', 'png', 'jpg', 'jpeg', 'bmp'];
         let extension = file.name.match(/\.(.{1,4})$/i);
         if (imgs.indexOf(extension[1].toLowerCase()) !== -1) {
           response = await uploadImage(file);
@@ -136,7 +136,7 @@ class DMChannelWithoutDrawer extends Component {
           return false;
         }
       }
-      if (text.trim() === "" && !response.url) {
+      if (text.trim() === '' && !response.url) {
         return false;
       }
       // encrypt the relevant parts of the message
@@ -145,60 +145,60 @@ class DMChannelWithoutDrawer extends Component {
         channel,
         user: this.props.user,
         file: response ? this.simpleCrypto.encrypt(response.url) : null,
-        fileName: response ? response.name : null
+        fileName: response ? response.name : null,
       };
 
       await this.props.createMessage({
         variables: {
-          ...newMessage
-        }
+          ...newMessage,
+        },
       });
       this.setState({
-        uploadInProgress: false
+        uploadInProgress: false,
       });
     } catch (err) {
       this.setState({
-        uploadInProgress: false
+        uploadInProgress: false,
       });
       console.error(new Error(err));
       Alert.alert(
-        "Error",
-        "We were unable to send your message, please try again later"
+        'Error',
+        'We were unable to send your message, please try again later',
       );
     }
   };
   normalizeName = name => {
     let retval = name
-      .split(", ")
+      .split(', ')
       .filter(
         n =>
           n !==
           this.props.getUserKeys.User.firstName +
-            " " +
-            this.props.getUserKeys.User.lastName
+            ' ' +
+            this.props.getUserKeys.User.lastName,
       );
     if (retval.length === 0) {
       return name;
     }
     if (retval.length < 3) {
-      return retval.join(" & ");
+      return retval.join(' & ');
     }
     if (retval.length < 6) {
       retval = [
         ...retval.splice(0, retval.length - 1),
-        ["and", retval[retval.length - 1]].join(" ")
+        ['and', retval[retval.length - 1]].join(' '),
       ];
-      retval = retval.join(", ");
+      retval = retval.join(', ');
       return retval;
     }
-    retval = [...retval.splice(0, 4), "...and " + retval.length + " more"];
-    retval = retval.join(", ");
+    retval = [...retval.splice(0, 4), '...and ' + retval.length + ' more'];
+    retval = retval.join(', ');
     return retval;
   };
   _subToMore = subscribeToMore => {
     subscribeToMore({
       document: SUB_TO_MESSAGES_BY_CHANNEL_ID,
-      variables: { id: this.props.activeChannel || "" },
+      variables: { id: this.props.activeChannel || '' },
       updateQuery: (prev, { subscriptionData }) => {
         let newMsg = subscriptionData.data.Message.node;
         // if (!prev.Channel.messages.find(m => m.id === newMsg.id)) {
@@ -207,7 +207,7 @@ class DMChannelWithoutDrawer extends Component {
         // }
 
         return prev;
-      }
+      },
     });
   };
   render() {
@@ -218,7 +218,7 @@ class DMChannelWithoutDrawer extends Component {
     return (
       <Query
         query={GET_MESSAGES_FROM_CHANNEL_ID}
-        variables={{ id: this.props.activeChannel || "" }}
+        variables={{ id: this.props.activeChannel || '' }}
         onCompleted={this.scrollToBottom}
       >
         {({ data, subscribeToMore }) => {
@@ -235,20 +235,20 @@ class DMChannelWithoutDrawer extends Component {
             messages = messages.map(m => ({
               ...m,
               text: this.simpleCrypto.decrypt(m.text),
-              file: m.file ? this.simpleCrypto.decrypt(m.file) : null
+              file: m.file ? this.simpleCrypto.decrypt(m.file) : null,
             }));
 
             return (
               <ScreenWrapper styles={[styles.wrapper]}>
                 <Chat user={user} messages={messages} />
                 <KeyboardAvoidingView
-                  behavior="padding"
+                  behavior='padding'
                   style={{
-                    position: "absolute",
+                    position: 'absolute',
                     left: 0,
                     right: 0,
                     bottom: this.state.btnLocation || 0,
-                    backgroundColor: "#0090FF"
+                    backgroundColor: '#0090FF',
                   }}
                 >
                   <ChatInput
@@ -264,9 +264,9 @@ class DMChannelWithoutDrawer extends Component {
           } else {
             return (
               <ScreenWrapper
-                styles={{ justifyContent: "center", alignItems: "center" }}
+                styles={{ justifyContent: 'center', alignItems: 'center' }}
               >
-                <UIActivityIndicator color={"#FFFFFF"} />
+                <UIActivityIndicator color={'#FFFFFF'} />
               </ScreenWrapper>
             );
           }
@@ -277,34 +277,34 @@ class DMChannelWithoutDrawer extends Component {
 }
 function mapStateToProps(state) {
   return {
-    user: pull(state, "user"),
-    activeChannel: pull(state, "activeChannel"),
-    dmSettings: pullUI(state, "dmSettings")
+    user: pull(state, 'user'),
+    activeChannel: pull(state, 'activeChannel'),
+    dmSettings: pullUI(state, 'dmSettings'),
   };
 }
 const DMChannelWithAllGarbage = connect(mapStateToProps)(
   compose(
-    graphql(CREATE_MESSAGE, { name: "createMessage" }),
+    graphql(CREATE_MESSAGE, { name: 'createMessage' }),
     graphql(GET_USER_KEYS, {
-      name: "getUserKeys",
+      name: 'getUserKeys',
       options: ({ user, activeChannel }) => ({
-        variables: { user: user, channel: activeChannel }
-      })
-    })
-  )(DMChannelWithoutDrawer)
+        variables: { user: user, channel: activeChannel },
+      }),
+    }),
+  )(DMChannelWithoutDrawer),
 );
 
 export default createDrawerNavigator(
   {
     DMChannel: {
-      screen: DMChannelWithAllGarbage
-    }
+      screen: DMChannelWithAllGarbage,
+    },
   },
   {
     contentComponent: Menu,
-    drawerPosition: "right",
-    drawerWidth: 350
-  }
+    drawerPosition: 'right',
+    drawerWidth: 350,
+  },
 );
 
 const styles = StyleSheet.create({
@@ -312,6 +312,6 @@ const styles = StyleSheet.create({
     // alignItems: "stretch",
     // justifyContent: "flex-start",
     // width: "100%",
-    flex: 1
-  }
+    flex: 1,
+  },
 });

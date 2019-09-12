@@ -1,26 +1,28 @@
-import { createStackNavigator, createDrawerNavigator } from "react-navigation";
+import { createStackNavigator } from 'react-navigation-stack';
+import { createDrawerNavigator } from 'react-navigation-drawer';
 
-import Dashboard from "./dashboard";
-import CreateCircle from "./createCircle";
-import CircleSettings from "./circleSettings";
-import Constitution from "./constitution";
-import CreateChannel from "./createChannel";
-import Channel from "./channel";
-import CreateDM from "./createDM";
-import DMChannel from "./dmChannel";
-import AddUser from "./addUser";
-import Revisions from "./revisions";
-import ViewRevision from "./viewRevision";
-import ViewOtherUser from "./viewOtherUser";
-import Me from "./me";
-import CreateRevision from "./createRevision";
-import { slidingStackNavigator } from "../../config/navigators";
-import Menu from "./menu";
-import EditAmendment from "./editAmendment";
+import Dashboard from './dashboard';
+import CreateCircle from './createCircle';
+import CircleSettings from './circleSettings';
+import Constitution from './constitution';
+import CreateChannel from './createChannel';
+import Channel from './channel';
+import CreateDM from './createDM';
+import DMChannel from './dmChannel';
+import AddUser from './addUser';
+import Revisions from './revisions';
+import ViewRevision from './viewRevision';
+import ViewOtherUser from './viewOtherUser';
+import Me from './me';
+import CreateRevision from './createRevision';
+import { slidingStackNavigator } from '../../config/navigators';
+import Menu from './menu';
+import EditAmendment from './editAmendment';
 
 const DashboardStackNavigator = createStackNavigator(
   {
     Dashboard: Dashboard,
+    CreateCircle: CreateCircle,
     CircleSettings: CircleSettings,
     DMChannel: DMChannel,
     Constitution: Constitution,
@@ -29,14 +31,13 @@ const DashboardStackNavigator = createStackNavigator(
     ViewRevision: ViewRevision,
     Revisions: Revisions,
     ViewUser: Me,
-    CreateCircle: CreateCircle,
     CreateChannel: CreateChannel,
     CreateDM: CreateDM,
     Channel: Channel,
     ViewOtherUser: ViewOtherUser,
-    AddUser: AddUser
+    AddUser: AddUser,
   },
-  slidingStackNavigator
+  slidingStackNavigator,
 );
 
 // this should be a list of all things in the drawer
@@ -46,12 +47,12 @@ const DashboardStackNavigator = createStackNavigator(
 // Logout
 const DashboardWithDrawer = createDrawerNavigator(
   {
-    Dashboard: DashboardStackNavigator
+    Dashboard: DashboardStackNavigator,
   },
   {
     contentComponent: Menu,
-    drawerPosition: "left",
-    drawerWidth: 350
-  }
+    drawerPosition: 'left',
+    drawerWidth: 350,
+  },
 );
 export default DashboardWithDrawer;

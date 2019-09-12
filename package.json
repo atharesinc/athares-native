@@ -7,6 +7,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@react-native-community/masked-view": "^0.1.1",
     "apollo-cache-inmemory": "^1.5.1",
     "apollo-client": "^2.4.13",
     "apollo-link": "^1.2.8",
@@ -37,9 +38,13 @@
     "react-native-indicators": "^0.13.0",
     "react-native-keyboard-spacer": "^0.4.1",
     "react-native-lightbox": "^0.8.0",
+    "react-native-reanimated": "~1.1.0",
+    "react-native-screens": "1.0.0-alpha.22",
     "react-native-svg": "^9.9.3",
     "react-native-switch-pro": "^1.0.2",
-    "react-navigation": "^3.11.0",
+    "react-navigation": "^4.0.3",
+    "react-navigation-drawer": "^2.1.2",
+    "react-navigation-stack": "^2.0.0-alpha.13",
     "react-redux": "^6.0.1",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",

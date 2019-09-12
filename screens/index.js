@@ -1,7 +1,7 @@
-import { createSwitchNavigator, createAppContainer } from "react-navigation";
+import { createSwitchNavigator, createAppContainer } from 'react-navigation';
 
-import PortalSwitchNavigator from "./portal";
-import DashboardStackNavigator from "./app";
+import PortalSwitchNavigator from './portal';
+import DashboardStackNavigator from './app';
 // import { fadingStackNavigator } from "../config/navigators";
 
 /**
@@ -20,7 +20,7 @@ import DashboardStackNavigator from "./app";
 
 const AppSwitchNavigator = createSwitchNavigator({
   Portal: { screen: PortalSwitchNavigator },
-  Dashboard: { screen: DashboardStackNavigator }
+  Dashboard: { screen: DashboardStackNavigator },
 });
 
 const AppContainer = createAppContainer(AppSwitchNavigator);

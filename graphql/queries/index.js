@@ -44,6 +44,7 @@ export const GET_USER_BY_ID_ALL = gql`
       uname
       email
       phone
+      createdAt
       circles {
         id
       }

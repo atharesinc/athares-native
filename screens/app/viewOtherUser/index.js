@@ -15,15 +15,17 @@ import { UIActivityIndicator } from 'react-native-indicators';
 
 import { Query } from 'react-apollo';
 import { GET_USER_BY_ID_ALL } from '../../../graphql/queries';
+import { connect } from 'react-redux';
+import { pull } from '../../../redux/state/reducers';
 
-export default class ViewOtherUser extends Component {
+class ViewOtherUser extends Component {
   render() {
     return (
       <Query
         query={GET_USER_BY_ID_ALL}
         variables={{ id: this.props.viewUser || '' }}
       >
-        {({ loading, data }) => {
+        {({ loading, data = {} }) => {
           let user,
             stats = null;
           if (data.User) {
@@ -109,11 +111,17 @@ export default class ViewOtherUser extends Component {
             </ScreenWrapper>
           );
         }}
-        }
       </Query>
     );
   }
 }
+
+function mapStateToProps(state) {
+  return {
+    viewUser: pull(state, 'viewUser'),
+  };
+}
+export default connect(mapStateToProps)(ViewOtherUser);
 
 const styles = StyleSheet.create({
   header: {

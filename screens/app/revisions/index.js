@@ -1,29 +1,30 @@
-import React, { Component } from "react";
-import ScreenWrapper from "../../../components/ScreenWrapper";
+import React, { Component } from 'react';
+import ScreenWrapper from '../../../components/ScreenWrapper';
 import {
   ScrollView,
   Text,
   StyleSheet,
   TouchableOpacity,
-  View
-} from "react-native";
-import RevisionBoard from "../../../components/RevisionBoard";
+  View,
+} from 'react-native';
+import RevisionBoard from '../../../components/RevisionBoard';
 import {
   GET_REVISIONS_FROM_CIRCLE_ID,
-  IS_USER_IN_CIRCLE
-} from "../../../graphql/queries";
-import { Query, graphql } from "react-apollo";
-import { updateChannel } from "../../../redux/state/actions";
-import { pull } from "../../../redux/state/reducers";
-import { connect } from "react-redux";
-import { UIActivityIndicator } from "react-native-indicators";
+  IS_USER_IN_CIRCLE,
+} from '../../../graphql/queries';
+import { Query, graphql } from 'react-apollo';
+import { updateChannel } from '../../../redux/state/actions';
+import { pull } from '../../../redux/state/reducers';
+import { connect } from 'react-redux';
+import { UIActivityIndicator } from 'react-native-indicators';
+import moment from 'moment';
 
 class Revisions extends Component {
   componentDidMount() {
     this.props.dispatch(updateChannel(null));
   }
   goToSettings = () => {
-    this.props.navigation.navigate("CircleSettings");
+    this.props.navigation.navigate('CircleSettings');
   };
   render() {
     let { activeCircle, user, isUserInCircle } = this.props;
@@ -33,7 +34,7 @@ class Revisions extends Component {
     return (
       <Query
         query={GET_REVISIONS_FROM_CIRCLE_ID}
-        variables={{ id: this.props.activeCircle || "" }}
+        variables={{ id: this.props.activeCircle || '' }}
         pollInterval={10000}
       >
         {({ data }) => {
@@ -44,9 +45,9 @@ class Revisions extends Component {
           if (!circle) {
             return (
               <ScreenWrapper
-                styles={{ justifyContent: "center", alignItems: "center" }}
+                styles={{ justifyContent: 'center', alignItems: 'center' }}
               >
-                <UIActivityIndicator color={"#FFFFFF"} />
+                <UIActivityIndicator color={'#FFFFFF'} />
               </ScreenWrapper>
             );
           }
@@ -60,30 +61,30 @@ class Revisions extends Component {
           allRevisions = allRevisions.map(r => {
             return {
               votes: r.votes.filter(v => v.revision === r.id),
-              ...r
+              ...r,
             };
           });
           let now = moment().valueOf();
 
           // all non-expired revisions
           let newRevisions = allRevisions.filter(
-            r => r.passed === null && now < moment(r.expires).valueOf()
+            r => r.passed === null && now < moment(r.expires).valueOf(),
           );
           // passed in the last week
           let recentlyPassed = allRevisions.filter(
             r =>
               r.passed === true &&
-              now - moment(r.expires).valueOf() <= 604800000
+              now - moment(r.expires).valueOf() <= 604800000,
           );
           // rejected in the last week
           let recentlyRejected = allRevisions.filter(
             r =>
               r.passed === false &&
-              now - moment(r.expires).valueOf() <= 604800000
+              now - moment(r.expires).valueOf() <= 604800000,
           );
           return (
-            <ScreenWrapper styles={[styles.wrapper]}>
-              <View style={{ margin: 15, alignItems: "flex-start" }}>
+            <ScreenWrapper styles={[styles.wrapper]} theme>
+              <View style={{ margin: 15, alignItems: 'flex-start' }}>
                 <Text style={[styles.disclaimer, { marginBottom: 15 }]}>
                   Review proposed legislation and changes to existing laws.
                 </Text>
@@ -96,21 +97,21 @@ class Revisions extends Component {
               </View>
               <ScrollView horizontal={true} style={styles.boardsWrapper}>
                 <RevisionBoard
-                  boardName="New Revisions"
+                  boardName='New Revisions'
                   revisions={newRevisions}
                   circleID={activeCircle}
                   user={user}
                   belongsToCircle={belongsToCircle}
                 />
                 <RevisionBoard
-                  boardName="Recently Passed"
+                  boardName='Recently Passed'
                   revisions={recentlyPassed}
                   circleID={activeCircle}
                   user={user}
                   belongsToCircle={belongsToCircle}
                 />
                 <RevisionBoard
-                  boardName="Recently Rejected"
+                  boardName='Recently Rejected'
                   revisions={recentlyRejected}
                   circleID={activeCircle}
                   user={user}
@@ -127,43 +128,47 @@ class Revisions extends Component {
 
 function mapStateToProps(state) {
   return {
-    user: pull(state, "user"),
-    activeCircle: pull(state, "activeCircle")
+    user: pull(state, 'user'),
+    activeCircle: pull(state, 'activeCircle'),
   };
 }
 
 export default connect(mapStateToProps)(
   graphql(IS_USER_IN_CIRCLE, {
-    name: "isUserInCircle",
+    name: 'isUserInCircle',
     options: ({ activeCircle, user }) => ({
-      variables: { circle: activeCircle || "", user: user || "" }
-    })
-  })(RevisionBoard)
+      variables: { circle: activeCircle || '', user: user || '' },
+    }),
+  })(Revisions),
 );
 
 const styles = StyleSheet.create({
   wrapper: {
-    alignItems: "flex-start",
-    justifyContent: "flex-start",
-    width: "100%",
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    width: '100%',
     flex: 1,
-    paddingTop: 15
+    paddingTop: 15,
   },
   disclaimer: {
     fontSize: 15,
-    color: "#FFFFFFb7"
+    color: '#FFFFFFb7',
+    textAlignVertical: 'center',
   },
   discreteButton: {
     borderWidth: 1,
-    borderColor: "#FFFFFFb7",
+    borderColor: '#FFFFFFb7',
     borderRadius: 9999,
-    backgroundColor: "#2f3242",
+    backgroundColor: '#2f3242',
     padding: 5,
     paddingHorizontal: 10,
-    marginBottom: 15
+    marginBottom: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
   },
   boardsWrapper: {
-    width: "100%",
-    marginHorizontal: 15
-  }
+    width: '100%',
+    marginHorizontal: 15,
+  },
 });

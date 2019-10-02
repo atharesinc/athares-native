@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { StyleSheet, View, ImageBackground, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { AppLoading } from 'expo';
@@ -49,31 +49,33 @@ export default class App extends Component {
       return <AppLoading />;
     }
     return (
-      <ApolloProvider client={client}>
-        <Provider store={store}>
-          <StatusBar barStyle='light-content' />
-          <SafeAreaView
-            style={styles.container}
-            forceInset={{
-              top: 'always',
-              bottom: 'always',
-            }}
-          >
-            <ImageBackground
-              source={require('./assets/iss-master.jpg')}
-              style={styles.image}
+      <Fragment>
+        <StatusBar barStyle='light-content' />
+        <ApolloProvider client={client}>
+          <Provider store={store}>
+            <SafeAreaView
+              style={styles.container}
+              forceInset={{
+                top: 'always',
+                bottom: 'always',
+              }}
             >
-              <View style={styles.transparentView}>
-                <AppContaner style={styles.appContainer} />
-              </View>
-              {/* Fun Stuff! */}
-              <RevisionMonitor />
-              <ChannelUpdateMonitor />
-              <DMUpdateMonitor />
-            </ImageBackground>
-          </SafeAreaView>
-        </Provider>
-      </ApolloProvider>
+              <ImageBackground
+                source={require('./assets/iss-master.jpg')}
+                style={styles.image}
+              >
+                <View style={styles.transparentView}>
+                  <AppContaner style={styles.appContainer} />
+                </View>
+                {/* Fun Stuff! */}
+                <RevisionMonitor />
+                <ChannelUpdateMonitor />
+                <DMUpdateMonitor />
+              </ImageBackground>
+            </SafeAreaView>
+          </Provider>
+        </ApolloProvider>
+      </Fragment>
     );
   }
 }

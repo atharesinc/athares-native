@@ -22,7 +22,8 @@ const SearchSection = props => {
             item={item}
             navigation={navigation}
             clearSearch={clearSearch}
-            title={props.title}
+            category={props.title}
+            searchOn={props.searchOn}
           />
         ))}
       </View>

@@ -1,8 +1,8 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 68175,
+  "expoServerPort": null,
+  "packagerPort": null,
+  "packagerPid": null,
   "expoServerNgrokUrl": "https://8p-mk8.dankral.native.exp.direct",
   "packagerNgrokUrl": "https://packager.8p-mk8.dankral.native.exp.direct",
   "ngrokPid": 68191,

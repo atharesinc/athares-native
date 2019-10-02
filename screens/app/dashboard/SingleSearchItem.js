@@ -13,12 +13,12 @@ import {
 } from '../../../redux/state/actions';
 import { closeSearch } from '../../../redux/ui/actions';
 
-const SingleSearchItem = ({ item, navigation, ...props }) => {
+const SingleSearchItem = ({ item, category, navigation, ...props }) => {
   const navigate = () => {
     const { id } = item;
 
     if (item) {
-      switch (props.title) {
+      switch (category) {
         case 'circles':
           props.dispatch(updateCircle(id));
           break;
@@ -39,12 +39,11 @@ const SingleSearchItem = ({ item, navigation, ...props }) => {
           break;
         case 'users':
           props.dispatch(updateViewUser(id));
-          navigation.navigate('ViewUser');
+          navigation.navigate('ViewOtherUser');
           break;
         default:
           break;
       }
-      props.clearSearch();
       props.dispatch(closeSearch());
     }
   };
@@ -55,7 +54,7 @@ const SingleSearchItem = ({ item, navigation, ...props }) => {
       onPress={navigate}
       data-id={item.id}
     >
-      {props.title === 'users' ? (
+      {category === 'users' ? (
         <View style={styles.suggestionItemUser}>
           <AsyncImageAnimated
             source={{ uri: item.icon }}
@@ -71,9 +70,9 @@ const SingleSearchItem = ({ item, navigation, ...props }) => {
         <View>
           <Text style={styles.suggestionText}>
             {item[props.searchOn] +
-              (props.title !== 'circles' ? ' - ' + item.circle.name : '')}
+              (category !== 'circles' ? ' - ' + item.circle.name : '')}
           </Text>
-          {props.title !== 'circles' && (
+          {category !== 'circles' && (
             <Text style={[styles.suggestionText, styles.smaller]}>
               {moment(item.createdAt).fromNow()}
             </Text>

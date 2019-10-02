@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import ScreenWrapper from "../../../components/ScreenWrapper";
-import InfoLineStatic from "../../../components/InfoLineStatic";
-import Statistic from "../../../components/Statistic";
+import React, { Component } from 'react';
+import ScreenWrapper from '../../../components/ScreenWrapper';
+import InfoLineStatic from '../../../components/InfoLineStatic';
+import Statistic from '../../../components/Statistic';
 import {
   Text,
   View,
@@ -9,19 +9,19 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   ImageBackground,
-  Image
-} from "react-native";
-import { UIActivityIndicator } from "react-native-indicators";
+  Image,
+} from 'react-native';
+import { UIActivityIndicator } from 'react-native-indicators';
 
-import { Query } from "react-apollo";
-import { GET_USER_BY_ID_ALL } from "../../../graphql/queries";
+import { Query } from 'react-apollo';
+import { GET_USER_BY_ID_ALL } from '../../../graphql/queries';
 
 export default class ViewOtherUser extends Component {
   render() {
     return (
       <Query
         query={GET_USER_BY_ID_ALL}
-        variables={{ id: this.props.activeUser || "" }}
+        variables={{ id: this.props.viewUser || '' }}
       >
         {({ loading, data }) => {
           let user,
@@ -32,29 +32,29 @@ export default class ViewOtherUser extends Component {
               voteCount: user.votes.length,
               circleCount: user.circles.length,
               revisionCount: user.revisions.length,
-              passedRevisionCount: user.revisions.filter(r => r.passed).length
+              passedRevisionCount: user.revisions.filter(r => r.passed).length,
             };
           }
           if (loading) {
             return (
               <ScreenWrapper
-                styles={{ justifyContent: "center", alignItems: "center" }}
+                styles={{ justifyContent: 'center', alignItems: 'center' }}
               >
-                <UIActivityIndicator color={"#FFFFFF"} />
+                <UIActivityIndicator color={'#FFFFFF'} />
               </ScreenWrapper>
             );
           }
           return (
             <ScreenWrapper styles={[styles.wrapper]}>
-              <KeyboardAvoidingView behavior="position">
+              <KeyboardAvoidingView behavior='position'>
                 <ScrollView styles={[styles.wrapper]}>
                   <ImageBackground
-                    source={require("../../../assets/nasa-earth.jpg")}
+                    source={require('../../../assets/nasa-earth.jpg')}
                     style={styles.backgroundImage}
                   >
                     <View style={styles.userAndImageWrapper}>
                       <Text style={styles.userNameText}>
-                        {user.firstName + " " + user.lastName}
+                        {user.firstName + ' ' + user.lastName}
                       </Text>
                       <View style={[styles.previewWrapper]}>
                         <Image
@@ -68,18 +68,18 @@ export default class ViewOtherUser extends Component {
                   <View style={styles.section}>
                     <Text style={styles.sectionHeading}>Info</Text>
                     <InfoLineStatic
-                      icon={"phone"}
-                      label="Phone"
+                      icon={'phone'}
+                      label='Phone'
                       value={user.phone}
                     />
                     <InfoLineStatic
-                      icon={"at-sign"}
-                      label="Email"
+                      icon={'at-sign'}
+                      label='Email'
                       value={user.email}
                     />
                     <InfoLineStatic
-                      icon={"hash"}
-                      label="Unique Name"
+                      icon={'hash'}
+                      label='Unique Name'
                       value={user.uname}
                     />
                   </View>
@@ -88,18 +88,18 @@ export default class ViewOtherUser extends Component {
                   <View style={styles.section}>
                     <Text style={styles.sectionHeading}>Statistics</Text>
                     <View style={styles.wrapSection}>
-                      <Statistic header="Circles" text={stats.circleCount} />
+                      <Statistic header='Circles' text={stats.circleCount} />
                       <Statistic
-                        header="Revisions Proposed"
+                        header='Revisions Proposed'
                         text={stats.revisionCount}
                       />
                       <Statistic
-                        header="Revisions Accepted"
+                        header='Revisions Accepted'
                         text={stats.passedRevisionCount}
                       />
-                      <Statistic header="Times Voted" text={stats.voteCount} />
+                      <Statistic header='Times Voted' text={stats.voteCount} />
                       <Statistic
-                        header="User Since"
+                        header='User Since'
                         text={new Date(user.createdAt).toLocaleDateString()}
                       />
                     </View>
@@ -117,87 +117,87 @@ export default class ViewOtherUser extends Component {
 
 const styles = StyleSheet.create({
   header: {
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
     letterSpacing: 2,
     fontSize: 13,
-    color: "#FFFFFFb7",
-    marginBottom: 25
+    color: '#FFFFFFb7',
+    marginBottom: 25,
   },
   wrapper: {
-    alignItems: "stretch",
-    justifyContent: "flex-start",
-    width: "100%",
-    flex: 1
+    alignItems: 'stretch',
+    justifyContent: 'flex-start',
+    width: '100%',
+    flex: 1,
   },
   userNameText: {
     fontSize: 20,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-    marginBottom: 10
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 10,
   },
   userAndImageWrapper: {
     flex: 1,
     padding: 15,
-    width: "100%",
-    backgroundColor: "#00000080",
-    justifyContent: "center",
-    alignItems: "center"
+    width: '100%',
+    backgroundColor: '#00000080',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   section: {
     marginTop: 15,
     marginHorizontal: 15,
-    marginBottom: 10
+    marginBottom: 10,
   },
   sectionHeading: {
     fontSize: 20,
-    color: "#FFFFFF",
-    marginBottom: 10
+    color: '#FFFFFF',
+    marginBottom: 10,
   },
   disclaimer: {
     fontSize: 15,
-    color: "#FFFFFFb7",
-    marginBottom: 5
+    color: '#FFFFFFb7',
+    marginBottom: 5,
   },
   label: {
     fontSize: 18,
     marginBottom: 10,
-    color: "#FFF"
+    color: '#FFF',
   },
   picker: {
-    flexDirection: "column",
-    alignItems: "stretch",
-    marginBottom: 20
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    marginBottom: 20,
   },
   backgroundImage: {
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center"
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   marginTop: {
-    marginTop: 15
+    marginTop: 15,
   },
   wrapSection: {
-    flexDirection: "row",
-    flexWrap: "wrap"
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   preview: {
     height: 150,
     width: 150,
-    resizeMode: "stretch",
+    resizeMode: 'stretch',
     padding: 0,
-    margin: 0
+    margin: 0,
   },
   previewWrapper: {
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
     height: 150,
     width: 150,
     padding: 0,
     marginBottom: 15,
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "hidden",
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
     borderRadius: 9999,
-    borderColor: "#FFFFFF",
-    borderWidth: 5
-  }
+    borderColor: '#FFFFFF',
+    borderWidth: 5,
+  },
 });

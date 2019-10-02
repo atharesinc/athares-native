@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, Text } from 'react-native';
 import Footer from '../../../components/Footer';
 import Circles from '../../../components/Circles';
 import ChannelItem from '../../../components/ChannelItem';
@@ -13,15 +13,12 @@ import {
   IS_USER_IN_CIRCLE,
 } from '../../../graphql/queries';
 import { Query, graphql, compose } from 'react-apollo';
-
+import { Search } from './Search';
 import { connect } from 'react-redux';
 import { pull } from '../../../redux/state/reducers';
+const pullUI = require('../../../redux/ui/reducers').pull;
 
 class Dashboard extends Component {
-  state = {
-    showSearch: false,
-  };
-
   render() {
     let {
       activeCircle,
@@ -29,6 +26,7 @@ class Dashboard extends Component {
       unreadDMs,
       unreadChannels,
       isUserInCircle,
+      showSearch,
     } = this.props;
     let belongsToCircle = false;
     let user = null;
@@ -81,6 +79,7 @@ class Dashboard extends Component {
                 backgroundColor: '#282a38',
               }}
             >
+              {showSearch ? <Search /> : null}
               <Circles loggedIn={user} />
               <ScrollView
                 contentContainerStyle={{
@@ -143,6 +142,7 @@ function mapStateToProps(state) {
     activeCircle: pull(state, 'activeCircle'),
     unreadDMs: pull(state, 'unreadDMs'),
     unreadChannels: pull(state, 'unreadChannels'),
+    showSearch: pullUI(state, 'showSearch'),
   };
 }
 

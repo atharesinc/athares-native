@@ -43,12 +43,12 @@ class Header extends Component {
     let {
       loggedIn = false,
       belongsToCircle = false,
-      searchOpen = false,
+      showSearch = false,
       scene,
       user = null,
       activeChannel,
       activeRevision,
-      activeUser,
+      viewUser,
     } = this.props;
     const { routeName } = scene.route;
     const routeTitleIndex = /[A-Z]/.exec('createChannel').index;
@@ -160,7 +160,7 @@ class Header extends Component {
       return (
         <Query
           query={GET_USER_BY_ID}
-          variables={{ id: activeUser || user || '' }}
+          variables={{ id: viewUser || user || '' }}
         >
           {({ data }) => {
             return (
@@ -226,7 +226,7 @@ class Header extends Component {
                       >
                         {name}
                       </Text>
-                      {!searchOpen ? (
+                      {!showSearch ? (
                         <TouchableOpacity onPress={this.toggleSearch}>
                           <Icon name='search' size={25} color={'#FFFFFF'} />
                         </TouchableOpacity>
@@ -298,9 +298,10 @@ function mapStateToProps(state) {
     user: pull(state, 'user'),
     activeCircle: pull(state, 'activeCircle'),
     activeChannel: pull(state, 'activeChannel'),
-    activeUser: pull(state, 'activeUser'),
+    viewUser: pull(state, 'viewUser'),
     activeRevision: pull(state, 'activeRevision'),
     dmSettings: pullUI(state, 'dmSettings'),
+    showSearch: pullUI(state, 'showSearch'),
   };
 }
 export default connect(mapStateToProps)(withNavigation(Header));

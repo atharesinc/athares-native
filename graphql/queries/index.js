@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const GET_ALL_NOTICES = gql`
   {
@@ -385,6 +385,7 @@ export const SEARCH_ALL = gql`
       firstName
       lastName
       icon
+      uname
     }
   }
 `;

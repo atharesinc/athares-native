@@ -28,12 +28,12 @@ const baseStyles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#282a3899',
+    backgroundColor: '#282a38',
   },
   theme: {
-    backgroundColor: '#2f324299',
+    backgroundColor: '#2f3242',
   },
   light: {
-    backgroundColor: '#3a3e5299',
+    backgroundColor: '#3a3e52',
   },
 });

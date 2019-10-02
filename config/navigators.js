@@ -38,58 +38,7 @@ const slidingStackNavigator = {
     cardTransparent: true,
     backgroundColor: 'transparent',
   },
-  transparentCard: true,
   headerMode: 'screen',
-  mode: 'card',
-  navigationOptions: {
-    transitionSpec: {
-      open: { opacity: 1 },
-      close: {
-        opacity: 0,
-      },
-    },
-  },
-  transitionConfig: () => ({
-    // screenInterpolator: sceneProps => {
-    //   const { layout, position, scene } = sceneProps;
-    //   const { index } = scene;
-    //   const width = layout.initWidth;
-
-    //   return {
-    //     opacity: position.interpolate({
-    //       inputRange: [index - 1, index, index + 1],
-    //       outputRange: [0, 1, 0],
-    //     }),
-    //     transform: [
-    //       {
-    //         translateX: position.interpolate({
-    //           inputRange: [index - 1, index, index + 1],
-    //           outputRange: [width, 0, -width],
-    //         }),
-    //       },
-    //     ],
-    //   };
-    // },
-    headerTitleInterpolator: sceneProps => {
-      const { layout, position, scene } = sceneProps;
-      const { index } = scene;
-      const width = layout.initWidth;
-      return {
-        opacity: position.interpolate({
-          inputRange: [index - 1, index, index + 1],
-          outputRange: [0, 1, 0],
-        }),
-        transform: [
-          {
-            translateX: position.interpolate({
-              inputRange: [index - 1, index, index + 1],
-              outputRange: [width, 0, -width],
-            }),
-          },
-        ],
-      };
-    },
-  }),
 };
 
 export { fadingStackNavigator, slidingStackNavigator };

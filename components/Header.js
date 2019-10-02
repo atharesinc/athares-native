@@ -12,6 +12,7 @@ import {
   GET_USER_BY_ID,
   GET_MESSAGES_FROM_CHANNEL_ID,
   GET_REVISION_BY_ID,
+  GET_CIRCLE_NAME_BY_ID,
 } from '../graphql/queries';
 import AsyncImageAnimated from 'react-native-async-image-animated';
 
@@ -78,7 +79,13 @@ class Header extends Component {
     // render screen name and back
     if (simpleChannelsArr.indexOf(routeName) !== -1) {
       return (
-        <View style={[styles.header, styles.headerThemeDark]}>
+        <View
+          style={[
+            styles.header,
+            styles.headerThemeDark,
+            routeName === 'Revisions' ? styles.headerTheme : {},
+          ]}
+        >
           <TouchableOpacity onPress={this.back}>
             <Icon name='chevron-left' size={25} color={'#FFFFFF'} />
           </TouchableOpacity>
@@ -186,31 +193,57 @@ class Header extends Component {
               ? { uri: data.User.icon }
               : require('../assets/user-default.png');
             return (
-              <View style={styles.header}>
-                <TouchableOpacity onPress={this.toggleDrawer}>
-                  <View style={styles.userIconWrapper}>
-                    <AsyncImageAnimated
-                      source={img}
-                      style={styles.userIcon}
-                      placeholderColor={'#3a3e52'}
-                    />
-                  </View>
-                </TouchableOpacity>
-                {!searchOpen ? (
-                  <TouchableOpacity onPress={this.toggleSearch}>
-                    <Icon name='search' size={25} color={'#FFFFFF'} />
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity onPress={this.toggleSearch}>
-                    <Icon
-                      name='x'
-                      size={25}
-                      color={'#FFFFFF'}
-                      numberOfLines={1}
-                    />
-                  </TouchableOpacity>
-                )}
-              </View>
+              <Query
+                query={GET_CIRCLE_NAME_BY_ID}
+                variables={{ id: this.props.activeCircle || '' }}
+              >
+                {({ data: circleNameData = {} }) => {
+                  let name = '';
+                  if (circleNameData.Circle) {
+                    name = circleNameData.Circle.name;
+                  }
+                  return (
+                    <View style={styles.header}>
+                      <TouchableOpacity onPress={this.toggleDrawer}>
+                        <View style={styles.userIconWrapper}>
+                          <AsyncImageAnimated
+                            source={img}
+                            style={styles.userIcon}
+                            placeholderColor={'#3a3e52'}
+                          />
+                        </View>
+                      </TouchableOpacity>
+                      <Text
+                        style={{
+                          color: '#FFF',
+                          fontSize: 15,
+                          letterSpacing: 2,
+                          padding: 5,
+                          paddingHorizontal: 10,
+                        }}
+                        numberOfLines={1}
+                        ellipsizeMode={'middle'}
+                      >
+                        {name}
+                      </Text>
+                      {!searchOpen ? (
+                        <TouchableOpacity onPress={this.toggleSearch}>
+                          <Icon name='search' size={25} color={'#FFFFFF'} />
+                        </TouchableOpacity>
+                      ) : (
+                        <TouchableOpacity onPress={this.toggleSearch}>
+                          <Icon
+                            name='x'
+                            size={25}
+                            color={'#FFFFFF'}
+                            numberOfLines={1}
+                          />
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  );
+                }}
+              </Query>
             );
           }
           return <View style={styles.header}></View>;
@@ -232,13 +265,13 @@ const styles = StyleSheet.create({
     zIndex: 0,
   },
   headerThemeDark: {
-    backgroundColor: '#282a3899',
+    backgroundColor: '#282a38',
   },
   headerTheme: {
-    backgroundColor: '#2f324299',
+    backgroundColor: '#2f3242',
   },
   headerThemeLighter: {
-    backgroundColor: '#3a3e5299',
+    backgroundColor: '#3a3e52',
   },
   headerText: {
     color: '#FFFFFF',
@@ -263,6 +296,7 @@ const styles = StyleSheet.create({
 function mapStateToProps(state) {
   return {
     user: pull(state, 'user'),
+    activeCircle: pull(state, 'activeCircle'),
     activeChannel: pull(state, 'activeChannel'),
     activeUser: pull(state, 'activeUser'),
     activeRevision: pull(state, 'activeRevision'),

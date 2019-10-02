@@ -1,25 +1,25 @@
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment } from 'react';
 
-import { ScrollView, View } from "react-native";
-import Footer from "../../../components/Footer";
-import Circles from "../../../components/Circles";
-import ChannelItem from "../../../components/ChannelItem";
-import ChannelGroupHeader from "../../../components/ChannelGroupHeader";
-import CircleHeader from "../../../components/CircleHeader";
-import GovernanceChannelItem from "../../../components/GovernanceChannelItem";
+import { ScrollView, View } from 'react-native';
+import Footer from '../../../components/Footer';
+import Circles from '../../../components/Circles';
+import ChannelItem from '../../../components/ChannelItem';
+import ChannelGroupHeader from '../../../components/ChannelGroupHeader';
+import CircleHeader from '../../../components/CircleHeader';
+import GovernanceChannelItem from '../../../components/GovernanceChannelItem';
 import {
   GET_CHANNELS_BY_CIRCLE_ID,
   GET_DMS_BY_USER,
-  IS_USER_IN_CIRCLE
-} from "../../../graphql/queries";
-import { Query, graphql, compose } from "react-apollo";
+  IS_USER_IN_CIRCLE,
+} from '../../../graphql/queries';
+import { Query, graphql, compose } from 'react-apollo';
 
-import { connect } from "react-redux";
-import { pull } from "../../../redux/state/reducers";
+import { connect } from 'react-redux';
+import { pull } from '../../../redux/state/reducers';
 
 class Dashboard extends Component {
   state = {
-    showSearch: false
+    showSearch: false,
   };
 
   render() {
@@ -28,7 +28,7 @@ class Dashboard extends Component {
       getDMsByUser,
       unreadDMs,
       unreadChannels,
-      isUserInCircle
+      isUserInCircle,
     } = this.props;
     let belongsToCircle = false;
     let user = null;
@@ -39,13 +39,13 @@ class Dashboard extends Component {
     if (getDMsByUser.User && getDMsByUser.User.channels) {
       dms = getDMsByUser.User.channels.map(dm => ({
         unread: unreadDMs.includes(dm.id),
-        ...dm
+        ...dm,
       }));
       user = getDMsByUser.User;
       user = {
         id: user.id,
         firstName: user.firstName,
-        lastName: user.lastName
+        lastName: user.lastName,
       };
       // see if the user actually belongs to this circle
       if (
@@ -59,7 +59,7 @@ class Dashboard extends Component {
     return (
       <Query
         query={GET_CHANNELS_BY_CIRCLE_ID}
-        variables={{ id: this.props.activeCircle || "" }}
+        variables={{ id: this.props.activeCircle || '' }}
         pollInterval={3000}
       >
         {({ data }) => {
@@ -68,43 +68,42 @@ class Dashboard extends Component {
             channels = circle.channels;
             channels = channels.map(ch => ({
               unread: unreadChannels.includes(ch.id),
-              ...ch
+              ...ch,
             }));
           }
           return (
             <View
               style={{
-                alignItems: "stretch",
-                justifyContent: "space-between",
-                width: "100%",
+                alignItems: 'stretch',
+                justifyContent: 'space-between',
+                width: '100%',
                 flex: 1,
-                backgroundColor: "#282a38"
+                backgroundColor: '#282a38',
               }}
             >
               <Circles loggedIn={user} />
               <ScrollView
                 contentContainerStyle={{
-                  backgroundColor: "#282a38",
-                  flexGrow: 1
+                  backgroundColor: '#282a38',
+                  flexGrow: 1,
                 }}
               >
-                {circle && <CircleHeader name={circle.name} />}
                 {circle && (
                   <Fragment>
-                    <ChannelGroupHeader title={"GOVERNANCE"} />
+                    <ChannelGroupHeader title={'GOVERNANCE'} />
                     <GovernanceChannelItem
-                      title={"Constitution"}
-                      link={"Constitution"}
+                      title={'Constitution'}
+                      link={'Constitution'}
                     />
-                    <GovernanceChannelItem title={"Polls"} link={"Revisions"} />
+                    <GovernanceChannelItem title={'Polls'} link={'Revisions'} />
                     {user && belongsToCircle && (
                       <GovernanceChannelItem
-                        title={"Settings"}
-                        link={"CircleSettings"}
+                        title={'Settings'}
+                        link={'CircleSettings'}
                       />
                     )}
                     <ChannelGroupHeader
-                      title={"CHANNELS"}
+                      title={'CHANNELS'}
                       displayPlus={user && belongsToCircle}
                     />
 
@@ -118,7 +117,7 @@ class Dashboard extends Component {
                   </Fragment>
                 )}
                 <ChannelGroupHeader
-                  title={"DIRECT MESSAGES"}
+                  title={'DIRECT MESSAGES'}
                   displayPlus={true}
                 />
                 {dms.map(ch => (
@@ -140,27 +139,27 @@ class Dashboard extends Component {
 
 function mapStateToProps(state) {
   return {
-    user: pull(state, "user"),
-    activeCircle: pull(state, "activeCircle"),
-    unreadDMs: pull(state, "unreadDMs"),
-    unreadChannels: pull(state, "unreadChannels")
+    user: pull(state, 'user'),
+    activeCircle: pull(state, 'activeCircle'),
+    unreadDMs: pull(state, 'unreadDMs'),
+    unreadChannels: pull(state, 'unreadChannels'),
   };
 }
 
 export default connect(mapStateToProps)(
   compose(
     graphql(IS_USER_IN_CIRCLE, {
-      name: "isUserInCircle",
+      name: 'isUserInCircle',
       options: ({ activeCircle, user }) => ({
-        variables: { circle: activeCircle || "", user: user || "" }
-      })
+        variables: { circle: activeCircle || '', user: user || '' },
+      }),
     }),
     graphql(GET_DMS_BY_USER, {
-      name: "getDMsByUser",
+      name: 'getDMsByUser',
       options: ({ user }) => ({
         pollInterval: 5000,
-        variables: { id: user || "" }
-      })
-    })
-  )(Dashboard)
+        variables: { id: user || '' },
+      }),
+    }),
+  )(Dashboard),
 );

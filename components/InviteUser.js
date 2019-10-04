@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -13,28 +13,23 @@ import { pull } from '../redux/state/reducers';
 import { SEARCH_FOR_USER, GET_USERS_BY_CIRCLE_ID } from '../graphql/queries';
 import { compose, graphql, Query } from 'react-apollo';
 
-class InviteUser extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      input: '',
-    };
-  }
+function InviteUser({ style = {}, getUsers, tags, circle, ...props }) {
+  const [input, setInput] = useState('');
 
-  handleAddition = suggestion => {
-    let newTags = this.props.tags.concat([suggestion]);
-    this.props.updateTags(newTags);
-    this.setState({
+  const handleAddition = suggestion => {
+    let newTags = props.tags.concat([suggestion]);
+    props.updateTags(newTags);
+    setState({
       input: '',
     });
   };
-  _renderSuggestion = item => {
+  const _renderSuggestion = item => {
     return (
       <TouchableOpacity
         key={item.id}
         style={s.suggestion}
         onPress={() => {
-          this.handleAddition(item);
+          handleAddition(item);
         }}
       >
         <AsyncImageAnimated
@@ -47,49 +42,40 @@ class InviteUser extends Component {
       </TouchableOpacity>
     );
   };
-  updateInput = text => {
-    this.setState({
-      input: text,
-    });
-  };
-  render() {
-    const { style = {}, getUsers, tags, circle } = this.props;
-    const { input } = this.state;
-    let suggestions = [];
-    return (
-      <Query
-        query={SEARCH_FOR_USER}
-        variables={{ text: input || 's7d9f87vs69d8fv7' }}
-      >
-        {({ data: { allUsers } }) => {
-          // filter data.suggestions by users that are in tags list, and if in addUser, users already in this circle
-          if (input.trim().length >= 1 && tags.length < 7 && allUsers) {
-            suggestions = allUsers
-              .filter(u => tags.findIndex(su => su.id === u.id) === -1)
-              .map(u => ({ name: u.firstName + ' ' + u.lastName, ...u }));
-            if (circle) {
-              suggestions = suggestions.filter(
-                u =>
-                  getUsers.Circle.users.findIndex(su => su.id === u.id) === -1,
-              );
-            }
+
+  let suggestions = [];
+  return (
+    <Query
+      query={SEARCH_FOR_USER}
+      variables={{ text: input || 's7d9f87vs69d8fv7' }}
+    >
+      {({ data: { allUsers } }) => {
+        // filter data.suggestions by users that are in tags list, and if in addUser, users already in this circle
+        if (input.trim().length >= 1 && tags.length < 7 && allUsers) {
+          suggestions = allUsers
+            .filter(u => tags.findIndex(su => su.id === u.id) === -1)
+            .map(u => ({ name: u.firstName + ' ' + u.lastName, ...u }));
+          if (circle) {
+            suggestions = suggestions.filter(
+              u => getUsers.Circle.users.findIndex(su => su.id === u.id) === -1,
+            );
           }
-          return (
-            <View styles={[s.autocompleteContainer, style]}>
-              <TextInput
-                value={input}
-                onChangeText={this.updateInput}
-                style={s.inputStyle}
-                placeholder='Enter a name'
-                placeholderTextColor={'#FFFFFFb7'}
-              />
-              {suggestions.map(u => this._renderSuggestion(u))}
-            </View>
-          );
-        }}
-      </Query>
-    );
-  }
+        }
+        return (
+          <View styles={[s.autocompleteContainer, style]}>
+            <TextInput
+              value={input}
+              onChangeText={setInput}
+              style={s.inputStyle}
+              placeholder='Enter a name'
+              placeholderTextColor={'#FFFFFFb7'}
+            />
+            {suggestions.map(u => _renderSuggestion(u))}
+          </View>
+        );
+      }}
+    </Query>
+  );
 }
 
 const s = StyleSheet.create({
@@ -133,7 +119,6 @@ const s = StyleSheet.create({
     height: 30,
     width: 30,
     marginRight: 10,
-    borderRadius: 9999,
   },
   suggestionText: {
     color: '#FFFFFF',

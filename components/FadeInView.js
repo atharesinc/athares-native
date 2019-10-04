@@ -1,15 +1,15 @@
-import React from "react";
-import { Animated } from "react-native";
+import React from 'react';
+import { Animated } from 'react-native';
 
 export default class FadeInView extends React.Component {
   state = {
-    fadeAnim: new Animated.Value(0)
+    fadeAnim: new Animated.Value(0),
   };
 
   componentDidMount() {
     Animated.timing(this.state.fadeAnim, {
       toValue: 1,
-      duration: 250
+      duration: 250,
     }).start();
   }
 
@@ -21,7 +21,7 @@ export default class FadeInView extends React.Component {
         {...this.props}
         style={{
           ...this.props.style,
-          opacity: fadeAnim
+          opacity: fadeAnim,
         }}
       >
         {this.props.children}

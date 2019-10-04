@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from 'react';
+import React, { Component, useState, Fragment } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { withNavigation } from 'react-navigation';
 

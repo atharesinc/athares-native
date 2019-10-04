@@ -35,14 +35,14 @@ import SimpleCrypto from "simple-crypto-js";
 import { encrypt, decrypt } from "../../../utils/crypto";
 import { compose, graphql } from "react-apollo";
 
-class DMSettings extends Component {
+function DMSettings (props) {
   state = {
     loading: false,
     showAddUsers: false,
     tags: []
   };
 
-  confirmLeave = () => {
+const   confirmLeave = () => {
     Alert.alert(
       "Leave Circle?",
       "Are you sure you'd like to leave this Channel?",
@@ -197,10 +197,10 @@ class DMSettings extends Component {
       Alert.alert("Error", "There was an error adding users at this time");
     }
   };
-  close = () => {
+const   close = () => {
     this.props.navigation.toggleDrawer();
   };
-  render() {
+  
     const { tags } = this.state;
     return (
       <ScreenWrapper styles={[styles.wrapper]}>
@@ -263,7 +263,6 @@ class DMSettings extends Component {
         </KeyboardAvoidingView> */}
       </ScreenWrapper>
     );
-  }
 }
 
 function mapStateToProps(state) {

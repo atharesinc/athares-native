@@ -16,7 +16,7 @@ import {
 } from "../utils/mediaUtils";
 import Icon from "@expo/vector-icons/Feather";
 
-export default class CustomActions extends React.Component {
+export default function CustomActions (props) {
   getImage = async () => {
     Keyboard.dismiss();
     let file = await pickImageAsync();
@@ -32,7 +32,7 @@ export default class CustomActions extends React.Component {
     let file = await pickFileAsync();
     this.props.updateFile(file);
   };
-  render() {
+  
     return (
       <View style={[styles.container]}>
         <TouchableOpacity style={[styles.wrapper]} onPress={this.getImage}>
@@ -46,7 +46,6 @@ export default class CustomActions extends React.Component {
         </TouchableOpacity>
       </View>
     );
-  }
 }
 
 const styles = StyleSheet.create({

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -25,18 +25,21 @@ import {
 } from '../../../graphql/queries';
 import { UIActivityIndicator } from 'react-native-indicators';
 
-class ViewRevision extends Component {
-  componentDidMount() {
-    this.props.dispatch(updateChannel(null));
-  }
-  checkIfPass = () => {
-    this.forceUpdate();
+function ViewRevision(props) {
+  useEffect(() => {
+    props.dispatch(updateChannel(null));
+  }, []);
+
+  // const checkIfPass = () => {
+  //   forceUpdate();
+  // };
+
+  const goToUser = id => {
+    props.dispatch(updateViewUser(id));
+    props.navigation.navigate('ViewOtherUser');
   };
-  goToUser = id => {
-    this.props.dispatch(updateViewUser(id));
-    this.props.navigation.navigate('ViewOtherUser');
-  };
-  renderCategory = ({ repeal = false, amendment = null }) => {
+
+  const renderCategory = ({ repeal = false, amendment = null }) => {
     if (repeal) {
       return (
         <View style={[styles.cardCategory, styles.redBorder]}>
@@ -58,7 +61,8 @@ class ViewRevision extends Component {
       </View>
     );
   };
-  renderHasVoted = ({ updatedAt = new Date(), support = true }) => {
+
+  const renderHasVoted = ({ updatedAt = new Date(), support = true }) => {
     if (support) {
       <Text style={[styles.disclaimer, styles.greenText]}>
         You voted to support this on {new Date(updatedAt).toLocaleDateString()}
@@ -70,8 +74,9 @@ class ViewRevision extends Component {
       </Text>
     );
   };
-  vote = async support => {
-    let { activeRevision, data, isUserInCircle, activeCircle } = this.props;
+
+  const vote = async support => {
+    let { activeRevision, data, isUserInCircle, activeCircle } = props;
 
     // make sure the user belongs to this circle
     if (
@@ -88,11 +93,11 @@ class ViewRevision extends Component {
         return false;
       }
 
-      const hasVoted = votes.find(({ user: { id } }) => id === this.props.user);
+      const hasVoted = votes.find(({ user: { id } }) => id === props.user);
       try {
         if (hasVoted) {
           // update this user's existing vote
-          await this.props.updateVote({
+          await props.updateVote({
             variables: {
               vote: hasVoted.id,
               support,
@@ -100,10 +105,10 @@ class ViewRevision extends Component {
           });
         } else {
           // create a new vote, this user hasn't voted yet
-          this.props.createVote({
+          props.createVote({
             variables: {
               revision: activeRevision,
-              user: this.props.user,
+              user: props.user,
               support,
             },
           });
@@ -114,120 +119,118 @@ class ViewRevision extends Component {
       }
     }
   };
-  render() {
-    let revision = null;
-    let belongsToCircle = false;
-    const { data, isUserInCircle, activeCircle } = this.props;
 
-    if (data.Revision && isUserInCircle) {
-      if (
-        isUserInCircle.allCircles &&
-        isUserInCircle.allCircles.length !== 0 &&
-        isUserInCircle.allCircles[0].id === activeCircle
-      ) {
-        belongsToCircle = true;
-      }
-      revision = data.Revision;
-      const { votes } = revision;
+  let revision = null;
+  let belongsToCircle = false;
+  const { data, isUserInCircle, activeCircle } = props;
 
-      const support = votes.filter(({ support }) => support).length;
-      const hasVoted = votes.find(({ user: { id } }) => id === this.props.user);
-      const hasExpired =
-        moment().valueOf() >= moment(revision.expires).valueOf();
-      /* Represents a change to existing legislation; Show diff panels   */
-      return (
-        <ScreenWrapper styles={styles.wrapper}>
-          <ScrollView>
-            <Text style={styles.disclaimer}>Review the proposed draft</Text>
-            {myVote && this.renderHasVoted(hasVoted)}
-            <View style={styles.cardWrapper}>
-              <Text style={styles.cardHeader}>{revision.title}</Text>
-              <View style={styles.cardBody}>
-                <View style={styles.cardStats}>
-                  {this.renderCategory(revision)}
-                  <View style={styles.cardVotesWrapper}>
-                    <Text style={styles.cardVotesSupport}>+{support}</Text>
-                    <Text style={styles.slash}>/</Text>
-                    <Text style={styles.cardVotesReject}>
-                      -{votes.length - support}
-                    </Text>
-                  </View>
-                </View>
-                {revision.amendment ? (
-                  <DiffSection {...revision} />
-                ) : (
-                  <View style={styles.revisionTextWrapper}>
-                    <Text style={styles.disclaimer}>Proposed text:</Text>
-
-                    <Text style={styles.revisionText}>{revision.newText}</Text>
-                  </View>
-                )}
-                <View style={styles.wrapSection}>
-                  <Statistic
-                    header='Date Proposed'
-                    text={new Date(revision.createdAt).toLocaleDateString()}
-                  />
-                  <Statistic
-                    header='Expires'
-                    text={new Date(revision.expires).toLocaleDateString()}
-                  />
-                  <Statistic header='Votes to Support' text={23} />
-                  <Statistic header='Votes to Reject' text={15} />
-                  {hasExpired && <Statistic header='Passed' text={false} />}
-                </View>
-                <Text style={styles.disclaimer}>Backer</Text>
-                <TouchableOpacity
-                  style={styles.backerWrapper}
-                  onPress={() => {
-                    this.goToUser(revision.backer.id);
-                  }}
-                >
-                  <Image
-                    style={styles.backerImg}
-                    source={{ uri: revision.backer.icon }}
-                  />
-                  <Text style={styles.proposedDate}>
-                    {revision.backer.firstName + ' ' + revision.backer.lastName}
-                  </Text>
-                </TouchableOpacity>
-                {canVote && hasExpired === false && (
-                  <View style={styles.voteSectionWrapper}>
-                    <TouchableOpacity
-                      style={[styles.voteButton, styles.greenBorder]}
-                      onPress={() => {
-                        this.vote(true);
-                      }}
-                    >
-                      <Text style={[styles.voteText, styles.greenText]}>
-                        SUPPORT
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[styles.voteButton, styles.redBorder]}
-                      onPress={() => {
-                        this.vote(false);
-                      }}
-                    >
-                      <Text style={[styles.voteText, styles.redText]}>
-                        REJECT
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
-            </View>
-          </ScrollView>
-        </ScreenWrapper>
-      );
-    } else {
-      return (
-        <ScreenWrapper
-          styles={{ justifyContent: 'center', alignItems: 'center' }}
-        >
-          <UIActivityIndicator color={'#FFFFFF'} />
-        </ScreenWrapper>
-      );
+  if (data.Revision && isUserInCircle) {
+    if (
+      isUserInCircle.allCircles &&
+      isUserInCircle.allCircles.length !== 0 &&
+      isUserInCircle.allCircles[0].id === activeCircle
+    ) {
+      belongsToCircle = true;
     }
+    revision = data.Revision;
+    const { votes } = revision;
+
+    const support = votes.filter(({ support }) => support).length;
+    const hasVoted = votes.find(({ user: { id } }) => id === props.user);
+    const hasExpired = moment().valueOf() >= moment(revision.expires).valueOf();
+    /* Represents a change to existing legislation; Show diff panels   */
+    return (
+      <ScreenWrapper styles={styles.wrapper}>
+        <ScrollView>
+          <Text style={styles.disclaimer}>Review the proposed draft</Text>
+          {myVote && renderHasVoted(hasVoted)}
+          <View style={styles.cardWrapper}>
+            <Text style={styles.cardHeader}>{revision.title}</Text>
+            <View style={styles.cardBody}>
+              <View style={styles.cardStats}>
+                {renderCategory(revision)}
+                <View style={styles.cardVotesWrapper}>
+                  <Text style={styles.cardVotesSupport}>+{support}</Text>
+                  <Text style={styles.slash}>/</Text>
+                  <Text style={styles.cardVotesReject}>
+                    -{votes.length - support}
+                  </Text>
+                </View>
+              </View>
+              {revision.amendment ? (
+                <DiffSection {...revision} />
+              ) : (
+                <View style={styles.revisionTextWrapper}>
+                  <Text style={styles.disclaimer}>Proposed text:</Text>
+
+                  <Text style={styles.revisionText}>{revision.newText}</Text>
+                </View>
+              )}
+              <View style={styles.wrapSection}>
+                <Statistic
+                  header='Date Proposed'
+                  text={new Date(revision.createdAt).toLocaleDateString()}
+                />
+                <Statistic
+                  header='Expires'
+                  text={new Date(revision.expires).toLocaleDateString()}
+                />
+                <Statistic header='Votes to Support' text={23} />
+                <Statistic header='Votes to Reject' text={15} />
+                {hasExpired && <Statistic header='Passed' text={false} />}
+              </View>
+              <Text style={styles.disclaimer}>Backer</Text>
+              <TouchableOpacity
+                style={styles.backerWrapper}
+                onPress={() => {
+                  goToUser(revision.backer.id);
+                }}
+              >
+                <Image
+                  style={styles.backerImg}
+                  source={{ uri: revision.backer.icon }}
+                />
+                <Text style={styles.proposedDate}>
+                  {revision.backer.firstName + ' ' + revision.backer.lastName}
+                </Text>
+              </TouchableOpacity>
+              {canVote && hasExpired === false && (
+                <View style={styles.voteSectionWrapper}>
+                  <TouchableOpacity
+                    style={[styles.voteButton, styles.greenBorder]}
+                    onPress={() => {
+                      vote(true);
+                    }}
+                  >
+                    <Text style={[styles.voteText, styles.greenText]}>
+                      SUPPORT
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.voteButton, styles.redBorder]}
+                    onPress={() => {
+                      vote(false);
+                    }}
+                  >
+                    <Text style={[styles.voteText, styles.redText]}>
+                      REJECT
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          </View>
+        </ScrollView>
+      </ScreenWrapper>
+    );
+  } else {
+    return (
+      <ScreenWrapper
+        styles={{ justifyContent: 'center', alignItems: 'center' }}
+      >
+        <UIActivityIndicator color={'#FFFFFF'} />
+      </ScreenWrapper>
+    );
   }
 }
 

@@ -4,7 +4,7 @@ import { Text, TouchableOpacity, StyleSheet, View, Image } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import Icon from '@expo/vector-icons/Feather';
 import { connect } from 'react-redux';
-import { toggleSearch } from '../redux/ui/actions';
+import { toggleSearch as toggleSearchAction } from '../redux/ui/actions';
 import { pull } from '../redux/state/reducers';
 import { toggleDMSettings } from '../redux/ui/actions';
 import { Query } from 'react-apollo';
@@ -18,239 +18,233 @@ import AsyncImageAnimated from 'react-native-async-image-animated';
 
 const pullUI = require('../redux/ui/reducers').pull;
 
-class Header extends Component {
-  toggleDrawer = () => {
-    this.props.navigation.toggleDrawer();
+function Header({
+  loggedIn = false,
+  belongsToCircle = false,
+  showSearch = false,
+  scene,
+  user = null,
+  activeChannel,
+  activeRevision,
+  viewUser,
+  ...props
+}) {
+  const toggleDrawer = () => {
+    props.navigation.toggleDrawer();
   };
-  toggleSearch = () => {
-    this.props.dispatch(toggleSearch());
+  const toggleSearch = () => {
+    props.dispatch(toggleSearchAction());
   };
-  back = () => {
-    // this.props.navigation.navigate("Dashboard");
-    this.props.navigation.goBack(null);
+  const back = () => {
+    props.navigation.goBack(null);
   };
-  more = () => {
-    let { scene } = this.props;
+  const more = () => {
     let { routeName } = scene.route;
     if (routeName === 'DMChannel') {
-      this.props.dispatch(toggleDMSettings());
+      props.dispatch(toggleDMSettings());
     }
   };
-  createRevision = () => {
-    this.props.navigation.navigate('CreateRevision');
+  const createRevision = () => {
+    props.navigation.navigate('CreateRevision');
   };
-  render() {
-    let {
-      loggedIn = false,
-      belongsToCircle = false,
-      showSearch = false,
-      scene,
-      user = null,
-      activeChannel,
-      activeRevision,
-      viewUser,
-    } = this.props;
-    const { routeName } = scene.route;
-    const routeTitleIndex = /[A-Z]/.exec('createChannel').index;
 
-    const simpleChannelsArr = [
-      'CreateCircle',
-      'CircleSettings',
-      'Constitution',
-      'CreateChannel',
-      'AddUser',
-      'Revisions',
-      'CreateDM',
-      'CreateRevision',
-      'EditAmendment',
-    ];
+  const { routeName } = scene.route;
+  const routeTitleIndex = /[A-Z]/.exec('createChannel').index;
 
-    const simpleChannelsObj = {
-      CreateCircle: 'Create Circle',
-      CircleSettings: 'Circle Settings',
-      Constitution: 'Constitution',
-      CreateChannel: 'Create Channel',
-      AddUser: 'Add User',
-      Revisions: 'Revisions',
-      CreateDM: 'New Message',
-      CreateRevision: 'Create Revision',
-      EditAmendment: 'Edit Amendment',
-    };
-    // render screen name and back
-    if (simpleChannelsArr.indexOf(routeName) !== -1) {
-      return (
-        <View
-          style={[
-            styles.header,
-            styles.headerThemeDark,
-            routeName === 'Revisions' ? styles.headerTheme : {},
-          ]}
-        >
-          <TouchableOpacity onPress={this.back}>
-            <Icon name='chevron-left' size={25} color={'#FFFFFF'} />
+  const simpleChannelsArr = [
+    'CreateCircle',
+    'CircleSettings',
+    'Constitution',
+    'CreateChannel',
+    'AddUser',
+    'Revisions',
+    'CreateDM',
+    'CreateRevision',
+    'EditAmendment',
+  ];
+
+  const simpleChannelsObj = {
+    CreateCircle: 'Create Circle',
+    CircleSettings: 'Circle Settings',
+    Constitution: 'Constitution',
+    CreateChannel: 'Create Channel',
+    AddUser: 'Add User',
+    Revisions: 'Revisions',
+    CreateDM: 'New Message',
+    CreateRevision: 'Create Revision',
+    EditAmendment: 'Edit Amendment',
+  };
+  // render screen name and back
+  if (simpleChannelsArr.indexOf(routeName) !== -1) {
+    return (
+      <View
+        style={[
+          styles.header,
+          styles.headerThemeDark,
+          routeName === 'Revisions' ? styles.headerTheme : {},
+        ]}
+      >
+        <TouchableOpacity onPress={back}>
+          <Icon name='chevron-left' size={25} color={'#FFFFFF'} />
+        </TouchableOpacity>
+        <Text style={styles.headerText} numberOfLines={1}>
+          {simpleChannelsObj[routeName]}
+        </Text>
+        {routeName === 'Constitution' ? (
+          <TouchableOpacity onPress={createRevision}>
+            <Icon name='plus' size={25} color={'#FFFFFF'} />
           </TouchableOpacity>
-          <Text style={styles.headerText} numberOfLines={1}>
-            {simpleChannelsObj[routeName]}
-          </Text>
-          {routeName === 'Constitution' ? (
-            <TouchableOpacity onPress={this.createRevision}>
-              <Icon name='plus' size={25} color={'#FFFFFF'} />
-            </TouchableOpacity>
-          ) : (
-            <Icon name='more-vertical' size={25} color={'transparent'} />
-          )}
-        </View>
-      );
-    }
-    // render channelName and back
-    if (['Channel', 'DMChannel'].indexOf(routeName) !== -1) {
-      return (
-        <Query
-          query={GET_MESSAGES_FROM_CHANNEL_ID}
-          variables={{ id: activeChannel || '' }}
-        >
-          {({ data }) => {
-            return (
-              <View style={[styles.header, styles.headerThemeDark]}>
-                <TouchableOpacity onPress={this.back}>
-                  <Icon name='chevron-left' size={25} color={'#FFFFFF'} />
-                </TouchableOpacity>
-                {data.Channel && (
-                  <Text style={styles.headerText} numberOfLines={1}>
-                    {data.Channel.name}
-                  </Text>
-                )}
-                {routeName === 'DMChannel' ? (
-                  <TouchableOpacity onPress={this.more}>
-                    <Icon name='more-vertical' size={25} color={'#FFFFFF'} />
-                  </TouchableOpacity>
-                ) : (
-                  <Icon name='more-vertical' size={25} color={'transparent'} />
-                )}
-              </View>
-            );
-          }}
-        </Query>
-      );
-    }
-    // render revision name and back
-    if (routeName === 'ViewRevision') {
-      return (
-        <Query query={GET_REVISION_BY_ID} variables={{ id: activeRevision }}>
-          {({ data }) => {
-            return (
-              <View style={[styles.header, styles.headerThemeDark]}>
-                <TouchableOpacity onPress={this.back}>
-                  <Icon name='chevron-left' size={25} color={'#FFFFFF'} />
-                </TouchableOpacity>
-                {data.Revision && (
-                  <Text style={styles.headerText} numberOfLines={1}>
-                    {data.Revision.title}
-                  </Text>
-                )}
-                <Icon name='more-vertical' size={25} color={'transparent'} />
-              </View>
-            );
-          }}
-        </Query>
-      );
-    }
-    // render username and back
-    if (['ViewUser', 'ViewOtherUser'].indexOf(routeName) !== -1) {
-      return (
-        <Query
-          query={GET_USER_BY_ID}
-          variables={{ id: viewUser || user || '' }}
-        >
-          {({ data }) => {
-            return (
-              <View style={[styles.header, styles.headerThemeDark]}>
-                <TouchableOpacity onPress={this.back}>
-                  <Icon name='chevron-left' size={25} color={'#FFFFFF'} />
-                </TouchableOpacity>
-                {data.User && (
-                  <Text style={styles.headerText} numberOfLines={1}>
-                    {data.User.firstName + ' ' + data.User.lastName}
-                  </Text>
-                )}
-                <Icon name='more-vertical' size={25} color={'transparent'} />
-              </View>
-            );
-          }}
-        </Query>
-      );
-    }
-    // render dashboard with user drawer
+        ) : (
+          <Icon name='more-vertical' size={25} color={'transparent'} />
+        )}
+      </View>
+    );
+  }
+  // render channelName and back
+  if (['Channel', 'DMChannel'].indexOf(routeName) !== -1) {
     return (
       <Query
-        query={GET_USER_BY_ID}
-        variables={{ id: user || '' }}
-        pollInterval={2000}
+        query={GET_MESSAGES_FROM_CHANNEL_ID}
+        variables={{ id: activeChannel || '' }}
       >
-        {({ loading, err, data }) => {
-          if (data.User) {
-            const img = data.User.icon
-              ? { uri: data.User.icon }
-              : require('../assets/user-default.png');
-            return (
-              <Query
-                query={GET_CIRCLE_NAME_BY_ID}
-                variables={{ id: this.props.activeCircle || '' }}
-              >
-                {({ data: circleNameData = {} }) => {
-                  let name = '';
-                  if (circleNameData.Circle) {
-                    name = circleNameData.Circle.name;
-                  }
-                  return (
-                    <View style={styles.header}>
-                      <TouchableOpacity onPress={this.toggleDrawer}>
-                        <View style={styles.userIconWrapper}>
-                          <AsyncImageAnimated
-                            source={img}
-                            style={styles.userIcon}
-                            placeholderColor={'#3a3e52'}
-                          />
-                        </View>
-                      </TouchableOpacity>
-                      <Text
-                        style={{
-                          color: '#FFF',
-                          fontSize: 15,
-                          letterSpacing: 2,
-                          padding: 5,
-                          paddingHorizontal: 10,
-                        }}
-                        numberOfLines={1}
-                        ellipsizeMode={'middle'}
-                      >
-                        {name}
-                      </Text>
-                      {!showSearch ? (
-                        <TouchableOpacity onPress={this.toggleSearch}>
-                          <Icon name='search' size={25} color={'#FFFFFF'} />
-                        </TouchableOpacity>
-                      ) : (
-                        <TouchableOpacity onPress={this.toggleSearch}>
-                          <Icon
-                            name='x'
-                            size={25}
-                            color={'#FFFFFF'}
-                            numberOfLines={1}
-                          />
-                        </TouchableOpacity>
-                      )}
-                    </View>
-                  );
-                }}
-              </Query>
-            );
-          }
-          return <View style={styles.header}></View>;
+        {({ data }) => {
+          return (
+            <View style={[styles.header, styles.headerThemeDark]}>
+              <TouchableOpacity onPress={back}>
+                <Icon name='chevron-left' size={25} color={'#FFFFFF'} />
+              </TouchableOpacity>
+              {data.Channel && (
+                <Text style={styles.headerText} numberOfLines={1}>
+                  {data.Channel.name}
+                </Text>
+              )}
+              {routeName === 'DMChannel' ? (
+                <TouchableOpacity onPress={more}>
+                  <Icon name='more-vertical' size={25} color={'#FFFFFF'} />
+                </TouchableOpacity>
+              ) : (
+                <Icon name='more-vertical' size={25} color={'transparent'} />
+              )}
+            </View>
+          );
         }}
       </Query>
     );
   }
+  // render revision name and back
+  if (routeName === 'ViewRevision') {
+    return (
+      <Query query={GET_REVISION_BY_ID} variables={{ id: activeRevision }}>
+        {({ data }) => {
+          return (
+            <View style={[styles.header, styles.headerThemeDark]}>
+              <TouchableOpacity onPress={back}>
+                <Icon name='chevron-left' size={25} color={'#FFFFFF'} />
+              </TouchableOpacity>
+              {data.Revision && (
+                <Text style={styles.headerText} numberOfLines={1}>
+                  {data.Revision.title}
+                </Text>
+              )}
+              <Icon name='more-vertical' size={25} color={'transparent'} />
+            </View>
+          );
+        }}
+      </Query>
+    );
+  }
+  // render username and back
+  if (['ViewUser', 'ViewOtherUser'].indexOf(routeName) !== -1) {
+    return (
+      <Query query={GET_USER_BY_ID} variables={{ id: viewUser || user || '' }}>
+        {({ data }) => {
+          return (
+            <View style={[styles.header, styles.headerThemeDark]}>
+              <TouchableOpacity onPress={back}>
+                <Icon name='chevron-left' size={25} color={'#FFFFFF'} />
+              </TouchableOpacity>
+              {data.User && (
+                <Text style={styles.headerText} numberOfLines={1}>
+                  {data.User.firstName + ' ' + data.User.lastName}
+                </Text>
+              )}
+              <Icon name='more-vertical' size={25} color={'transparent'} />
+            </View>
+          );
+        }}
+      </Query>
+    );
+  }
+  // render dashboard with user drawer
+  return (
+    <Query
+      query={GET_USER_BY_ID}
+      variables={{ id: user || '' }}
+      pollInterval={2000}
+    >
+      {({ loading, err, data }) => {
+        if (data.User) {
+          const img = data.User.icon
+            ? { uri: data.User.icon }
+            : require('../assets/user-default.png');
+          return (
+            <Query
+              query={GET_CIRCLE_NAME_BY_ID}
+              variables={{ id: props.activeCircle || '' }}
+            >
+              {({ data: circleNameData = {} }) => {
+                let name = '';
+                if (circleNameData.Circle) {
+                  name = circleNameData.Circle.name;
+                }
+                return (
+                  <View style={styles.header}>
+                    <TouchableOpacity onPress={toggleDrawer}>
+                      <View style={styles.userIconWrapper}>
+                        <AsyncImageAnimated
+                          source={img}
+                          style={styles.userIcon}
+                          placeholderColor={'#3a3e52'}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                    <Text
+                      style={{
+                        color: '#FFF',
+                        fontSize: 15,
+                        letterSpacing: 2,
+                        padding: 5,
+                        paddingHorizontal: 10,
+                      }}
+                      numberOfLines={1}
+                      ellipsizeMode={'middle'}
+                    >
+                      {name}
+                    </Text>
+                    {!showSearch ? (
+                      <TouchableOpacity onPress={toggleSearch}>
+                        <Icon name='search' size={25} color={'#FFFFFF'} />
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity onPress={toggleSearch}>
+                        <Icon
+                          name='x'
+                          size={25}
+                          color={'#FFFFFF'}
+                          numberOfLines={1}
+                        />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                );
+              }}
+            </Query>
+          );
+        }
+        return <View style={styles.header}></View>;
+      }}
+    </Query>
+  );
 }
 
 const styles = StyleSheet.create({

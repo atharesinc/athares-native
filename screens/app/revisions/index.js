@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import {
   ScrollView,
@@ -19,111 +19,110 @@ import { connect } from 'react-redux';
 import { UIActivityIndicator } from 'react-native-indicators';
 import moment from 'moment';
 
-class Revisions extends Component {
-  componentDidMount() {
-    this.props.dispatch(updateChannel(null));
-  }
-  goToSettings = () => {
-    this.props.navigation.navigate('CircleSettings');
-  };
-  render() {
-    let { activeCircle, user, isUserInCircle } = this.props;
-    let circle = null;
-    let allRevisions = [];
-    let belongsToCircle = false;
-    return (
-      <Query
-        query={GET_REVISIONS_FROM_CIRCLE_ID}
-        variables={{ id: this.props.activeCircle || '' }}
-        pollInterval={10000}
-      >
-        {({ data }) => {
-          if (data.Circle) {
-            circle = data.Circle;
-            allRevisions = data.Circle.revisions;
-          }
-          if (!circle) {
-            return (
-              <ScreenWrapper
-                styles={{ justifyContent: 'center', alignItems: 'center' }}
-              >
-                <UIActivityIndicator color={'#FFFFFF'} />
-              </ScreenWrapper>
-            );
-          }
-          if (
-            isUserInCircle.allCircles &&
-            isUserInCircle.allCircles.length !== 0 &&
-            isUserInCircle.allCircles[0].id === activeCircle
-          ) {
-            belongsToCircle = true;
-          }
-          allRevisions = allRevisions.map(r => {
-            return {
-              votes: r.votes.filter(v => v.revision === r.id),
-              ...r,
-            };
-          });
-          let now = moment().valueOf();
+function Revisions(props) {
+  useEffect(() => {
+    props.dispatch(updateChannel(null));
+  }, []);
 
-          // all non-expired revisions
-          let newRevisions = allRevisions.filter(
-            r => r.passed === null && now < moment(r.expires).valueOf(),
-          );
-          // passed in the last week
-          let recentlyPassed = allRevisions.filter(
-            r =>
-              r.passed === true &&
-              now - moment(r.expires).valueOf() <= 604800000,
-          );
-          // rejected in the last week
-          let recentlyRejected = allRevisions.filter(
-            r =>
-              r.passed === false &&
-              now - moment(r.expires).valueOf() <= 604800000,
-          );
+  const goToSettings = () => {
+    props.navigation.navigate('CircleSettings');
+  };
+
+  let { activeCircle, user, isUserInCircle } = props;
+  let circle = null;
+  let allRevisions = [];
+  let belongsToCircle = false;
+  return (
+    <Query
+      query={GET_REVISIONS_FROM_CIRCLE_ID}
+      variables={{ id: props.activeCircle || '' }}
+      pollInterval={10000}
+    >
+      {({ data }) => {
+        if (data.Circle) {
+          circle = data.Circle;
+          allRevisions = data.Circle.revisions;
+        }
+        if (!circle) {
           return (
-            <ScreenWrapper styles={[styles.wrapper]} theme>
-              <View style={{ margin: 15, alignItems: 'flex-start' }}>
-                <Text style={[styles.disclaimer, { marginBottom: 15 }]}>
-                  Review proposed legislation and changes to existing laws.
-                </Text>
-                <TouchableOpacity
-                  style={styles.discreteButton}
-                  onPress={this.goToSettings}
-                >
-                  <Text style={styles.disclaimer}>Subscribe to Revisions</Text>
-                </TouchableOpacity>
-              </View>
-              <ScrollView horizontal={true} style={styles.boardsWrapper}>
-                <RevisionBoard
-                  boardName='New Revisions'
-                  revisions={newRevisions}
-                  circleID={activeCircle}
-                  user={user}
-                  belongsToCircle={belongsToCircle}
-                />
-                <RevisionBoard
-                  boardName='Recently Passed'
-                  revisions={recentlyPassed}
-                  circleID={activeCircle}
-                  user={user}
-                  belongsToCircle={belongsToCircle}
-                />
-                <RevisionBoard
-                  boardName='Recently Rejected'
-                  revisions={recentlyRejected}
-                  circleID={activeCircle}
-                  user={user}
-                  belongsToCircle={belongsToCircle}
-                />
-              </ScrollView>
+            <ScreenWrapper
+              styles={{ justifyContent: 'center', alignItems: 'center' }}
+            >
+              <UIActivityIndicator color={'#FFFFFF'} />
             </ScreenWrapper>
           );
-        }}
-      </Query>
-    );
-  }
+        }
+        if (
+          isUserInCircle.allCircles &&
+          isUserInCircle.allCircles.length !== 0 &&
+          isUserInCircle.allCircles[0].id === activeCircle
+        ) {
+          belongsToCircle = true;
+        }
+        allRevisions = allRevisions.map(r => {
+          return {
+            votes: r.votes.filter(v => v.revision === r.id),
+            ...r,
+          };
+        });
+        let now = moment().valueOf();
+
+        // all non-expired revisions
+        let newRevisions = allRevisions.filter(
+          r => r.passed === null && now < moment(r.expires).valueOf(),
+        );
+        // passed in the last week
+        let recentlyPassed = allRevisions.filter(
+          r =>
+            r.passed === true && now - moment(r.expires).valueOf() <= 604800000,
+        );
+        // rejected in the last week
+        let recentlyRejected = allRevisions.filter(
+          r =>
+            r.passed === false &&
+            now - moment(r.expires).valueOf() <= 604800000,
+        );
+        return (
+          <ScreenWrapper styles={[styles.wrapper]} theme>
+            <View style={{ margin: 15, alignItems: 'flex-start' }}>
+              <Text style={[styles.disclaimer, { marginBottom: 15 }]}>
+                Review proposed legislation and changes to existing laws.
+              </Text>
+              <TouchableOpacity
+                style={styles.discreteButton}
+                onPress={goToSettings}
+              >
+                <Text style={styles.disclaimer}>Subscribe to Revisions</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView horizontal={true} style={styles.boardsWrapper}>
+              <RevisionBoard
+                boardName='New Revisions'
+                revisions={newRevisions}
+                circleID={activeCircle}
+                user={user}
+                belongsToCircle={belongsToCircle}
+              />
+              <RevisionBoard
+                boardName='Recently Passed'
+                revisions={recentlyPassed}
+                circleID={activeCircle}
+                user={user}
+                belongsToCircle={belongsToCircle}
+              />
+              <RevisionBoard
+                boardName='Recently Rejected'
+                revisions={recentlyRejected}
+                circleID={activeCircle}
+                user={user}
+                belongsToCircle={belongsToCircle}
+              />
+            </ScrollView>
+          </ScreenWrapper>
+        );
+      }}
+    </Query>
+  );
 }
 
 function mapStateToProps(state) {

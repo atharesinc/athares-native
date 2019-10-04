@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { pull } from "../redux/state/reducers";
-import { GET_ALL_USERS_CIRCLES_CHANNELS } from "../graphql/queries";
-import { SUB_TO_ALL_CIRCLES_CHANNELS } from "../graphql/subscriptions";
-import { Query, graphql } from "react-apollo";
-import { updateChannels, addUnreadChannel } from "../redux/state/actions";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { pull } from '../redux/state/reducers';
+import { GET_ALL_USERS_CIRCLES_CHANNELS } from '../graphql/queries';
+import { SUB_TO_ALL_CIRCLES_CHANNELS } from '../graphql/subscriptions';
+import { Query, graphql } from 'react-apollo';
+import { updateChannels, addUnreadChannel } from '../redux/state/actions';
 
 class ChannelUpdateMonitor extends Component {
   componentDidUpdate(prevProps) {
@@ -37,14 +37,14 @@ class ChannelUpdateMonitor extends Component {
           }
           return prev;
         }
-      }
+      },
     });
   };
   render() {
     return (
       <Query
         query={GET_ALL_USERS_CIRCLES_CHANNELS}
-        variables={{ id: this.props.user || "" }}
+        variables={{ id: this.props.user || '' }}
       >
         {({ subscribeToMore }) => {
           if (this.props.getAllMyChannels.User) {
@@ -58,15 +58,15 @@ class ChannelUpdateMonitor extends Component {
 }
 function mapStateToProps(state) {
   return {
-    user: pull(state, "user"),
-    activeChannel: pull(state, "activeChannel"),
-    channels: pull(state, "channels"),
-    unreadChannels: pull(state, "unreadChannels")
+    user: pull(state, 'user'),
+    activeChannel: pull(state, 'activeChannel'),
+    channels: pull(state, 'channels'),
+    unreadChannels: pull(state, 'unreadChannels'),
   };
 }
 export default connect(mapStateToProps)(
   graphql(GET_ALL_USERS_CIRCLES_CHANNELS, {
-    name: "getAllMyChannels",
-    options: ({ user }) => ({ variables: { id: user || "" } })
-  })(ChannelUpdateMonitor)
+    name: 'getAllMyChannels',
+    options: ({ user }) => ({ variables: { id: user || '' } }),
+  })(ChannelUpdateMonitor),
 );

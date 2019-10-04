@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import AvatarPicker from '../../../components/AvatarPicker';
 import InfoLine from '../../../components/InfoLine';
@@ -15,7 +15,6 @@ import {
 import { UIActivityIndicator } from 'react-native-indicators';
 import { ImageManipulator } from 'expo';
 import debounce from 'lodash.debounce';
-
 import {
   UPDATE_ALLOW_MARKETING_EMAIL,
   UPDATE_USER,
@@ -27,23 +26,23 @@ import {
 } from '../../../graphql/queries';
 import { connect } from 'react-redux';
 import { graphql, compose } from 'react-apollo';
+import { pull } from '../../../redux/state/reducers';
 
-class Me extends Component {
-  state = {
-    uri: null,
-  };
-  updatePref = async checked => {
-    let { id } = this.props.data.User.prefs;
+function Me({ loading, data: { User: userPref }, getUser, ...props }) {
+  const [uri, setUri] = useState(null);
 
-    await this.props.updateMarketingEmail({
+  const updatePref = async checked => {
+    let { id } = props.data.User.prefs;
+
+    await props.updateMarketingEmail({
       variables: {
         id,
         flag: checked,
       },
     });
   };
-  updateURI = async uri => {
-    if (uri !== this.props.getUser.User.icon) {
+  const updateURI = async uri => {
+    if (uri !== props.getUser.User.icon) {
       uri = await ImageManipulator.manipulateAsync(
         uri,
         [{ resize: { width: 200, height: 200 } }],
@@ -51,25 +50,25 @@ class Me extends Component {
       );
       uri = 'data:image/png;base64,' + uri.base64;
     }
-    this.updateUser({ icon: uri });
+    updateUser({ icon: uri });
   };
 
-  updatePhone = text => {
+  const updatePhone = text => {
     debounce(
       () => {
-        this.updateUser({ phone: text });
+        updateUser({ phone: text });
       },
       1000,
       { leading: false, trailing: true },
     );
   };
   // updateEmail = text => {
-  //   this.updateUser({ email: text })
+  //   updateUser({ email: text })
   // };
-  updateName = text => {
+  const updateName = text => {
     debounce(
       () => {
-        this.updateUser({
+        updateUser({
           uname: text,
         });
       },
@@ -77,12 +76,12 @@ class Me extends Component {
       { leading: false, trailing: true },
     );
   };
-  updateUser = async updates => {
+  const updateUser = async updates => {
     try {
       // create circle
       const {
         getUser: { User: user },
-      } = this.props;
+      } = props;
 
       let updatedUser = {
         firstName: user.firstName,
@@ -93,9 +92,9 @@ class Me extends Component {
         ...updates,
       };
 
-      await this.props.updateUser({
+      await props.updateUser({
         variables: {
-          id: this.props.userId,
+          id: props.userId,
           ...updatedUser,
         },
       });
@@ -104,99 +103,99 @@ class Me extends Component {
       Alert.alert('Error', 'There was an error updating your profile.');
     }
   };
-  render() {
-    let user = null;
-    const {
-      loading,
-      stats,
-      data: { User: userPref },
-      getUser,
-    } = this.props;
-    if (loading || !userPref || !getUser.User) {
-      return (
-        <ScreenWrapper
-          styles={{ justifyContent: 'center', alignItems: 'center' }}
-        >
-          <UIActivityIndicator color={'#FFFFFF'} />
-        </ScreenWrapper>
-      );
-    }
-    user = getUser.User;
-    return (
-      <ScreenWrapper styles={styles.wrapper}>
-        <KeyboardAvoidingView behavior='position'>
-          <ScrollView styles={styles.wrapper}>
-            <ImageBackground
-              source={require('../../../assets/nasa-earth.jpg')}
-              style={styles.backgroundImage}
-            >
-              <View style={styles.userAndImageWrapper}>
-                <Text style={styles.userNameText}>
-                  {user.firstName + ' ' + user.lastName}
-                </Text>
-                <AvatarPicker
-                  uri={user.uri}
-                  onImageChange={this.updateURI}
-                  rounded={true}
-                />
-              </View>
-            </ImageBackground>
-            {/* Info */}
-            <View style={styles.section}>
-              <Text style={styles.sectionHeading}>Info</Text>
-              <InfoLine
-                icon={'phone'}
-                label='Phone'
-                value={user.phone}
-                onChangeText={this.updatePhone}
-              />
-              <InfoLine
-                icon={'at-sign'}
-                label='Email'
-                value={user.email}
-                onChangeText={this.updateEmail}
-              />
-              <InfoLine
-                icon={'hash'}
-                label='Unique Name'
-                value={user.uname}
-                onChangeText={this.updateName}
-              />
-            </View>
 
-            {/* Stats */}
-            <View style={styles.section}>
-              <Text style={styles.sectionHeading}>Statistics</Text>
-              <View style={styles.wrapSection}>
-                <Statistic header='Circles' text={stats.circleCount} />
-                <Statistic
-                  header='Revisions Proposed'
-                  text={stats.revisionCount}
-                />
-                <Statistic
-                  header='Revisions Accepted'
-                  text={stats.passedRevisionCount}
-                />
-                <Statistic header='Times Voted' text={stats.voteCount} />
-                <Statistic
-                  header='User Since'
-                  text={new Date(user.createdAt).toLocaleDateString()}
-                />
-              </View>
-            </View>
-            <View style={[styles.section, { marginBottom: 50 }]}>
-              <Text style={styles.sectionHeading}>User Preferences</Text>
-              <SwitchLine
-                onPress={this.updatePref}
-                label={'Allow Marketing Emails'}
-                value={userPref.prefs.maySendMarketingEmail}
-              />
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
+  if (loading || !userPref || !getUser.User) {
+    return (
+      <ScreenWrapper
+        styles={{ justifyContent: 'center', alignItems: 'center' }}
+      >
+        <UIActivityIndicator color={'#FFFFFF'} />
       </ScreenWrapper>
     );
   }
+
+  const user = getUser.User;
+  const stats = {
+    voteCount: user.votes.length,
+    circleCount: user.circles.length,
+    revisionCount: user.revisions.length,
+    passedRevisionCount: user.revisions.filter(r => r.passed).length,
+  };
+
+  return (
+    <ScreenWrapper styles={styles.wrapper}>
+      <KeyboardAvoidingView behavior='position'>
+        <ScrollView styles={styles.wrapper}>
+          <ImageBackground
+            source={require('../../../assets/nasa-earth.jpg')}
+            style={styles.backgroundImage}
+          >
+            <View style={styles.userAndImageWrapper}>
+              <Text style={styles.userNameText}>
+                {user.firstName + ' ' + user.lastName}
+              </Text>
+              <AvatarPicker
+                uri={user.uri}
+                onImageChange={updateURI}
+                rounded={true}
+              />
+            </View>
+          </ImageBackground>
+          {/* Info */}
+          <View style={styles.section}>
+            <Text style={styles.sectionHeading}>Info</Text>
+            <InfoLine
+              icon={'phone'}
+              label={'Phone'}
+              value={user.phone}
+              onChangeText={updatePhone}
+            />
+            <InfoLine
+              icon={'at-sign'}
+              label={'Email'}
+              value={user.email}
+              onChangeText={updateEmail}
+            />
+            <InfoLine
+              icon={'hash'}
+              label={'Unique Name'}
+              value={user.uname}
+              onChangeText={updateName}
+            />
+          </View>
+
+          {/* Stats */}
+          <View style={styles.section}>
+            <Text style={styles.sectionHeading}>Statistics</Text>
+            <View style={styles.wrapSection}>
+              <Statistic header='Circles' text={stats.circleCount} />
+              <Statistic
+                header='Revisions Proposed'
+                text={stats.revisionCount}
+              />
+              <Statistic
+                header='Revisions Accepted'
+                text={stats.passedRevisionCount}
+              />
+              <Statistic header='Times Voted' text={stats.voteCount} />
+              <Statistic
+                header='User Since'
+                text={new Date(user.createdAt).toLocaleDateString()}
+              />
+            </View>
+          </View>
+          <View style={[styles.section, { marginBottom: 50 }]}>
+            <Text style={styles.sectionHeading}>User Preferences</Text>
+            <SwitchLine
+              onPress={updatePref}
+              label={'Allow Marketing Emails'}
+              value={userPref.prefs.maySendMarketingEmail}
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </ScreenWrapper>
+  );
 }
 
 function mapStateToProps(state) {

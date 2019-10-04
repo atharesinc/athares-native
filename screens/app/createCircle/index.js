@@ -21,7 +21,7 @@ import { pull } from '../../../redux/state/reducers';
 import { updateCircle } from '../../../redux/state/actions';
 import defaultCircleImage from '../../../components/defaultCircleImage';
 
-class CreateCircle extends Component {
+function CreateCircle (props) {
   state = {
     name: '',
     preamble: '',
@@ -94,7 +94,7 @@ class CreateCircle extends Component {
     Alert.alert('Circle Created', `${name} has been created successfully.`);
     this.props.navigation.goBack(null);
   };
-  render() {
+  
     const { name, preamble, loading } = this.state;
 
     if (loading) {
@@ -142,7 +142,6 @@ class CreateCircle extends Component {
         </ScrollView>
       </ScreenWrapper>
     );
-  }
 }
 
 const styles = StyleSheet.create({

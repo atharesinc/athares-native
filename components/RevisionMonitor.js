@@ -1,16 +1,16 @@
-import { Component } from "react";
-import { connect } from "react-redux";
-import { pull } from "../redux/state/reducers";
-import moment from "moment";
+import { Component } from 'react';
+import { connect } from 'react-redux';
+import { pull } from '../redux/state/reducers';
+import moment from 'moment';
 import {
   CREATE_AMENDMENT_FROM_REVISION,
   DENY_REVISION,
   UPDATE_AMENDMENT_FROM_REVISION,
-  UPDATE_AMENDMENT_FROM_REVISION_AND_DELETE
-} from "../graphql/mutations";
-import { GET_ACTIVE_REVISIONS_BY_USER_ID } from "../graphql/queries";
-import { compose, graphql } from "react-apollo";
-import { sha } from "../utils/crypto";
+  UPDATE_AMENDMENT_FROM_REVISION_AND_DELETE,
+} from '../graphql/mutations';
+import { GET_ACTIVE_REVISIONS_BY_USER_ID } from '../graphql/queries';
+import { compose, graphql } from 'react-apollo';
+import { sha } from '../utils/crypto';
 
 let checkItemsTimer = null;
 
@@ -52,7 +52,7 @@ class App extends Component {
     let items = revisions
       .filter(i => i.passed === null)
       .sort(
-        (a, b) => moment(a.expires).valueOf() - moment(b.expires).valueOf()
+        (a, b) => moment(a.expires).valueOf() - moment(b.expires).valueOf(),
       );
     if (items.length === 0) {
       return;
@@ -64,7 +64,7 @@ class App extends Component {
 
         this.checkIfPass({
           circleId: items[i].circle,
-          revisionId: items[i].id
+          revisionId: items[i].id,
         });
         break;
       } else if (moment(items[i].expires).valueOf() > now) {
@@ -100,8 +100,8 @@ class App extends Component {
         await this.props.deleteAmendment({
           variables: {
             revision: thisRevision.id,
-            amendment: thisRevision.amendment.id
-          }
+            amendment: thisRevision.amendment.id,
+          },
         });
         this.getNext();
       } else {
@@ -111,8 +111,8 @@ class App extends Component {
           JSON.stringify({
             id: thisRevision.id,
             title: thisRevision.title,
-            text: thisRevision.newText
-          })
+            text: thisRevision.newText,
+          }),
         );
         if (thisRevision.amendment) {
           await this.props.updateAmendment({
@@ -122,8 +122,8 @@ class App extends Component {
               text: thisRevision.newText,
               revision: thisRevision.id,
               circle: thisRevision.circle,
-              hash
-            }
+              hash,
+            },
           });
           this.getNext();
         } else {
@@ -133,8 +133,8 @@ class App extends Component {
               text: thisRevision.newText,
               revision: thisRevision.id,
               circle: thisRevision.circle,
-              hash
-            }
+              hash,
+            },
           });
           this.getNext();
         }
@@ -143,8 +143,8 @@ class App extends Component {
       // it fails and we ignore it forever
       await this.props.denyRevision({
         variables: {
-          id: thisRevision.id
-        }
+          id: thisRevision.id,
+        },
       });
       this.getNext();
     }
@@ -155,26 +155,26 @@ class App extends Component {
 }
 function mapStateToProps(state) {
   return {
-    user: pull(state, "user")
+    user: pull(state, 'user'),
   };
 }
 export default connect(mapStateToProps)(
   compose(
     graphql(UPDATE_AMENDMENT_FROM_REVISION_AND_DELETE, {
-      name: "deleteAmendment"
+      name: 'deleteAmendment',
     }),
-    graphql(UPDATE_AMENDMENT_FROM_REVISION, { name: "updateAmendment" }),
+    graphql(UPDATE_AMENDMENT_FROM_REVISION, { name: 'updateAmendment' }),
     graphql(CREATE_AMENDMENT_FROM_REVISION, {
-      name: "createAmendmentFromRevision"
+      name: 'createAmendmentFromRevision',
     }),
     graphql(DENY_REVISION, {
-      name: "denyRevision"
+      name: 'denyRevision',
     }),
     graphql(GET_ACTIVE_REVISIONS_BY_USER_ID, {
       options: ({ user }) => ({
-        variables: { id: user || "" },
-        pollInterval: 10000
-      })
-    })
-  )(App)
+        variables: { id: user || '' },
+        pollInterval: 10000,
+      }),
+    }),
+  )(App),
 );

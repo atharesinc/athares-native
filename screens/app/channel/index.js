@@ -1,28 +1,28 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
 import {
   StyleSheet,
   Alert,
   KeyboardAvoidingView,
-  Platform
-} from "react-native";
-import ScreenWrapper from "../../../components/ScreenWrapper";
-import Chat from "../../../components/Chat";
-import ChatInput from "../../../components/ChatInput";
-import { pull } from "../../../redux/state/reducers";
-import { removeUnreadChannel } from "../../../redux/state/actions";
-import { connect } from "react-redux";
-import { CREATE_MESSAGE } from "../../../graphql/mutations";
-import { SUB_TO_MESSAGES_BY_CHANNEL_ID } from "../../../graphql/subscriptions";
-import { GET_MESSAGES_FROM_CHANNEL_ID } from "../../../graphql/queries";
-import { compose, graphql, Query } from "react-apollo";
-import { uploadImage, uploadDocument } from "../../../utils/upload";
-import KeyboardSpacer from "react-native-keyboard-spacer";
-import { UIActivityIndicator } from "react-native-indicators";
+  Platform,
+} from 'react-native';
+import ScreenWrapper from '../../../components/ScreenWrapper';
+import Chat from '../../../components/Chat';
+import ChatInput from '../../../components/ChatInput';
+import { pull } from '../../../redux/state/reducers';
+import { removeUnreadChannel } from '../../../redux/state/actions';
+import { connect } from 'react-redux';
+import { CREATE_MESSAGE } from '../../../graphql/mutations';
+import { SUB_TO_MESSAGES_BY_CHANNEL_ID } from '../../../graphql/subscriptions';
+import { GET_MESSAGES_FROM_CHANNEL_ID } from '../../../graphql/queries';
+import { compose, graphql, Query } from 'react-apollo';
+import { uploadImage, uploadDocument } from '../../../utils/upload';
+import KeyboardSpacer from 'react-native-keyboard-spacer';
+import { UIActivityIndicator } from 'react-native-indicators';
 
 class Channel extends Component {
   state = {
-    uploadInProgress: false
+    uploadInProgress: false,
   };
   componentDidMount() {
     if (this.props.activeChannel) {
@@ -37,14 +37,14 @@ class Channel extends Component {
       this.props.dispatch(removeUnreadChannel(this.props.activeChannel));
     }
   }
-  submit = async (text = "", file = null) => {
+  submit = async (text = '', file = null) => {
     let response = null;
     try {
       if (file) {
         this.setState({
-          uploadInProgress: true
+          uploadInProgress: true,
         });
-        const imgs = ["gif", "png", "jpg", "jpeg", "bmp"];
+        const imgs = ['gif', 'png', 'jpg', 'jpeg', 'bmp'];
         let extension = file.name.match(/\.(.{1,4})$/i);
 
         if (imgs.indexOf(extension[1].toLowerCase()) !== -1) {
@@ -59,7 +59,7 @@ class Channel extends Component {
           return false;
         }
       }
-      if (text.trim() === "" && !response.url) {
+      if (text.trim() === '' && !response.url) {
         return false;
       }
       let newMessage = {
@@ -67,32 +67,32 @@ class Channel extends Component {
         channel: this.props.activeChannel,
         user: this.props.user,
         file: response ? response.url : null,
-        fileName: response ? response.name : null
+        fileName: response ? response.name : null,
       };
       await this.props.createMessage({
         variables: {
-          ...newMessage
-        }
+          ...newMessage,
+        },
       });
 
       this.setState({
-        uploadInProgress: false
+        uploadInProgress: false,
       });
     } catch (err) {
       this.setState({
-        uploadInProgress: false
+        uploadInProgress: false,
       });
       console.error(new Error(err));
       Alert.alert(
-        "Error",
-        "We were unable to send your message, please try again later"
+        'Error',
+        'We were unable to send your message, please try again later',
       );
     }
   };
   _subToMore = subscribeToMore => {
     subscribeToMore({
       document: SUB_TO_MESSAGES_BY_CHANNEL_ID,
-      variables: { id: this.props.activeChannel || "" },
+      variables: { id: this.props.activeChannel || '' },
       updateQuery: (prev, { subscriptionData }) => {
         let newMsg = subscriptionData.data.Message.node;
         // merge new messages into prev.messages
@@ -100,7 +100,7 @@ class Channel extends Component {
           prev.Channel.messages = [...prev.Channel.messages, newMsg];
         }
         return prev;
-      }
+      },
     });
   };
   render() {
@@ -110,7 +110,7 @@ class Channel extends Component {
     return (
       <Query
         query={GET_MESSAGES_FROM_CHANNEL_ID}
-        variables={{ id: this.props.activeChannel || "" }}
+        variables={{ id: this.props.activeChannel || '' }}
       >
         {({ data, subscribeToMore }) => {
           if (data.Channel) {
@@ -127,8 +127,8 @@ class Channel extends Component {
                   onSend={this.submit}
                   uploadInProgress={this.state.uploadInProgress}
                 />
-                <KeyboardAvoidingView behavior="padding" />
-                {Platform.OS === "android" ? (
+                <KeyboardAvoidingView behavior='padding' />
+                {Platform.OS === 'android' ? (
                   <KeyboardSpacer topSpacing={-130} />
                 ) : null}
               </ScreenWrapper>
@@ -136,9 +136,9 @@ class Channel extends Component {
           } else {
             return (
               <ScreenWrapper
-                styles={{ justifyContent: "center", alignItems: "center" }}
+                styles={{ justifyContent: 'center', alignItems: 'center' }}
               >
-                <UIActivityIndicator color={"#FFFFFF"} />
+                <UIActivityIndicator color={'#FFFFFF'} />
               </ScreenWrapper>
             );
           }
@@ -150,21 +150,21 @@ class Channel extends Component {
 
 const styles = StyleSheet.create({
   wrapper: {
-    alignItems: "stretch",
-    justifyContent: "flex-start",
-    width: "100%",
-    flex: 1
-  }
+    alignItems: 'stretch',
+    justifyContent: 'flex-start',
+    width: '100%',
+    flex: 1,
+  },
 });
 
 function mapStateToProps(state) {
   return {
-    user: pull(state, "user"),
-    activeChannel: pull(state, "activeChannel"),
-    activeCircle: pull(state, "activeCircle")
+    user: pull(state, 'user'),
+    activeChannel: pull(state, 'activeChannel'),
+    activeCircle: pull(state, 'activeCircle'),
   };
 }
 
-export default compose(graphql(CREATE_MESSAGE, { name: "createMessage" }))(
-  connect(mapStateToProps)(Channel)
+export default compose(graphql(CREATE_MESSAGE, { name: 'createMessage' }))(
+  connect(mapStateToProps)(Channel),
 );

@@ -8,8 +8,8 @@ import {
   takePictureAsync
 } from "../utils/mediaUtils";
 
-export default class AccessoryBar extends React.Component {
-  render() {
+export default function AccessoryBar (props) {
+  
     const { onSend } = this.props;
     return (
       <View style={styles.container}>
@@ -18,7 +18,6 @@ export default class AccessoryBar extends React.Component {
         <Button onPress={() => getLocationAsync(onSend)} name="my-location" />
       </View>
     );
-  }
 }
 
 const Button = ({

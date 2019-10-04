@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { useEffect, Fragment, useState } from 'react';
 import { StyleSheet, View, ImageBackground, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { AppLoading } from 'expo';
@@ -25,12 +25,10 @@ const client = new ApolloClient({
   cache,
 });
 
-export default class App extends Component {
-  state = {
-    fontsAreLoaded: false,
-  };
+export default function App() {
+  const [fontsAreLoaded, setFontsAreLoaded] = useState(false);
 
-  async componentDidMount() {
+  loadFonts = async () => {
     await Font.loadAsync({
       SpaceGrotesk: require('./assets/SpaceGrotesk-SemiBold.otf'),
     });
@@ -42,42 +40,45 @@ export default class App extends Component {
     setCustomText(customTextProps);
     setCustomTextInput(customTextProps);
 
-    this.setState({ fontsAreLoaded: true });
+    setFontsAreLoaded(true);
+  };
+  useEffect(() => {
+    loadFonts();
+  }, []);
+
+  if (!fontsAreLoaded) {
+    return <AppLoading />;
   }
-  render() {
-    if (!this.state.fontsAreLoaded) {
-      return <AppLoading />;
-    }
-    return (
-      <Fragment>
-        <StatusBar barStyle='light-content' />
-        <ApolloProvider client={client}>
-          <Provider store={store}>
-            <SafeAreaView
-              style={styles.container}
-              forceInset={{
-                top: 'always',
-                bottom: 'always',
-              }}
+
+  return (
+    <Fragment>
+      <StatusBar barStyle='light-content' />
+      <ApolloProvider client={client}>
+        <Provider store={store}>
+          <SafeAreaView
+            style={styles.container}
+            forceInset={{
+              top: 'always',
+              bottom: 'always',
+            }}
+          >
+            <ImageBackground
+              source={require('./assets/iss-master.jpg')}
+              style={styles.image}
             >
-              <ImageBackground
-                source={require('./assets/iss-master.jpg')}
-                style={styles.image}
-              >
-                <View style={styles.transparentView}>
-                  <AppContaner style={styles.appContainer} />
-                </View>
-                {/* Fun Stuff! */}
-                <RevisionMonitor />
-                <ChannelUpdateMonitor />
-                <DMUpdateMonitor />
-              </ImageBackground>
-            </SafeAreaView>
-          </Provider>
-        </ApolloProvider>
-      </Fragment>
-    );
-  }
+              <View style={styles.transparentView}>
+                <AppContaner style={styles.appContainer} />
+              </View>
+              {/* Fun Stuff! */}
+              <RevisionMonitor />
+              <ChannelUpdateMonitor />
+              <DMUpdateMonitor />
+            </ImageBackground>
+          </SafeAreaView>
+        </Provider>
+      </ApolloProvider>
+    </Fragment>
+  );
 }
 
 const styles = StyleSheet.create({

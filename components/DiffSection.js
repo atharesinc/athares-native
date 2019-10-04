@@ -9,7 +9,7 @@ import {
 import Diff from "react-native-diff-component";
 import Icon from "@expo/vector-icons/Feather";
 
-class DiffSection extends Component {
+function DiffSection (props) {
   state = {
     mode: 0
   };
@@ -18,7 +18,7 @@ class DiffSection extends Component {
       mode: index
     });
   };
-  renderTab = () => {
+const   renderTab = () => {
     const { oldText = "", newText = "" } = this.props;
     const { mode } = this.state;
     switch (mode) {
@@ -66,7 +66,7 @@ class DiffSection extends Component {
         );
     }
   };
-  render() {
+  
     const { mode } = this.state;
     return (
       <Fragment>
@@ -129,7 +129,6 @@ class DiffSection extends Component {
         </View>
       </Fragment>
     );
-  }
 }
 
 export default DiffSection;

@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { pull } from "../redux/state/reducers";
-import { GET_DMS_BY_USER } from "../graphql/queries";
-import { SUB_TO_DMS_BY_USER } from "../graphql/subscriptions";
-import { Query, graphql } from "react-apollo";
-import { updateDMs, addUnreadDM } from "../redux/state/actions";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { pull } from '../redux/state/reducers';
+import { GET_DMS_BY_USER } from '../graphql/queries';
+import { SUB_TO_DMS_BY_USER } from '../graphql/subscriptions';
+import { Query, graphql } from 'react-apollo';
+import { updateDMs, addUnreadDM } from '../redux/state/actions';
 
 class ChannelUpdateMonitor extends Component {
   constructor() {
@@ -23,7 +23,7 @@ class ChannelUpdateMonitor extends Component {
     }
   }
   playAudio = () => {
-    let audio = new Audio("/img/job-done.mp3");
+    let audio = new Audio('/img/job-done.mp3');
     audio.volume = 0.2;
     audio.play();
   };
@@ -48,7 +48,7 @@ class ChannelUpdateMonitor extends Component {
           }
           return prev;
         }
-      }
+      },
     });
   };
   flashTab = firstName => {
@@ -74,7 +74,7 @@ class ChannelUpdateMonitor extends Component {
   };
   render() {
     return (
-      <Query query={GET_DMS_BY_USER} variables={{ id: this.props.user || "" }}>
+      <Query query={GET_DMS_BY_USER} variables={{ id: this.props.user || '' }}>
         {({ subscribeToMore }) => {
           if (this.props.getDMs.User) {
             this._subToMore(subscribeToMore);
@@ -87,15 +87,15 @@ class ChannelUpdateMonitor extends Component {
 }
 function mapStateToProps(state) {
   return {
-    user: pull(state, "user"),
-    activeChannel: pull(state, "activeChannel"),
-    dms: pull(state, "dms"),
-    unreadDMs: pull(state, "unreadDMs")
+    user: pull(state, 'user'),
+    activeChannel: pull(state, 'activeChannel'),
+    dms: pull(state, 'dms'),
+    unreadDMs: pull(state, 'unreadDMs'),
   };
 }
 export default connect(mapStateToProps)(
   graphql(GET_DMS_BY_USER, {
-    name: "getDMs",
-    options: ({ user }) => ({ variables: { id: user || "" } })
-  })(ChannelUpdateMonitor)
+    name: 'getDMs',
+    options: ({ user }) => ({ variables: { id: user || '' } }),
+  })(ChannelUpdateMonitor),
 );

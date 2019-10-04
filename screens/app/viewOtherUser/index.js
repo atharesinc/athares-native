@@ -18,8 +18,8 @@ import { GET_USER_BY_ID_ALL } from '../../../graphql/queries';
 import { connect } from 'react-redux';
 import { pull } from '../../../redux/state/reducers';
 
-class ViewOtherUser extends Component {
-  render() {
+function ViewOtherUser (props) {
+  
     return (
       <Query
         query={GET_USER_BY_ID_ALL}
@@ -113,7 +113,6 @@ class ViewOtherUser extends Component {
         }}
       </Query>
     );
-  }
 }
 
 function mapStateToProps(state) {

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import PortalInput from '../../components/PortalInput';
 import PortalButton from '../../components/PortalButton';
 import PortalCard from '../../components/PortalCard';
@@ -37,62 +37,43 @@ import getEnvVars from '../../env';
 
 const { DEFAULT_IMG } = getEnvVars();
 
-class Register extends Component {
-  constructor(props) {
-    super(props);
+function Register({ createUser, signinUser, createUserPref, ...props }) {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
 
-    this.state = {
-      firstName: '',
-      lastName: '',
-      password: '',
-      email: '',
-      loading: false,
-    };
-  }
-  componentDidMount() {
-    this.props.dispatch(updateChannel(null));
-    this.props.dispatch(updateCircle(null));
-    this.props.dispatch(updateRevision(null));
-  }
-  updateFirstName = text => {
-    this.setState({
-      firstName: text,
-    });
+  useEffect(() => {
+    props.dispatch(updateChannel(null));
+    props.dispatch(updateCircle(null));
+    props.dispatch(updateRevision(null));
+  }, []);
+
+  const updateEmail = text => {
+    setEmail(text.toLowerCase());
   };
-  updateLastName = text => {
-    this.setState({
-      lastName: text,
-    });
-  };
-  updateEmail = text => {
-    this.setState({
-      email: text.toLowerCase(),
-    });
-  };
-  updatePassword = text => {
-    this.setState({
-      password: text,
-    });
-  };
-  goToPolicy = () => {
+
+  const goToPolicy = () => {
     Linking.openURL('https://www.athares.us/policy');
   };
-  tryRegister = async e => {
+
+  const tryRegister = async e => {
     e.preventDefault();
-    await this.setState({ loading: true });
+    setLoading(true);
 
     const isValid = validateRegister({
-      ...this.state,
+      firstName,
+      lastName,
+      password,
+      email,
     });
 
     if (isValid !== undefined) {
       Alert.alert('Error', isValid[Object.keys(isValid)[0]][0]);
-      await this.setState({ loading: false });
+      setLoading(false);
       return false;
     }
-
-    let { createUser, signinUser, createUserPref } = this.props;
-    let { firstName, lastName, password, email } = this.state;
 
     let hashedToken = sha(password);
     try {
@@ -133,12 +114,12 @@ class Register extends Component {
       await AsyncStorage.setItem('ATHARES_ALIAS', email);
       await AsyncStorage.setItem('ATHARES_HASH', hashedToken);
       await AsyncStorage.setItem('ATHARES_TOKEN', token);
-      this.props.dispatch(updateUser(userId));
-      this.props.dispatch(updatePub(hashedToken));
+      props.dispatch(updateUser(userId));
+      props.dispatch(updatePub(hashedToken));
 
-      this.props.navigation.navigate('Dashboard');
+      props.navigation.navigate('Dashboard');
     } catch (err) {
-      await this.setState({ loading: false });
+      setLoading(false);
       console.error(err);
       if (err.message.indexOf('Field name = email') !== -1) {
         Alert.alert('Error', 'A user already exists with this email address.');
@@ -147,109 +128,107 @@ class Register extends Component {
       }
     }
   };
-  render() {
-    const { loading, email, firstName, lastName, password } = this.state;
-    if (loading) {
-      return (
-        <View
-          style={{
-            flex: 1,
-            width: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'transparent',
-            alignItems: 'center',
-            backgroundColor: 'transparent',
-          }}
-        >
-          <UIActivityIndicator
-            color='#FFFFFF'
-            style={{ flex: 1, marginBottom: 15 }}
-          />
-          <Text>Building Profile...</Text>
-        </View>
-      );
-    }
-    return (
-      <PortalWrapper>
-        <PortalCard>
-          <Image
-            style={{
-              height: 60,
-              width: 60,
-              marginBottom: 10,
-            }}
-            source={require('../../assets/Athares-owl-logo-large-white-thin.png')}
-          />
-          <Image
-            style={{
-              height: 20,
-              width: 120,
-              marginBottom: 25,
-            }}
-            source={require('../../assets/Athares-type-small-white.png')}
-          />
-          <Text
-            style={{
-              marginBottom: 25,
-              color: '#FFFFFF',
-            }}
-          >
-            Register with Athares
-          </Text>
-          <PortalInput
-            icon='user'
-            placeholder='First Name'
-            onChangeText={this.updateFirstName}
-            value={firstName}
-          />
-          <PortalInput
-            icon='user'
-            placeholder='Last Name'
-            onChangeText={this.updateLastName}
-            value={lastName}
-          />
-          <PortalInput
-            icon='at-sign'
-            placeholder='Email Address'
-            onChangeText={this.updateEmail}
-            value={email}
-          />
-          <PortalInput
-            icon='lock'
-            placeholder='Password'
-            secureTextEntry
-            onChangeText={this.updatePassword}
-            value={password}
-          />
-          <PortalButton title='REGISTER' onPress={this.tryRegister} />
-        </PortalCard>
-        <PortalToggle
-          onPress={() => this.props.navigation.navigate('Login')}
-          text={'I already have an account'}
-        />
 
-        <TouchableOpacity
-          style={{
-            width: '100%',
-            paddingHorizontal: 15,
-            alignItems: 'center',
-          }}
-          onPress={() => this.props.navigation.navigate('Register')}
-        >
-          <Text
-            style={{
-              color: '#FFF',
-              alignItems: 'center',
-            }}
-          >
-            By registering you acknowledge that you agree to the Terms of Use
-            and Privacy Policy.
-          </Text>
-        </TouchableOpacity>
-      </PortalWrapper>
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          width: '100%',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'transparent',
+          alignItems: 'center',
+          backgroundColor: 'transparent',
+        }}
+      >
+        <UIActivityIndicator
+          color='#FFFFFF'
+          style={{ flex: 1, marginBottom: 15 }}
+        />
+        <Text>Building Profile...</Text>
+      </View>
     );
   }
+  return (
+    <PortalWrapper>
+      <PortalCard>
+        <Image
+          style={{
+            height: 60,
+            width: 60,
+            marginBottom: 10,
+          }}
+          source={require('../../assets/Athares-owl-logo-large-white-thin.png')}
+        />
+        <Image
+          style={{
+            height: 20,
+            width: 120,
+            marginBottom: 25,
+          }}
+          source={require('../../assets/Athares-type-small-white.png')}
+        />
+        <Text
+          style={{
+            marginBottom: 25,
+            color: '#FFFFFF',
+          }}
+        >
+          Register with Athares
+        </Text>
+        <PortalInput
+          icon='user'
+          placeholder='First Name'
+          onChangeText={setFirstName}
+          value={firstName}
+        />
+        <PortalInput
+          icon='user'
+          placeholder='Last Name'
+          onChangeText={setLastName}
+          value={lastName}
+        />
+        <PortalInput
+          icon='at-sign'
+          placeholder='Email Address'
+          onChangeText={updateEmail}
+          value={email}
+        />
+        <PortalInput
+          icon='lock'
+          placeholder='Password'
+          secureTextEntry
+          onChangeText={setPassword}
+          value={password}
+        />
+        <PortalButton title='REGISTER' onPress={tryRegister} />
+      </PortalCard>
+      <PortalToggle
+        onPress={() => props.navigation.navigate('Login')}
+        text={'I already have an account'}
+      />
+
+      <TouchableOpacity
+        style={{
+          width: '100%',
+          paddingHorizontal: 15,
+          alignItems: 'center',
+        }}
+        onPress={goToPolicy}
+      >
+        <Text
+          style={{
+            color: '#FFF',
+            alignItems: 'center',
+          }}
+        >
+          By registering you acknowledge that you agree to the Terms of Use and
+          Privacy Policy.
+        </Text>
+      </TouchableOpacity>
+    </PortalWrapper>
+  );
 }
 
 function mapStateToProps(state) {

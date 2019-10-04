@@ -19,12 +19,15 @@
     "apollo-utilities": "^1.1.3",
     "expo": "^34.0.1",
     "expo-constants": "^6.0.0",
+    "expo-document-picker": "~6.0.0",
+    "expo-image-picker": "~6.0.0",
     "graphql": "^14.0.2",
     "graphql-tag": "^2.10.0",
     "hash.js": "^1.1.7",
     "hybrid-crypto-js": "^0.1.6",
     "lodash.debounce": "^4.0.8",
     "moment": "^2.24.0",
+    "permissions": "^0.1.0",
     "react": "16.8.3",
     "react-apollo": "^2.5.3",
     "react-native": "https://github.com/expo/react-native/archive/sdk-34.0.0.tar.gz",
@@ -53,7 +56,14 @@
     "validate.js": "^0.12.0"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0"
+    "babel-preset-expo": "^5.0.0",
+    "husky": "^3.0.8",
+    "prettier": "~1.12.1"
   },
-  "private": true
+  "husky": {
+    "hooks": {
+      "pre-commit": "prettier --write --single-quote --trailing-comma all"
+    }
+  },
+  "private": false
 }

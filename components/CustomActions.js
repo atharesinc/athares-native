@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React from 'reactn';
 import {
   StyleSheet,
   Text,

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'reactn';
 import { FlatList } from 'react-native';
 import Message from './Message';
 

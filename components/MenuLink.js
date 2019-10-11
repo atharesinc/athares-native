@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'reactn';
 import { TouchableOpacity, Image, View, Text, StyleSheet } from "react-native";
 import Icon from "@expo/vector-icons/Feather";
 

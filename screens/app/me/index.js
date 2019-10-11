@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'reactn';
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import AvatarPicker from '../../../components/AvatarPicker';
 import InfoLine from '../../../components/InfoLine';
@@ -24,9 +24,8 @@ import {
   GET_USER_BY_ID_ALL,
   GET_USER_PREF_BY_ID,
 } from '../../../graphql/queries';
-import { connect } from 'react-redux';
+
 import { graphql, compose } from 'react-apollo';
-import { pull } from '../../../redux/state/reducers';
 
 function Me({ loading, data: { User: userPref }, getUser, ...props }) {
   const [uri, setUri] = useState(null);
@@ -124,7 +123,7 @@ function Me({ loading, data: { User: userPref }, getUser, ...props }) {
 
   return (
     <ScreenWrapper styles={styles.wrapper}>
-      <KeyboardAvoidingView behavior='position'>
+      <KeyboardAvoidingView behavior="position">
         <ScrollView styles={styles.wrapper}>
           <ImageBackground
             source={require('../../../assets/nasa-earth.jpg')}
@@ -168,18 +167,18 @@ function Me({ loading, data: { User: userPref }, getUser, ...props }) {
           <View style={styles.section}>
             <Text style={styles.sectionHeading}>Statistics</Text>
             <View style={styles.wrapSection}>
-              <Statistic header='Circles' text={stats.circleCount} />
+              <Statistic header="Circles" text={stats.circleCount} />
               <Statistic
-                header='Revisions Proposed'
+                header="Revisions Proposed"
                 text={stats.revisionCount}
               />
               <Statistic
-                header='Revisions Accepted'
+                header="Revisions Accepted"
                 text={stats.passedRevisionCount}
               />
-              <Statistic header='Times Voted' text={stats.voteCount} />
+              <Statistic header="Times Voted" text={stats.voteCount} />
               <Statistic
-                header='User Since'
+                header="User Since"
                 text={new Date(user.createdAt).toLocaleDateString()}
               />
             </View>
@@ -198,25 +197,17 @@ function Me({ loading, data: { User: userPref }, getUser, ...props }) {
   );
 }
 
-function mapStateToProps(state) {
-  return {
-    userId: pull(state, 'user'),
-  };
-}
-
-export default connect(mapStateToProps)(
-  compose(
-    graphql(GET_USER_BY_ID_ALL, {
-      name: 'getUser',
-      options: ({ userId }) => ({ variables: { id: userId || '' } }),
-    }),
-    graphql(UPDATE_USER, { name: 'updateUser' }),
-    graphql(UPDATE_ALLOW_MARKETING_EMAIL, { name: 'updateMarketingEmail' }),
-    graphql(GET_USER_PREF_BY_ID, {
-      options: ({ userId }) => ({ variables: { id: userId || '' } }),
-    }),
-  )(Me),
-);
+export default compose(
+  graphql(GET_USER_BY_ID_ALL, {
+    name: 'getUser',
+    options: ({ userId }) => ({ variables: { id: userId || '' } }),
+  }),
+  graphql(UPDATE_USER, { name: 'updateUser' }),
+  graphql(UPDATE_ALLOW_MARKETING_EMAIL, { name: 'updateMarketingEmail' }),
+  graphql(GET_USER_PREF_BY_ID, {
+    options: ({ userId }) => ({ variables: { id: userId || '' } }),
+  }),
+)(Me);
 
 const styles = StyleSheet.create({
   header: {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'reactn';
 import { View, Text, StyleSheet } from 'react-native';
 import SingleSearchItem from './SingleSearchItem';
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'reactn';
 import Header from '../components/Header';
 
 const fadingStackNavigator = {

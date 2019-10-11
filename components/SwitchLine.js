@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'reactn';
 import { View, StyleSheet, Text } from "react-native";
 import Switch from "react-native-switch-pro";
 

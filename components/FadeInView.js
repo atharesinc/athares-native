@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'reactn';
 import { Animated } from 'react-native';
 
 export default class FadeInView extends React.Component {
@@ -9,7 +9,7 @@ export default class FadeInView extends React.Component {
   componentDidMount() {
     Animated.timing(this.state.fadeAnim, {
       toValue: 1,
-      duration: 250,
+      duration: 1000,
     }).start();
   }
 

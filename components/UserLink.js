@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'reactn';
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import AsyncImageAnimated from 'react-native-async-image-animated';
 

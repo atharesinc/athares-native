@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useGlobal } from 'reactn';
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import Input from '../../../components/Input';
 
@@ -14,9 +14,6 @@ import { sha } from '../../../utils/crypto';
 import { compose, graphql } from 'react-apollo';
 import { CREATE_REVISION, CREATE_VOTE } from '../../../graphql/mutations';
 import { GET_AMENDMENTS_FROM_CIRCLE_ID } from '../../../graphql/queries';
-import { connect } from 'react-redux';
-import { pull } from '../../../redux/state/reducers';
-import { updateRevision } from '../../../redux/state/actions';
 
 import { UIActivityIndicator } from 'react-native-indicators';
 
@@ -24,6 +21,7 @@ function CreateRevision({ activeCircle, data, ...props }) {
   const [title, setTitle] = useState('');
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
+  const [activeRevision, setActiveRevision] = useGlobal('activeRevision');
 
   // the longest a revision must persist before votes are counted is 7 days ( many users), the shortest is about 30 seconds (1 user)
   // add this number of seconds to the createdAt time to determine when a revision should expire, where x is the number of users
@@ -88,7 +86,7 @@ function CreateRevision({ activeCircle, data, ...props }) {
         },
       });
 
-      props.dispatch(updateRevision(newRevision.id));
+      setActiveRevision(newRevision.id);
 
       props.navigation.navigate('ViewRevision');
     } catch (err) {
@@ -111,7 +109,7 @@ function CreateRevision({ activeCircle, data, ...props }) {
     return (
       <ScreenWrapper styles={[styles.wrapper]}>
         <ScrollView styles={[styles.wrapper]}>
-          <KeyboardAvoidingView behavior='padding'>
+          <KeyboardAvoidingView behavior="padding">
             <Text style={styles.header}>
               DRAFT A NEW PIECE OF LEGISLATION FOR {data.Circle.name}
             </Text>
@@ -139,7 +137,7 @@ function CreateRevision({ activeCircle, data, ...props }) {
               of Circle members, and then must be approved with a majority of
               votes. Amendment drafts are publicly accessible.
             </Text>
-            <PortalButton title='Create Amendment' onPress={submit} />
+            <PortalButton title="Create Amendment" onPress={submit} />
           </KeyboardAvoidingView>
         </ScrollView>
       </ScreenWrapper>
@@ -182,23 +180,14 @@ const styles = StyleSheet.create({
   },
 });
 
-function mapStateToProps(state) {
-  return {
-    user: pull(state, 'user'),
-    activeCircle: pull(state, 'activeCircle'),
-    activeRevision: pull(state, 'activeRevision'),
-  };
-}
-export default connect(mapStateToProps)(
-  compose(
-    graphql(CREATE_REVISION, { name: 'createRevision' }),
-    graphql(CREATE_VOTE, { name: 'createVote' }),
-    graphql(GET_AMENDMENTS_FROM_CIRCLE_ID, {
-      options: ({ activeCircle }) => ({
-        variables: {
-          id: activeCircle,
-        },
-      }),
+export default compose(
+  graphql(CREATE_REVISION, { name: 'createRevision' }),
+  graphql(CREATE_VOTE, { name: 'createVote' }),
+  graphql(GET_AMENDMENTS_FROM_CIRCLE_ID, {
+    options: ({ activeCircle }) => ({
+      variables: {
+        id: activeCircle,
+      },
     }),
-  )(CreateRevision),
-);
+  }),
+)(CreateRevision);

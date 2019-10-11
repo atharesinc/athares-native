@@ -1,6 +1,5 @@
-import { Component } from 'react';
-import { connect } from 'react-redux';
-import { pull } from '../redux/state/reducers';
+import { Component } from 'reactn';
+
 import moment from 'moment';
 import {
   CREATE_AMENDMENT_FROM_REVISION,
@@ -153,28 +152,22 @@ class App extends Component {
     return null;
   }
 }
-function mapStateToProps(state) {
-  return {
-    user: pull(state, 'user'),
-  };
-}
-export default connect(mapStateToProps)(
-  compose(
-    graphql(UPDATE_AMENDMENT_FROM_REVISION_AND_DELETE, {
-      name: 'deleteAmendment',
+
+export default compose(
+  graphql(UPDATE_AMENDMENT_FROM_REVISION_AND_DELETE, {
+    name: 'deleteAmendment',
+  }),
+  graphql(UPDATE_AMENDMENT_FROM_REVISION, { name: 'updateAmendment' }),
+  graphql(CREATE_AMENDMENT_FROM_REVISION, {
+    name: 'createAmendmentFromRevision',
+  }),
+  graphql(DENY_REVISION, {
+    name: 'denyRevision',
+  }),
+  graphql(GET_ACTIVE_REVISIONS_BY_USER_ID, {
+    options: ({ user }) => ({
+      variables: { id: user || '' },
+      pollInterval: 10000,
     }),
-    graphql(UPDATE_AMENDMENT_FROM_REVISION, { name: 'updateAmendment' }),
-    graphql(CREATE_AMENDMENT_FROM_REVISION, {
-      name: 'createAmendmentFromRevision',
-    }),
-    graphql(DENY_REVISION, {
-      name: 'denyRevision',
-    }),
-    graphql(GET_ACTIVE_REVISIONS_BY_USER_ID, {
-      options: ({ user }) => ({
-        variables: { id: user || '' },
-        pollInterval: 10000,
-      }),
-    }),
-  )(App),
-);
+  }),
+)(App);

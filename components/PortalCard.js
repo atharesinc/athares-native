@@ -1,5 +1,5 @@
 import { StyleSheet, KeyboardAvoidingView, View } from "react-native";
-import React from "react";
+import React from 'reactn';
 
 const PortalCard = ({ children }) => (
   <KeyboardAvoidingView style={styles.keyboard} behavior="position">

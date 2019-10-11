@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'reactn';
 
 import { Text, View, StyleSheet, Clipboard, Platform } from "react-native";
 

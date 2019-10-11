@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'reactn';
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { withNavigation } from "react-navigation";
 

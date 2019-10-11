@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'reactn';
 import LinkText from '../../../components/LinkText';
 
 import { Text, View, StyleSheet, Alert } from 'react-native';
@@ -8,8 +8,6 @@ import { CREATE_INVITE } from '../../../graphql/mutations';
 import { GET_CIRCLE_NAME_BY_ID } from '../../../graphql/queries';
 import { graphql, Query } from 'react-apollo';
 
-import { connect } from 'react-redux';
-import { pull } from '../../../redux/state/reducers';
 import { UIActivityIndicator } from 'react-native-indicators';
 
 function ShareCircle({ user, activeCircle, ...props }) {
@@ -47,7 +45,7 @@ function ShareCircle({ user, activeCircle, ...props }) {
         if (loading) {
           return (
             <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-              <UIActivityIndicator color='#FFFFFF' />
+              <UIActivityIndicator color="#FFFFFF" />
             </View>
           );
         }
@@ -64,7 +62,7 @@ function ShareCircle({ user, activeCircle, ...props }) {
               have an Athares account.
             </Text>
             {loadingOther ? (
-              <UIActivityIndicator color='#FFFFFF' />
+              <UIActivityIndicator color="#FFFFFF" />
             ) : (
               <PortalButton
                 title={'Generate Link'}
@@ -100,12 +98,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 });
-function mapStateToProps(state) {
-  return {
-    user: pull(state, 'user'),
-    activeCircle: pull(state, 'activeCircle'),
-  };
-}
+
 export default graphql(CREATE_INVITE, {
   name: 'createInvite',
-})(connect(mapStateToProps)(ShareCircle));
+})(ShareCircle);

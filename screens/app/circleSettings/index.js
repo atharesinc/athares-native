@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useGlobal } from 'reactn';
 
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import PortalButton from '../../../components/PortalButton';
@@ -14,12 +14,10 @@ import {
   Alert,
 } from 'react-native';
 
-import { updateCircle } from '../../../redux/state/actions';
+function CircleSettings(props) {
+  const [activeCircle, setActiveCircle] = useGlobal('activeCircle');
+  const [user, setUser] = useGlobal('user');
 
-import { connect } from 'react-redux';
-import { pull } from '../../../redux/state/reducers';
-
-function CircleSettings({ activeCircle, user, ...props }) {
   const leaveCircle = () => {
     props.deleteUserFomCircle({
       variables: {
@@ -27,7 +25,7 @@ function CircleSettings({ activeCircle, user, ...props }) {
         circle: activeCircle,
       },
     });
-    props.dispatch(updateCircle(null));
+    setActiveCircle(null);
 
     props.navigation.navigate(`Dashboard`);
     Alert.alert(
@@ -53,7 +51,7 @@ function CircleSettings({ activeCircle, user, ...props }) {
 
   return (
     <ScreenWrapper styles={[styles.wrapper]}>
-      <KeyboardAvoidingView behavior='position'>
+      <KeyboardAvoidingView behavior="position">
         <ScrollView styles={[styles.wrapper]}>
           <ShareCircle activeCircle={activeCircle} />
           <CirclePrefs user={user} activeCircle={activeCircle} />
@@ -115,11 +113,4 @@ const styles = StyleSheet.create({
   },
 });
 
-function mapStateToProps(state) {
-  return {
-    user: pull(state, 'user'),
-    activeCircle: pull(state, 'activeCircle'),
-  };
-}
-
-export default connect(mapStateToProps)(CircleSettings);
+export default CircleSettings;

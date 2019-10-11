@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment } from 'reactn';
 
 import { ScrollView, View, Text } from 'react-native';
 import Footer from '../../../components/Footer';
@@ -14,8 +14,7 @@ import {
 } from '../../../graphql/queries';
 import { Query, graphql, compose } from 'react-apollo';
 import { Search } from './Search';
-import { connect } from 'react-redux';
-import { pull } from '../../../redux/state/reducers';
+
 const pullUI = require('../../../redux/ui/reducers').pull;
 
 function Dashboard({
@@ -95,12 +94,13 @@ function Dashboard({
                     link={'Constitution'}
                   />
                   <GovernanceChannelItem title={'Polls'} link={'Revisions'} />
-                  {user && belongsToCircle && (
-                    <GovernanceChannelItem
-                      title={'Settings'}
-                      link={'CircleSettings'}
-                    />
-                  )}
+                  {user &&
+                    belongsToCircle && (
+                      <GovernanceChannelItem
+                        title={'Settings'}
+                        link={'CircleSettings'}
+                      />
+                    )}
                   <ChannelGroupHeader
                     title={'CHANNELS'}
                     displayPlus={user && belongsToCircle}
@@ -141,20 +141,18 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(
-  compose(
-    graphql(IS_USER_IN_CIRCLE, {
-      name: 'isUserInCircle',
-      options: ({ activeCircle, user }) => ({
-        variables: { circle: activeCircle || '', user: user || '' },
-      }),
+export default compose(
+  graphql(IS_USER_IN_CIRCLE, {
+    name: 'isUserInCircle',
+    options: ({ activeCircle, user }) => ({
+      variables: { circle: activeCircle || '', user: user || '' },
     }),
-    graphql(GET_DMS_BY_USER, {
-      name: 'getDMsByUser',
-      options: ({ user }) => ({
-        pollInterval: 5000,
-        variables: { id: user || '' },
-      }),
+  }),
+  graphql(GET_DMS_BY_USER, {
+    name: 'getDMsByUser',
+    options: ({ user }) => ({
+      pollInterval: 5000,
+      variables: { id: user || '' },
     }),
-  )(Dashboard),
-);
+  }),
+)(Dashboard);

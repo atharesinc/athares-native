@@ -1,15 +1,15 @@
-import React, { Component, useState, Fragment } from 'react';
+import React, { Component, useState, Fragment } from 'reactn';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { withNavigation } from 'react-navigation';
 
 import Icon from '@expo/vector-icons/Feather';
 
 import { Query } from 'react-apollo';
-import { connect } from 'react-redux';
+
 import { UIActivityIndicator } from 'react-native-indicators';
 
 import { SEARCH_ALL } from '../../../graphql/queries';
-// import { pull } from '../../store/ui/reducers';
+// 
 // import { updateSearchParams } from '../../store/ui/actions';
 import { SearchResults } from './SearchResults';
 

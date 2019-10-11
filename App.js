@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment, useState } from 'react';
+import React, { useEffect, Fragment, useState, setGlobal } from 'reactn';
 import { StyleSheet, View, ImageBackground, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { AppLoading } from 'expo';
@@ -23,6 +23,34 @@ import { link, cache } from './graphql';
 const client = new ApolloClient({
   link,
   cache,
+});
+
+setGlobal({
+  // state
+  user: null,
+  activeCircle: null,
+  activeChannel: null,
+  activeRevision: null,
+  activeAmendment: null,
+  pub: null,
+  circles: [],
+  channels: [],
+  unreadChannels: [],
+  revisions: [],
+  votes: [],
+  users: [],
+  amendments: [],
+  messages: [],
+  dms: [],
+  unreadDMs: [],
+  dmsgs: [],
+  viewUser: null,
+  // ui
+  showSearch: false,
+  dmSettings: false,
+  showAddMoreUsers: false,
+  searchParams: '',
+  isOnline: false,
 });
 
 export default function App() {
@@ -52,7 +80,7 @@ export default function App() {
 
   return (
     <Fragment>
-      <StatusBar barStyle='light-content' />
+      <StatusBar barStyle="light-content" />
       <ApolloProvider client={client}>
         <Provider store={store}>
           <SafeAreaView
@@ -65,6 +93,7 @@ export default function App() {
             <ImageBackground
               source={require('./assets/iss-master.jpg')}
               style={styles.image}
+              progressiveRenderingEnabled
             >
               <View style={styles.transparentView}>
                 <AppContaner style={styles.appContainer} />

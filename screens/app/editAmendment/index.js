@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'reactn';
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import Input from '../../../components/Input';
 
@@ -10,10 +10,6 @@ import {
   Alert,
 } from 'react-native';
 import PortalButton from '../../../components/PortalButton';
-
-import { updateRevision } from '../../../redux/state/actions';
-import { connect } from 'react-redux';
-import { pull } from '../../../redux/state/reducers';
 import { compose, graphql } from 'react-apollo';
 import {
   CREATE_REVISION,
@@ -62,7 +58,7 @@ class EditAmendment extends Component {
   };
   repeal = () => {
     try {
-      const { activeCircle, circle, user } = this.props;
+      const { activeCircle, circle, user } = this.global;
       const { title, text, id } = this.props.data.Amendment;
 
       let numUsers = circle.users.length;
@@ -140,16 +136,16 @@ class EditAmendment extends Component {
       await this.props.addNewRevisionToAmendment({
         variables: {
           revision: newRevisionRes.data.createRevision.id,
-          amendment: this.props.activeAmendment,
+          amendment: this.global.activeAmendment,
           title: newRevision.title,
         },
       });
       newRevision.id = newRevisionRes.data.createRevision.id;
 
       const newVote = {
-        circle: this.props.activeCircle,
+        circle: this.global.activeCircle,
         revision: newRevision.id,
-        user: this.props.user,
+        user: this.global.user,
         support: true,
       };
 
@@ -159,7 +155,7 @@ class EditAmendment extends Component {
         },
       });
 
-      this.props.dispatch(updateRevision(newRevision.id));
+      this.setGlobal({ activeRevision: newRevision.id });
 
       this.props.navigation.navigate('ViewRevision');
     } catch (err) {
@@ -178,7 +174,7 @@ class EditAmendment extends Component {
     return (
       <ScreenWrapper styles={[styles.wrapper]}>
         <ScrollView styles={[styles.wrapper]}>
-          <KeyboardAvoidingView behavior='padding'>
+          <KeyboardAvoidingView behavior="padding">
             <Text style={styles.header}>EDIT OR REPEAL THIS AMENDMENT</Text>
             <Input
               value={text}
@@ -195,9 +191,9 @@ class EditAmendment extends Component {
               ratified and the majority of voters support these changes, then
               the existing Amendment will be replaced with these changes.
             </Text>
-            <PortalButton title='Update Amendment' onPress={this.submit} />
+            <PortalButton title="Update Amendment" onPress={this.submit} />
             <PortalButton
-              title='Repeal Amendment'
+              title="Repeal Amendment"
               style={styles.repealButton}
               onPress={this.repeal}
               textStyle={styles.repealText}
@@ -209,25 +205,16 @@ class EditAmendment extends Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    user: pull(state, 'user'),
-    activeCircle: pull(state, 'activeCircle'),
-    activeAmendment: pull(state, 'activeAmendment'),
-  };
-}
-export default connect(mapStateToProps)(
-  compose(
-    graphql(CREATE_REVISION, { name: 'createRevision' }),
-    graphql(CREATE_VOTE, { name: 'createVote' }),
-    graphql(ADD_REVISION_TO_AMENDMENT, { name: 'addNewRevisionToAmendment' }),
-    graphql(GET_AMENDMENT_BY_ID, {
-      options: ({ activeAmendment }) => ({
-        variables: { id: activeAmendment || '' },
-      }),
+export default compose(
+  graphql(CREATE_REVISION, { name: 'createRevision' }),
+  graphql(CREATE_VOTE, { name: 'createVote' }),
+  graphql(ADD_REVISION_TO_AMENDMENT, { name: 'addNewRevisionToAmendment' }),
+  graphql(GET_AMENDMENT_BY_ID, {
+    options: ({ activeAmendment }) => ({
+      variables: { id: activeAmendment || '' },
     }),
-  )(EditAmendment),
-);
+  }),
+)(EditAmendment);
 
 const styles = StyleSheet.create({
   header: {

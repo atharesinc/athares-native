@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useGlobal } from 'reactn';
 import PortalInput from '../../components/PortalInput';
 import PortalButton from '../../components/PortalButton';
 import PortalCard from '../../components/PortalCard';
@@ -15,19 +15,11 @@ import {
   Alert,
 } from 'react-native';
 import {
-  updateUser,
-  updatePub,
-  updateChannel,
-  updateCircle,
-  updateRevision,
-} from '../../redux/state/actions';
-import {
   CREATE_USER,
   SIGNIN_USER,
   CREATE_USER_PREF,
 } from '../../graphql/mutations';
-import { pull } from '../../redux/state/reducers';
-import { connect } from 'react-redux';
+
 import { sha, pair } from '../../utils/crypto';
 import { validateRegister } from '../../utils/validators';
 import { UIActivityIndicator } from 'react-native-indicators';
@@ -43,11 +35,16 @@ function Register({ createUser, signinUser, createUserPref, ...props }) {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [activeChannel, setActiveChannel] = useGlobal('activeChannel');
+  const [activeCircle, setActiveCircle] = useGlobal('activeCircle');
+  const [activeRevision, setActiveRevision] = useGlobal('activeRevision');
+  const [user, setUser] = useGlobal('user');
+  const [pub, setPub] = useGlobal('pub');
 
   useEffect(() => {
-    props.dispatch(updateChannel(null));
-    props.dispatch(updateCircle(null));
-    props.dispatch(updateRevision(null));
+    setActiveChannel(null);
+    setActiveCircle(null);
+    setActiveRevision(null);
   }, []);
 
   const updateEmail = text => {
@@ -114,8 +111,8 @@ function Register({ createUser, signinUser, createUserPref, ...props }) {
       await AsyncStorage.setItem('ATHARES_ALIAS', email);
       await AsyncStorage.setItem('ATHARES_HASH', hashedToken);
       await AsyncStorage.setItem('ATHARES_TOKEN', token);
-      props.dispatch(updateUser(userId));
-      props.dispatch(updatePub(hashedToken));
+      setUser(userId);
+      setPub(hashedToken);
 
       props.navigation.navigate('Dashboard');
     } catch (err) {
@@ -143,7 +140,7 @@ function Register({ createUser, signinUser, createUserPref, ...props }) {
         }}
       >
         <UIActivityIndicator
-          color='#FFFFFF'
+          color="#FFFFFF"
           style={{ flex: 1, marginBottom: 15 }}
         />
         <Text>Building Profile...</Text>
@@ -178,31 +175,31 @@ function Register({ createUser, signinUser, createUserPref, ...props }) {
           Register with Athares
         </Text>
         <PortalInput
-          icon='user'
-          placeholder='First Name'
+          icon="user"
+          placeholder="First Name"
           onChangeText={setFirstName}
           value={firstName}
         />
         <PortalInput
-          icon='user'
-          placeholder='Last Name'
+          icon="user"
+          placeholder="Last Name"
           onChangeText={setLastName}
           value={lastName}
         />
         <PortalInput
-          icon='at-sign'
-          placeholder='Email Address'
+          icon="at-sign"
+          placeholder="Email Address"
           onChangeText={updateEmail}
           value={email}
         />
         <PortalInput
-          icon='lock'
-          placeholder='Password'
+          icon="lock"
+          placeholder="Password"
           secureTextEntry
           onChangeText={setPassword}
           value={password}
         />
-        <PortalButton title='REGISTER' onPress={tryRegister} />
+        <PortalButton title="REGISTER" onPress={tryRegister} />
       </PortalCard>
       <PortalToggle
         onPress={() => props.navigation.navigate('Login')}
@@ -231,16 +228,10 @@ function Register({ createUser, signinUser, createUserPref, ...props }) {
   );
 }
 
-function mapStateToProps(state) {
-  return {
-    user: pull(state, 'user'),
-  };
-}
-
 export default compose(
   graphql(SIGNIN_USER, { name: 'signinUser' }),
   graphql(CREATE_USER, {
     name: 'createUser',
   }),
   graphql(CREATE_USER_PREF, { name: 'createUserPref' }),
-)(connect(mapStateToProps)(Register));
+)(Register);

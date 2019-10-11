@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'reactn';
 import { Animated } from 'react-native';
 
 export default class HeightOpenView extends React.Component {

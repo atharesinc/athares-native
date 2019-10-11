@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'reactn';
 import {
   View,
   StyleSheet,
@@ -8,8 +8,6 @@ import {
 } from 'react-native';
 import AsyncImageAnimated from 'react-native-async-image-animated';
 
-import { connect } from 'react-redux';
-import { pull } from '../redux/state/reducers';
 import { SEARCH_FOR_USER, GET_USERS_BY_CIRCLE_ID } from '../graphql/queries';
 import { compose, graphql, Query } from 'react-apollo';
 
@@ -19,10 +17,9 @@ function InviteUser({ style = {}, getUsers, tags, circle, ...props }) {
   const handleAddition = suggestion => {
     let newTags = props.tags.concat([suggestion]);
     props.updateTags(newTags);
-    setState({
-      input: '',
-    });
+    setInput('');
   };
+
   const _renderSuggestion = item => {
     return (
       <TouchableOpacity
@@ -67,7 +64,7 @@ function InviteUser({ style = {}, getUsers, tags, circle, ...props }) {
               value={input}
               onChangeText={setInput}
               style={s.inputStyle}
-              placeholder='Enter a name'
+              placeholder="Enter a name"
               placeholderTextColor={'#FFFFFFb7'}
             />
             {suggestions.map(u => _renderSuggestion(u))}
@@ -128,16 +125,9 @@ const s = StyleSheet.create({
   },
 });
 
-function mapStateToProps(state) {
-  return {
-    user: pull(state, 'user'),
-  };
-}
-export default connect(mapStateToProps)(
-  compose(
-    graphql(GET_USERS_BY_CIRCLE_ID, {
-      name: 'getUsers',
-      options: ({ circle }) => ({ variables: { id: circle || '' } }),
-    }),
-  )(InviteUser),
-);
+export default compose(
+  graphql(GET_USERS_BY_CIRCLE_ID, {
+    name: 'getUsers',
+    options: ({ circle }) => ({ variables: { id: circle || '' } }),
+  }),
+)(InviteUser);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useGlobal } from 'reactn';
 import PortalInput from '../../components/PortalInput';
 import {
   View,
@@ -13,32 +13,29 @@ import PortalButton from '../../components/PortalButton';
 import PortalCard from '../../components/PortalCard';
 import PortalWrapper from '../../components/PortalWrapper';
 import PortalToggle from '../../components/PortalToggle';
-import {
-  updateUser,
-  updatePub,
-  updateChannel,
-  updateCircle,
-  updateRevision,
-  logout,
-} from '../../redux/state/actions';
 
 import { validateLogin } from '../../utils/validators';
-import { pull } from '../../redux/state/reducers';
-import { connect } from 'react-redux';
+
 import { SIGNIN_USER } from '../../graphql/mutations';
 import { graphql } from 'react-apollo';
 import { sha } from '../../utils/crypto';
 import { UIActivityIndicator } from 'react-native-indicators';
 
 function Login(props) {
+  const [activeChannel, setActiveChannel] = useGlobal('activeChannel');
+  const [activeCircle, setActiveCircle] = useGlobal('activeCircle');
+  const [activeRevision, setActiveRevision] = useGlobal('activeRevision');
+  const [user, setUser] = useGlobal('user');
+  const [pub, setPub] = useGlobal('pub');
+
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
 
   const init = async () => {
-    props.dispatch(updateChannel(null));
-    props.dispatch(updateCircle(null));
-    props.dispatch(updateRevision(null));
+    setActiveChannel(null);
+    setActiveCircle(null);
+    setActiveRevision(null);
     // check if user could log in
     let alias = await AsyncStorage.getItem('ATHARES_ALIAS');
     let hash = await AsyncStorage.getItem('ATHARES_HASH');
@@ -58,8 +55,8 @@ function Login(props) {
             signinUser: { token, userId },
           },
         } = res;
-        props.dispatch(updateUser(userId));
-        props.dispatch(updatePub(hash));
+        setUser(userId);
+        setPub(hash);
         AsyncStorage.setItem('ATHARES_TOKEN', token);
         props.navigation.navigate('Dashboard');
       } catch (err) {
@@ -114,8 +111,8 @@ function Login(props) {
       await AsyncStorage.setItem('ATHARES_HASH', hashedToken);
       await AsyncStorage.setItem('ATHARES_TOKEN', token);
 
-      props.dispatch(updateUser(userId));
-      props.dispatch(updatePub(hashedToken));
+      setUser(userId);
+      setPub(hashedToken);
       props.navigation.navigate('Dashboard');
     } catch (err) {
       if (err.message.indexOf('Invalid Credentials') !== -1) {
@@ -140,7 +137,7 @@ function Login(props) {
           backgroundColor: 'transparent',
         }}
       >
-        <UIActivityIndicator color='#FFFFFF' />
+        <UIActivityIndicator color="#FFFFFF" />
       </View>
     );
   }
@@ -164,19 +161,19 @@ function Login(props) {
           Login to Athares
         </Text>
         <PortalInput
-          icon='at-sign'
-          placeholder='email'
+          icon="at-sign"
+          placeholder="email"
           onChangeText={updateEmail}
           value={email}
         />
         <PortalInput
-          icon='lock'
-          placeholder='password'
+          icon="lock"
+          placeholder="password"
           secureTextEntry
           onChangeText={updatePassword}
           value={password}
         />
-        <PortalButton title='LOGIN' onPress={tryLogin} />
+        <PortalButton title="LOGIN" onPress={tryLogin} />
       </PortalCard>
       <PortalToggle
         onPress={() => props.navigation.navigate('Register')}
@@ -195,11 +192,6 @@ function Login(props) {
   );
 }
 
-function mapStateToProps(state) {
-  return {
-    user: pull(state, 'user'),
-  };
-}
 export default graphql(SIGNIN_USER, {
   name: 'signinUser',
-})(connect(mapStateToProps)(Login));
+})(Login);

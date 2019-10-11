@@ -1,26 +1,19 @@
-import React, { Component, Fragment } from "react";
+import React, { useState, Fragment } from 'reactn';
 import {
   ScrollView,
   Text,
   View,
   StyleSheet,
-  TouchableOpacity
-} from "react-native";
-import Diff from "react-native-diff-component";
-import Icon from "@expo/vector-icons/Feather";
+  TouchableOpacity,
+} from 'react-native';
+import Diff from 'react-native-diff-component';
+import Icon from '@expo/vector-icons/Feather';
 
-function DiffSection (props) {
-  state = {
-    mode: 0
-  };
-  toggle = index => {
-    this.setState({
-      mode: index
-    });
-  };
-const   renderTab = () => {
-    const { oldText = "", newText = "" } = this.props;
-    const { mode } = this.state;
+function DiffSection(props) {
+  const [mode, setMode] = useState(0);
+
+  const renderTab = () => {
+    const { oldText = '', newText = '' } = props;
     switch (mode) {
       case 1:
         return (
@@ -31,7 +24,7 @@ const   renderTab = () => {
               inputB={newText}
               textStyle={styles.sideBySideText}
               containerStyle={styles.sideBySide}
-              type="words"
+              type='words'
             />
           </ScrollView>
         );
@@ -42,8 +35,8 @@ const   renderTab = () => {
               <Diff
                 unchagedText={styles.unchangedText}
                 inputA={oldText}
-                inputB={""}
-                type="words"
+                inputB={''}
+                type='words'
                 textStyle={styles.sideBySideText}
                 containerStyle={styles.sideBySide}
               />
@@ -51,9 +44,9 @@ const   renderTab = () => {
                 containerStyle={styles.sideBySide}
                 textStyle={styles.sideBySideText}
                 unchagedText={styles.unchangedText}
-                inputA={""}
+                inputA={''}
                 inputB={newText}
-                type="words"
+                type='words'
               />
             </View>
           </ScrollView>
@@ -66,125 +59,118 @@ const   renderTab = () => {
         );
     }
   };
-  
-    const { mode } = this.state;
-    return (
-      <Fragment>
-        {this.renderTab()}
-        <View style={styles.tabWrapper}>
-          <TouchableOpacity
-            onPress={() => {
-              this.toggle(0);
-            }}
-            style={[styles.tab, mode === 0 ? styles.selectedTab : {}]}
-          >
-            <Icon
-              size={20}
-              color={mode === 0 ? "#FFFFFF" : "#FFFFFFb7"}
-              name="check"
-              style={styles.tabIcon}
-            />
-            <Text
-              style={[styles.tabText, mode === 0 ? styles.selectedText : {}]}
-            >
-              Final
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              this.toggle(1);
-            }}
-            style={[styles.tab, mode === 1 ? styles.selectedTab : {}]}
-          >
-            <Icon
-              size={20}
-              color={mode === 1 ? "#FFFFFF" : "#FFFFFFb7"}
-              name="code"
-              style={styles.tabIcon}
-            />
-            <Text
-              style={[styles.tabText, mode === 1 ? styles.selectedText : {}]}
-            >
-              Diff
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              this.toggle(2);
-            }}
-            style={[styles.tab, mode === 2 ? styles.selectedTab : {}]}
-          >
-            <Icon
-              size={20}
-              color={mode === 2 ? "#FFFFFF" : "#FFFFFFb7"}
-              name="layout"
-              style={styles.tabIcon}
-            />
-            <Text
-              style={[styles.tabText, mode === 2 ? styles.selectedText : {}]}
-            >
-              Side-By-Side
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </Fragment>
-    );
+
+  return (
+    <Fragment>
+      {renderTab()}
+      <View style={styles.tabWrapper}>
+        <TouchableOpacity
+          onPress={() => {
+            setMode(0);
+          }}
+          style={[styles.tab, mode === 0 ? styles.selectedTab : {}]}
+        >
+          <Icon
+            size={20}
+            color={mode === 0 ? '#FFFFFF' : '#FFFFFFb7'}
+            name='check'
+            style={styles.tabIcon}
+          />
+          <Text style={[styles.tabText, mode === 0 ? styles.selectedText : {}]}>
+            Final
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            setMode(1);
+          }}
+          style={[styles.tab, mode === 1 ? styles.selectedTab : {}]}
+        >
+          <Icon
+            size={20}
+            color={mode === 1 ? '#FFFFFF' : '#FFFFFFb7'}
+            name='code'
+            style={styles.tabIcon}
+          />
+          <Text style={[styles.tabText, mode === 1 ? styles.selectedText : {}]}>
+            Diff
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            setMode(2);
+          }}
+          style={[styles.tab, mode === 2 ? styles.selectedTab : {}]}
+        >
+          <Icon
+            size={20}
+            color={mode === 2 ? '#FFFFFF' : '#FFFFFFb7'}
+            name='layout'
+            style={styles.tabIcon}
+          />
+          <Text style={[styles.tabText, mode === 2 ? styles.selectedText : {}]}>
+            Side-By-Side
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </Fragment>
+  );
 }
 
 export default DiffSection;
 
 const styles = StyleSheet.create({
   tabWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     borderTopWidth: 1,
-    borderTopColor: "#282a38",
-    width: "100%",
-    marginVertical: 15
+    borderTopColor: '#282a38',
+    width: '100%',
+    marginVertical: 15,
   },
   tab: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 15,
-    width: "30%",
-    backgroundColor: "#282a38",
+    width: '30%',
+    backgroundColor: '#282a38',
     paddingVertical: 10,
     borderRadius: 9999,
     borderWidth: 2,
-    borderColor: "#2f3242"
+    borderColor: '#2f3242',
   },
   selectedTab: {
-    backgroundColor: "#2f3242",
-    borderColor: "#FFFFFF"
+    backgroundColor: '#2f3242',
+    borderColor: '#FFFFFF',
   },
   selectedText: {
-    color: "#FFFFFF"
+    color: '#FFFFFF',
   },
   tabText: {
-    color: "#FFFFFFb7",
-    fontSize: 10
+    color: '#FFFFFFb7',
+    fontSize: 10,
   },
   tabIcon: {
-    marginRight: 10
+    marginRight: 10,
   },
   unchangedText: {
-    color: "#FFFFFF"
+    color: '#FFFFFF',
   },
   sideBySideWrapper: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start"
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
   sideBySide: {
-    alignItems: "flex-start",
-    padding: 5
+    alignItems: 'flex-start',
+    padding: 5,
   },
   sideBySideText: {
-    fontSize: 12
+    fontSize: 12,
   },
   textContainerStyle: {
-    marginBottom: 20
-  }
+    marginBottom: 20,
+  },
 });

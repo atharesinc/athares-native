@@ -1,10 +1,9 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { pull } from '../redux/state/reducers';
+import React, { Component } from 'reactn';
+
+
 import { GET_ALL_USERS_CIRCLES_CHANNELS } from '../graphql/queries';
 import { SUB_TO_ALL_CIRCLES_CHANNELS } from '../graphql/subscriptions';
 import { Query, graphql } from 'react-apollo';
-import { updateChannels, addUnreadChannel } from '../redux/state/actions';
 
 class ChannelUpdateMonitor extends Component {
   componentDidUpdate(prevProps) {
@@ -17,34 +16,44 @@ class ChannelUpdateMonitor extends Component {
 
       channels = channels.map(c => c.id);
       // set the user's current channels
-      this.props.dispatch(updateChannels(channels));
+      this.setGlobal({ channels });
     }
   }
   _subToMore = subscribeToMore => {
     subscribeToMore({
       document: SUB_TO_ALL_CIRCLES_CHANNELS,
-      variables: { ids: this.props.channels || [] },
+      variables: { ids: this.global.channels || [] },
       updateQuery: (prev, { subscriptionData }) => {
         let updatedChannel = subscriptionData.data.Message.node.channel.id;
-        if (subscriptionData.data.Message.node.user.id === this.props.user) {
+        if (subscriptionData.data.Message.node.user.id === this.global.user) {
           return prev;
         }
-        if (this.props.activeChannel !== updatedChannel) {
+        if (this.global.activeChannel !== updatedChannel) {
           if (
-            this.props.channels.findIndex(ch => ch === updatedChannel) !== -1
+            this.global.channels.findIndex(ch => ch === updatedChannel) !== -1
           ) {
-            this.props.dispatch(addUnreadChannel(updatedChannel));
+            this.addUnreadChannel(updatedChannel);
           }
           return prev;
         }
       },
     });
   };
+  addUnreadChannel = chan => {
+    let { unreadChannels } = this.global;
+    if (!unreadChannels.includes(chan)) {
+      unreadChannels = [...unreadChannels, chan];
+      this.setGlobal({
+        unreadChannels: [...this.global.unreadChannels, updatedChannel],
+      });
+    }
+  };
+
   render() {
     return (
       <Query
         query={GET_ALL_USERS_CIRCLES_CHANNELS}
-        variables={{ id: this.props.user || '' }}
+        variables={{ id: this.global.user || '' }}
       >
         {({ subscribeToMore }) => {
           if (this.props.getAllMyChannels.User) {
@@ -56,17 +65,8 @@ class ChannelUpdateMonitor extends Component {
     );
   }
 }
-function mapStateToProps(state) {
-  return {
-    user: pull(state, 'user'),
-    activeChannel: pull(state, 'activeChannel'),
-    channels: pull(state, 'channels'),
-    unreadChannels: pull(state, 'unreadChannels'),
-  };
-}
-export default connect(mapStateToProps)(
-  graphql(GET_ALL_USERS_CIRCLES_CHANNELS, {
-    name: 'getAllMyChannels',
-    options: ({ user }) => ({ variables: { id: user || '' } }),
-  })(ChannelUpdateMonitor),
-);
+
+export default graphql(GET_ALL_USERS_CIRCLES_CHANNELS, {
+  name: 'getAllMyChannels',
+  options: ({ user }) => ({ variables: { id: user || '' } }),
+})(ChannelUpdateMonitor);

@@ -1,50 +1,48 @@
-import React from 'react';
+import React, { useGlobal } from 'reactn';
 import { withNavigation } from 'react-navigation';
 import moment from 'moment';
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import AsyncImageAnimated from 'react-native-async-image-animated';
-import { connect } from 'react-redux';
-import {
-  updateRevision,
-  updateAmendment,
-  updateCircle,
-  updateViewUser,
-  updateChannel,
-} from '../../../redux/state/actions';
-import { closeSearch } from '../../../redux/ui/actions';
 
 const SingleSearchItem = ({ item, category, navigation, ...props }) => {
+  const [activeCircle, setActiveCircle] = useGlobal('activeCircle');
+  const [activeChannel, setActiveChannel] = useGlobal('activeChannel');
+  const [activeRevision, setActiveRevision] = useGlobal('activeRevision');
+  const [activeAmendment, setActiveAmendment] = useGlobal('activeAmendment');
+  const [viewUser, setViewUser] = useGlobal('viewUser');
+  const [showSearch, setShowSearch] = useGlobal('showSearch');
+
   const navigate = () => {
     const { id } = item;
 
     if (item) {
       switch (category) {
         case 'circles':
-          props.dispatch(updateCircle(id));
+          setActiveCircle(id);
           break;
         case 'channels':
-          props.dispatch(updateCircle(item.circle.id));
-          props.dispatch(updateChannel(id));
+          setActiveCircle(item.circle.id);
+          setActiveChannel(id);
           navigation.navigate('Channel');
           break;
         case 'amendments':
-          props.dispatch(updateCircle(item.circle.id));
-          props.dispatch(updateAmendment(id));
+          setActiveCircle(item.circle.id);
+          setActiveAmendment(id);
           navigation.navigate('Constitution');
           break;
         case 'revisions':
-          props.dispatch(updateCircle(item.circle.id));
-          props.dispatch(updateRevision(id));
+          setActiveCircle(item.circle.id);
+          setActiveRevision(id);
           navigation.navigate('ViewRevision');
           break;
         case 'users':
-          props.dispatch(updateViewUser(id));
+          setActiveViewUser(id);
           navigation.navigate('ViewOtherUser');
           break;
         default:
           break;
       }
-      props.dispatch(closeSearch());
+      setShowSearch(false);
     }
   };
   return (
@@ -83,11 +81,7 @@ const SingleSearchItem = ({ item, category, navigation, ...props }) => {
   );
 };
 
-function mapStateToProps(state) {
-  return {};
-}
-
-export default connect(mapStateToProps)(withNavigation(SingleSearchItem));
+export default withNavigation(SingleSearchItem);
 
 const styles = StyleSheet.create({
   suggestionItem: {

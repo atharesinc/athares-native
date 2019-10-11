@@ -1,12 +1,8 @@
-import React, { Component } from 'react';
+import React, { useGlobal } from 'reactn';
 
 import { Text, TouchableOpacity, StyleSheet, View, Image } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import Icon from '@expo/vector-icons/Feather';
-import { connect } from 'react-redux';
-import { toggleSearch as toggleSearchAction } from '../redux/ui/actions';
-import { pull } from '../redux/state/reducers';
-import { toggleDMSettings } from '../redux/ui/actions';
 import { Query } from 'react-apollo';
 import {
   GET_USER_BY_ID,
@@ -16,24 +12,24 @@ import {
 } from '../graphql/queries';
 import AsyncImageAnimated from 'react-native-async-image-animated';
 
-const pullUI = require('../redux/ui/reducers').pull;
-
 function Header({
   loggedIn = false,
   belongsToCircle = false,
-  showSearch = false,
   scene,
-  user = null,
-  activeChannel,
-  activeRevision,
-  viewUser,
   ...props
 }) {
+  const [showSearch, setShowSearch] = useGlobal('showSearch');
+  const [dmSettings, setDMSettings] = useGlobal('dmSettings');
+  const [user, setUser] = useGlobal('user');
+  const [activeChannel, setActiveChannel] = useGlobal('activeChannel');
+  const [activeRevision, setActiveRevision] = useGlobal('activeRevision');
+  const [viewUser, setViewUser] = useGlobal('viewUser');
+
   const toggleDrawer = () => {
     props.navigation.toggleDrawer();
   };
   const toggleSearch = () => {
-    props.dispatch(toggleSearchAction());
+    setShowSearch(!showSearch);
   };
   const back = () => {
     props.navigation.goBack(null);
@@ -41,7 +37,7 @@ function Header({
   const more = () => {
     let { routeName } = scene.route;
     if (routeName === 'DMChannel') {
-      props.dispatch(toggleDMSettings());
+      setDMSettings(!dmSettings);
     }
   };
   const createRevision = () => {
@@ -85,17 +81,17 @@ function Header({
         ]}
       >
         <TouchableOpacity onPress={back}>
-          <Icon name='chevron-left' size={25} color={'#FFFFFF'} />
+          <Icon name="chevron-left" size={25} color={'#FFFFFF'} />
         </TouchableOpacity>
         <Text style={styles.headerText} numberOfLines={1}>
           {simpleChannelsObj[routeName]}
         </Text>
         {routeName === 'Constitution' ? (
           <TouchableOpacity onPress={createRevision}>
-            <Icon name='plus' size={25} color={'#FFFFFF'} />
+            <Icon name="plus" size={25} color={'#FFFFFF'} />
           </TouchableOpacity>
         ) : (
-          <Icon name='more-vertical' size={25} color={'transparent'} />
+          <Icon name="more-vertical" size={25} color={'transparent'} />
         )}
       </View>
     );
@@ -111,7 +107,7 @@ function Header({
           return (
             <View style={[styles.header, styles.headerThemeDark]}>
               <TouchableOpacity onPress={back}>
-                <Icon name='chevron-left' size={25} color={'#FFFFFF'} />
+                <Icon name="chevron-left" size={25} color={'#FFFFFF'} />
               </TouchableOpacity>
               {data.Channel && (
                 <Text style={styles.headerText} numberOfLines={1}>
@@ -120,10 +116,10 @@ function Header({
               )}
               {routeName === 'DMChannel' ? (
                 <TouchableOpacity onPress={more}>
-                  <Icon name='more-vertical' size={25} color={'#FFFFFF'} />
+                  <Icon name="more-vertical" size={25} color={'#FFFFFF'} />
                 </TouchableOpacity>
               ) : (
-                <Icon name='more-vertical' size={25} color={'transparent'} />
+                <Icon name="more-vertical" size={25} color={'transparent'} />
               )}
             </View>
           );
@@ -139,14 +135,14 @@ function Header({
           return (
             <View style={[styles.header, styles.headerThemeDark]}>
               <TouchableOpacity onPress={back}>
-                <Icon name='chevron-left' size={25} color={'#FFFFFF'} />
+                <Icon name="chevron-left" size={25} color={'#FFFFFF'} />
               </TouchableOpacity>
               {data.Revision && (
                 <Text style={styles.headerText} numberOfLines={1}>
                   {data.Revision.title}
                 </Text>
               )}
-              <Icon name='more-vertical' size={25} color={'transparent'} />
+              <Icon name="more-vertical" size={25} color={'transparent'} />
             </View>
           );
         }}
@@ -161,14 +157,14 @@ function Header({
           return (
             <View style={[styles.header, styles.headerThemeDark]}>
               <TouchableOpacity onPress={back}>
-                <Icon name='chevron-left' size={25} color={'#FFFFFF'} />
+                <Icon name="chevron-left" size={25} color={'#FFFFFF'} />
               </TouchableOpacity>
               {data.User && (
                 <Text style={styles.headerText} numberOfLines={1}>
                   {data.User.firstName + ' ' + data.User.lastName}
                 </Text>
               )}
-              <Icon name='more-vertical' size={25} color={'transparent'} />
+              <Icon name="more-vertical" size={25} color={'transparent'} />
             </View>
           );
         }}
@@ -223,12 +219,12 @@ function Header({
                     </Text>
                     {!showSearch ? (
                       <TouchableOpacity onPress={toggleSearch}>
-                        <Icon name='search' size={25} color={'#FFFFFF'} />
+                        <Icon name="search" size={25} color={'#FFFFFF'} />
                       </TouchableOpacity>
                     ) : (
                       <TouchableOpacity onPress={toggleSearch}>
                         <Icon
-                          name='x'
+                          name="x"
                           size={25}
                           color={'#FFFFFF'}
                           numberOfLines={1}
@@ -241,7 +237,7 @@ function Header({
             </Query>
           );
         }
-        return <View style={styles.header}></View>;
+        return <View style={styles.header} />;
       }}
     </Query>
   );
@@ -287,15 +283,4 @@ const styles = StyleSheet.create({
   },
 });
 
-function mapStateToProps(state) {
-  return {
-    user: pull(state, 'user'),
-    activeCircle: pull(state, 'activeCircle'),
-    activeChannel: pull(state, 'activeChannel'),
-    viewUser: pull(state, 'viewUser'),
-    activeRevision: pull(state, 'activeRevision'),
-    dmSettings: pullUI(state, 'dmSettings'),
-    showSearch: pullUI(state, 'showSearch'),
-  };
-}
-export default connect(mapStateToProps)(withNavigation(Header));
+export default withNavigation(Header);

@@ -1,11 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component } from 'reactn';
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import Amendment from '../../../components/Amendment';
 
 import { Text, ScrollView, StyleSheet } from 'react-native';
 
-import { connect } from 'react-redux';
-import { pull } from '../../../redux/state/reducers';
 import {
   updateCircle,
   updateChannel,
@@ -120,11 +118,4 @@ const styles = StyleSheet.create({
   },
 });
 
-function mapStateToProps(state) {
-  return {
-    user: pull(state, 'user'),
-    activeCircle: pull(state, 'activeCircle'),
-  };
-}
-
-export default connect(mapStateToProps)(Constitution);
+export default Constitution;

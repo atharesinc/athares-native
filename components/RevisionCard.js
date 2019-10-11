@@ -1,7 +1,5 @@
-import React from 'react';
+import React, { useGlobal } from 'reactn';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { connect } from 'react-redux';
-import { updateRevision } from '../redux/state/actions';
 
 const RevisionCard = ({
   revision: {
@@ -16,6 +14,8 @@ const RevisionCard = ({
   },
   ...props
 }) => {
+  const [activeRevision, setActiveRevision] = useGlobal('activeRevision');
+
   const renderCategory = () => {
     if (repeal) {
       return (
@@ -39,7 +39,7 @@ const RevisionCard = ({
     );
   };
   const goToRevision = () => {
-    props.dispatch(updateRevision(id));
+    setActiveRevision(id);
     props.navigation.navigate('ViewRevision');
   };
   const support = votes.filter(({ support }) => support.length);
@@ -80,11 +80,7 @@ const RevisionCard = ({
   );
 };
 
-function mapStateToProps(state) {
-  return {};
-}
-
-export default connect(mapStateToProps)(RevisionCard);
+export default RevisionCard;
 
 const styles = StyleSheet.create({
   cardWrapper: {

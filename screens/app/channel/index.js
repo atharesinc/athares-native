@@ -9,9 +9,6 @@ import {
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import Chat from '../../../components/Chat';
 import ChatInput from '../../../components/ChatInput';
-import { pull } from '../../../redux/state/reducers';
-import { removeUnreadChannel } from '../../../redux/state/actions';
-import { connect } from 'react-redux';
 import { CREATE_MESSAGE } from '../../../graphql/mutations';
 import { SUB_TO_MESSAGES_BY_CHANNEL_ID } from '../../../graphql/subscriptions';
 import { GET_MESSAGES_FROM_CHANNEL_ID } from '../../../graphql/queries';
@@ -25,18 +22,31 @@ class Channel extends Component {
     uploadInProgress: false,
   };
   componentDidMount() {
-    if (this.props.activeChannel) {
-      this.props.dispatch(removeUnreadChannel(this.props.activeChannel));
+    if (this.global.activeChannel) {
+      this.removeUnreadChannel(this.global.activeChannel);
     }
   }
-  componentDidUpdate(prevProps) {
-    if (
-      this.props.activeChannel &&
-      this.props.activeChannel !== prevProps.activeChannel
-    ) {
-      this.props.dispatch(removeUnreadChannel(this.props.activeChannel));
+  removeUnreadChannel(chan) {
+    let { unreadChannels } = this.global;
+    if (unreadChannels.includes(chan)) {
+      let index = unreadChannels.findIndex(d => d === chan);
+      if (index !== -1) {
+        unreadChannels.splice(index, 1);
+        unreadChannels = [...unreadChannels];
+        this.setGlobal({
+          unreadChannels,
+        });
+      }
     }
   }
+  // componentDidUpdate(prevProps) {
+  //   if (
+  //     this.global.activeChannel &&
+  //     this.global.activeChannel !== prevProps.activeChannel
+  //   ) {
+  //     this.removeUnreadChannel(this.global.activeChannel);
+  //   }
+  // }
   submit = async (text = '', file = null) => {
     let response = null;
     try {
@@ -157,14 +167,6 @@ const styles = StyleSheet.create({
   },
 });
 
-function mapStateToProps(state) {
-  return {
-    user: pull(state, 'user'),
-    activeChannel: pull(state, 'activeChannel'),
-    activeCircle: pull(state, 'activeCircle'),
-  };
-}
-
 export default compose(graphql(CREATE_MESSAGE, { name: 'createMessage' }))(
-  connect(mapStateToProps)(Channel),
+  Channel,
 );

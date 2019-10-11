@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useGlobal } from 'reactn';
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import {
   ScrollView,
@@ -14,14 +14,15 @@ import {
 } from '../../../graphql/queries';
 import { Query, graphql } from 'react-apollo';
 import { updateChannel } from '../../../redux/state/actions';
-import { pull } from '../../../redux/state/reducers';
-import { connect } from 'react-redux';
+
 import { UIActivityIndicator } from 'react-native-indicators';
 import moment from 'moment';
 
 function Revisions(props) {
+  const [activeChannel, setActiveChannel] = useGlobal('activeChannel');
+
   useEffect(() => {
-    props.dispatch(updateChannel(null));
+    setActiveChannel(null);
   }, []);
 
   const goToSettings = () => {
@@ -97,21 +98,21 @@ function Revisions(props) {
             </View>
             <ScrollView horizontal={true} style={styles.boardsWrapper}>
               <RevisionBoard
-                boardName='New Revisions'
+                boardName="New Revisions"
                 revisions={newRevisions}
                 circleID={activeCircle}
                 user={user}
                 belongsToCircle={belongsToCircle}
               />
               <RevisionBoard
-                boardName='Recently Passed'
+                boardName="Recently Passed"
                 revisions={recentlyPassed}
                 circleID={activeCircle}
                 user={user}
                 belongsToCircle={belongsToCircle}
               />
               <RevisionBoard
-                boardName='Recently Rejected'
+                boardName="Recently Rejected"
                 revisions={recentlyRejected}
                 circleID={activeCircle}
                 user={user}
@@ -125,21 +126,12 @@ function Revisions(props) {
   );
 }
 
-function mapStateToProps(state) {
-  return {
-    user: pull(state, 'user'),
-    activeCircle: pull(state, 'activeCircle'),
-  };
-}
-
-export default connect(mapStateToProps)(
-  graphql(IS_USER_IN_CIRCLE, {
-    name: 'isUserInCircle',
-    options: ({ activeCircle, user }) => ({
-      variables: { circle: activeCircle || '', user: user || '' },
-    }),
-  })(Revisions),
-);
+export default graphql(IS_USER_IN_CIRCLE, {
+  name: 'isUserInCircle',
+  options: ({ activeCircle, user }) => ({
+    variables: { circle: activeCircle || '', user: user || '' },
+  }),
+})(Revisions);
 
 const styles = StyleSheet.create({
   wrapper: {

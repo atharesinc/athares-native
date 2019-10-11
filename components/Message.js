@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'reactn';
 import { StyleSheet, View, Text } from 'react-native';
 import moment from 'moment';
 import ImageMessage from './ImageMessage';

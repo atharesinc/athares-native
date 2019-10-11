@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'reactn';
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import InviteUser from '../../../components/InviteUser';
 
@@ -15,8 +15,6 @@ import PortalButton from '../../../components/PortalButton';
 import { graphql, compose } from 'react-apollo';
 import { ADD_USER_TO_CIRCLE } from '../../../graphql/mutations';
 
-import { connect } from 'react-redux';
-import { pull } from '../../../redux/state/reducers';
 import { UIActivityIndicator } from 'react-native-indicators';
 
 function AddUser({ activeCircle, loading }) {
@@ -73,7 +71,7 @@ function AddUser({ activeCircle, loading }) {
   return (
     <ScreenWrapper styles={[styles.wrapper]}>
       <ScrollView styles={[styles.wrapper]}>
-        <KeyboardAvoidingView behavior='padding'>
+        <KeyboardAvoidingView behavior="padding">
           <Text style={styles.header}>
             ADD EXISTING USERS TO PARTICIPATE IN THIS CIRCLE
           </Text>
@@ -111,7 +109,7 @@ function AddUser({ activeCircle, loading }) {
             Invitations aren't subject to democratic process.
           </Text>
           <PortalButton
-            title='Invite Users'
+            title="Invite Users"
             style={styles.marginTop}
             onPress={submit}
           />
@@ -184,13 +182,6 @@ const styles = StyleSheet.create({
   },
 });
 
-function mapStateToProps(state) {
-  return {
-    user: pull(state, 'user'),
-    pub: pull(state, 'pub'),
-    activeCircle: pull(state, 'activeCircle'),
-  };
-}
-export default connect(mapStateToProps)(
-  compose(graphql(ADD_USER_TO_CIRCLE, { name: 'addUserToCircle' }))(AddUser),
-);
+export default compose(
+  graphql(ADD_USER_TO_CIRCLE, { name: 'addUserToCircle' }),
+)(AddUser);

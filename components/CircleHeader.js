@@ -1,8 +1,6 @@
-import React from 'react';
+import React from 'reactn';
 
 import { Text, View, StyleSheet } from 'react-native';
-import { pull } from '../redux/state/reducers';
-import { connect } from 'react-redux';
 
 const CircleHeader = ({ name = 'No Circle Selected' }) => {
   return (
@@ -39,9 +37,4 @@ const styles = StyleSheet.create({
   },
 });
 
-function mapStateToProps(state) {
-  return {
-    activeCircle: pull(state, 'activeCircle'),
-  };
-}
-export default connect(mapStateToProps)(CircleHeader);
+export default CircleHeader;

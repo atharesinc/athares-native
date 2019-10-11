@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'reactn';
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
 
 export default function PortalToggle(props) {

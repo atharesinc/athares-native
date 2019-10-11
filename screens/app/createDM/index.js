@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'reactn';
 import {
   View,
   ScrollView,
@@ -19,8 +19,6 @@ import { uploadImage, uploadDocument } from '../../../utils/upload';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { UIActivityIndicator } from 'react-native-indicators';
 
-import { pull } from '../../../redux/state/reducers';
-import { connect } from 'react-redux';
 import SimpleCrypto from 'simple-crypto-js';
 
 import { GET_USER_BY_ID } from '../../../graphql/queries';
@@ -53,7 +51,7 @@ function CreateDM({ user, ...props }) {
             handleDelete(i);
           }}
         >
-          <Icon name='x' size={20} color={styles.tagText.color} />
+          <Icon name="x" size={20} color={styles.tagText.color} />
         </TouchableOpacity>
       </View>
     ));
@@ -64,9 +62,7 @@ function CreateDM({ user, ...props }) {
     if (!data.User) {
       return false;
     }
-    await setState({
-      uploadInProgress: true,
-    });
+    setUploadInProgress(true);
     // We're going to allow users to have no recipients because they always get added to a channel on creation
     // This defaults to a "just you" channel but they can later add users if they like
     // if (selectedUsers.length === 0) {
@@ -222,7 +218,7 @@ function CreateDM({ user, ...props }) {
       </View>
       <Chat user={user} messages={[]} />
       <ChatInput onSend={submit} uploadInProgress={uploadInProgress} />
-      <KeyboardAvoidingView behavior='padding' />
+      <KeyboardAvoidingView behavior="padding" />
       {Platform.OS === 'android' ? <KeyboardSpacer topSpacing={-130} /> : null}
     </ScreenWrapper>
   );
@@ -270,20 +266,12 @@ const styles = StyleSheet.create({
   },
 });
 
-function mapStateToProps(state) {
-  return {
-    user: pull(state, 'user'),
-  };
-}
-
-export default connect(mapStateToProps)(
-  compose(
-    graphql(CREATE_MESSAGE, { name: 'createMessage' }),
-    graphql(ADD_USER_TO_CHANNEL, { name: 'addUserToChannel' }),
-    graphql(CREATE_CHANNEL, { name: 'createChannel' }),
-    graphql(CREATE_KEY, { name: 'createKey' }),
-    graphql(GET_USER_BY_ID, {
-      options: ({ user }) => ({ variables: { id: user || '' } }),
-    }),
-  )(CreateDM),
-);
+export default compose(
+  graphql(CREATE_MESSAGE, { name: 'createMessage' }),
+  graphql(ADD_USER_TO_CHANNEL, { name: 'addUserToChannel' }),
+  graphql(CREATE_CHANNEL, { name: 'createChannel' }),
+  graphql(CREATE_KEY, { name: 'createKey' }),
+  graphql(GET_USER_BY_ID, {
+    options: ({ user }) => ({ variables: { id: user || '' } }),
+  }),
+)(CreateDM);

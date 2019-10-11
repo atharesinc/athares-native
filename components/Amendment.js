@@ -1,23 +1,25 @@
-import React from 'react';
+import React, { useGlobal } from 'reactn';
 import { withNavigation } from 'react-navigation';
 import Icon from '@expo/vector-icons/Feather';
-import { updateRevision, updateAmendment } from '../redux/state/actions';
-import { connect } from 'react-redux';
-
 import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
 
 const Amendment = ({ amendment, ...props }) => {
+  const [activeAmendment, setActiveAmendment] = useGlobal('activeAmendment');
+  const [activeRevision, setActiveRevision] = useGlobal('activeRevision');
+
   const goToRevision = () => {
-    props.dispatch(updateRevision(amendment.revision.id));
+    setActiveRevision(amendment.revision.id);
     props.navigation.navigate('ViewRevision');
   };
+
   const editAmendment = () => {
     if (hasOutstandingRevision) {
       return false;
     }
-    props.dispatch(updateAmendment(amendment.id));
+    setActiveAmendment(amendment.id);
     props.navigation.navigate('EditAmendment');
   };
+
   const hasOutstandingRevision =
     amendment.revision !== null && amendment.revision.passed === null;
   return (
@@ -51,10 +53,7 @@ const Amendment = ({ amendment, ...props }) => {
   );
 };
 
-function mapStateToProps(state) {
-  return {};
-}
-export default connect(mapStateToProps)(withNavigation(Amendment));
+export default withNavigation(Amendment);
 
 const styles = StyleSheet.create({
   amendmentWrapperOuter: {

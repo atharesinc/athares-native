@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'reactn';
 import { NavigationActions } from 'react-navigation';
 import { ScrollView, StyleSheet } from 'react-native';
 import UserLink from '../../../components/UserLink';
@@ -6,9 +6,8 @@ import MenuLink from '../../../components/MenuLink';
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import { Linking } from 'expo';
 
-import { connect } from 'react-redux';
 import { logout } from '../../../redux/state/actions';
-import { pull } from '../../../redux/state/reducers';
+
 import { Query } from 'react-apollo';
 import { GET_USER_BY_ID } from '../../../graphql/queries';
 
@@ -56,24 +55,24 @@ function SideMenu(props) {
             {user ? (
               <UserLink onPress={goToProfile} user={user} />
             ) : (
-              <MenuLink icon='log-in' label='Login' onPress={goToLogin} />
+              <MenuLink icon="log-in" label="Login" onPress={goToLogin} />
             )}
             <ScrollView>
               {/* Links */}
               <MenuLink
-                icon='help-circle'
-                label='About'
-                details='FAQs and Us'
+                icon="help-circle"
+                label="About"
+                details="FAQs and Us"
                 onPress={goToAbout}
               />
               <MenuLink
-                icon='info'
-                label='Privacy'
-                details='Privacy Policy and Terms of Use'
+                icon="info"
+                label="Privacy"
+                details="Privacy Policy and Terms of Use"
                 onPress={goToPolicy}
               />
               {user && (
-                <MenuLink icon='log-out' label='Log out' onPress={logoutUser} />
+                <MenuLink icon="log-out" label="Log out" onPress={logoutUser} />
               )}
             </ScrollView>
           </ScreenWrapper>
@@ -113,9 +112,4 @@ const styles = StyleSheet.create({
   },
 });
 
-function mapStateToProps(state) {
-  return {
-    userId: pull(state, 'user'),
-  };
-}
-export default connect(mapStateToProps)(SideMenu);
+export default SideMenu;

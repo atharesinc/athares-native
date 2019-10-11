@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef } from 'reactn';
 import { TouchableOpacity, TextInput, Text, StyleSheet } from 'react-native';
 
 function Input({ style = {}, label = null, description = null, ...props }) {

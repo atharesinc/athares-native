@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useGlobal } from 'reactn';
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import Input from '../../../components/Input';
 
@@ -19,18 +19,14 @@ import { GET_CIRCLE_NAME_BY_ID } from '../../../graphql/queries';
 import { compose, graphql, Query } from 'react-apollo';
 import { updateChannel } from '../../../redux/state/actions';
 
-import { connect } from 'react-redux';
-import { pull } from '../../../redux/state/reducers';
-
 function CreateChannel(props) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [loadingOther, setLoadingOther] = useState(false);
+  const [activeChannel, setActiveChannel] = useGlobal('activeChannel');
 
   submit = async e => {
-    await setState({
-      loadingOther: true,
-    });
+    setLoadingOther(true);
 
     if (name.trim().length === 0) {
       return false;
@@ -65,7 +61,7 @@ function CreateChannel(props) {
       let { name } = res.data.addToCircleOnChannels.circleCircle;
 
       Alert.alert('Channel Created', `${name} has been created in ${name}.`);
-      props.dispatch(updateChannel(newChannel.id));
+      setActiveChannel(newChannel.id);
 
       props.navigation.navigate('Channel');
     } catch (err) {
@@ -93,7 +89,7 @@ function CreateChannel(props) {
         return (
           <ScreenWrapper styles={[styles.wrapper]}>
             <ScrollView styles={[styles.wrapper]}>
-              <KeyboardAvoidingView behavior='padding'>
+              <KeyboardAvoidingView behavior="padding">
                 <Text style={styles.header}>
                   CREATE A NEW CHANNEL WITHIN {circle.name}.
                 </Text>
@@ -116,7 +112,7 @@ function CreateChannel(props) {
                   By pressing "Create Channel" you will create a new channel
                   within {circle.name}.
                 </Text>
-                <PortalButton title='Create Channel' onPress={submit} />
+                <PortalButton title="Create Channel" onPress={submit} />
               </KeyboardAvoidingView>
             </ScrollView>
           </ScreenWrapper>
@@ -153,15 +149,7 @@ const styles = StyleSheet.create({
   },
 });
 
-function mapStateToProps(state) {
-  return {
-    user: pull(state, 'user'),
-    activeCircle: pull(state, 'activeCircle'),
-    circles: pull(state, 'circles'),
-  };
-}
-
 export default compose(
   graphql(CREATE_CHANNEL, { name: 'createChannel' }),
   graphql(ADD_CHANNEL_TO_CIRCLE, { name: 'addChannelToCircle' }),
-)(connect(mapStateToProps)(CreateChannel));
+)(CreateChannel);

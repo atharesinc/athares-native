@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'reactn';
 
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { withNavigation } from 'react-navigation';

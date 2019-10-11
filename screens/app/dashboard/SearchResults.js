@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment } from 'reactn';
 import SearchSection from './SearchSection';
 
 export const SearchResults = ({

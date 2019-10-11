@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment } from 'reactn';
 import SwitchLine from '../../../components/SwitchLine';
 
 import { Text, View, StyleSheet } from 'react-native';

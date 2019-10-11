@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useGlobal } from 'reactn';
 
 import {
   Text,
@@ -13,13 +13,13 @@ import CircleIcon from './CircleIcon';
 
 import { Query } from 'react-apollo';
 import { GET_CIRCLES_BY_USER_ID } from '../graphql/queries';
-import { connect } from 'react-redux';
-import { updateCircle } from '../redux/state/actions';
-import { pull } from '../redux/state/reducers';
 
-const Circles = ({ loggedIn = false, activeCircle, user, ...props }) => {
+const Circles = ({ loggedIn = false, ...props }) => {
+  const [activeCircle, setActiveCircle] = useGlobal('activeCircle');
+  const [user, setUser] = useGlobal('user');
+
   const selectCircle = (id = null) => {
-    props.dispatch(updateCircle(id));
+    setActiveCircle(id);
   };
   const goToCreateCircle = () => {
     if (loggedIn) {
@@ -45,7 +45,7 @@ const Circles = ({ loggedIn = false, activeCircle, user, ...props }) => {
             >
               <View style={styles.iconWrapper}>
                 <Icon
-                  name='plus'
+                  name="plus"
                   color={loggedIn ? '#FFFFFF' : '#282a38'}
                   size={30}
                 />
@@ -111,10 +111,4 @@ const styles = StyleSheet.create({
   },
 });
 
-function mapStateToProps(state) {
-  return {
-    activeCircle: pull(state, 'activeCircle'),
-    user: pull(state, 'user'),
-  };
-}
-export default connect(mapStateToProps)(withNavigation(Circles));
+export default withNavigation(Circles);

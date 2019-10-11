@@ -1,5 +1,5 @@
 import { TouchableOpacity, Text, StyleSheet, View } from "react-native";
-import React from "react";
+import React from 'reactn';
 
 const PortalButton = ({ style = {}, textStyle = {}, title = "", ...props }) => (
   <TouchableOpacity style={[styles.wrapper, style]} {...props}>

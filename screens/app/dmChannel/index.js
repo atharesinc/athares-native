@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'reactn';
 import { createDrawerNavigator } from 'react-navigation-drawer';
 
 import {
@@ -9,9 +9,6 @@ import {
   Keyboard,
 } from 'react-native';
 import Menu from '../dmSettings';
-import { pull } from '../../../redux/state/reducers';
-import { removeUnreadDM } from '../../../redux/state/actions';
-import { connect } from 'react-redux';
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import Chat from '../../../components/Chat';
 import ChatInput from '../../../components/ChatInput';
@@ -25,9 +22,7 @@ import {
 import { SUB_TO_MESSAGES_BY_CHANNEL_ID } from '../../../graphql/subscriptions';
 import { compose, graphql, Query } from 'react-apollo';
 import { uploadImage, uploadDocument } from '../../../utils/upload';
-import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { UIActivityIndicator } from 'react-native-indicators';
-const pullUI = require('../../../redux/ui/reducers').pull;
 
 class DMChannelWithoutDrawer extends Component {
   constructor(props) {
@@ -46,7 +41,7 @@ class DMChannelWithoutDrawer extends Component {
     Keyboard.addListener('keyboardWillHide', this.keyboardWillHide);
 
     if (this.props.activeChannel) {
-      this.props.dispatch(removeUnreadDM(this.props.activeChannel));
+      this.removeUnreadDM(this.props.activeChannel);
     }
     if (this.props.getUserKeys.User) {
       try {
@@ -70,6 +65,19 @@ class DMChannelWithoutDrawer extends Component {
       }
     }
   }
+  removeUnreadDM(chan) {
+    let { unreadDMs } = this.global;
+    if (unreadDMs.includes(chan)) {
+      let index = unreadDMs.findIndex(d => d === chan);
+      if (index !== -1) {
+        unreadDMs.splice(index, 1);
+        unreadDMs = [...unreadDMs];
+        this.setGlobal({
+          unreadDMs,
+        });
+      }
+    }
+  }
   keyboardWillShow = e => {
     this.setState({ footerLocation: e.endCoordinates.height });
   };
@@ -81,12 +89,12 @@ class DMChannelWithoutDrawer extends Component {
     if (prevProps.dmSettings !== this.props.dmSettings) {
       this.props.navigation.toggleDrawer();
     }
-    if (
-      this.props.activeChannel &&
-      this.props.activeChannel !== prevProps.activeChannel
-    ) {
-      this.props.dispatch(removeUnreadDM(this.props.activeChannel));
-    }
+    // if (
+    //   this.props.activeChannel &&
+    //   this.props.activeChannel !== prevProps.activeChannel
+    // ) {
+    //   this.props.dispatch(removeUnreadDM(this.props.activeChannel));
+    // }
     if (prevProps.getUserKeys.User !== this.props.getUserKeys.User) {
       try {
         let hashed = await AsyncStorage.getItem('ATHARES_HASH');
@@ -114,7 +122,7 @@ class DMChannelWithoutDrawer extends Component {
     if (text.trim() === '' && file === null) {
       return false;
     }
-    let { user, activeChannel: channel } = this.props;
+    let { user, activeChannel: channel } = this.global;
 
     let response = null;
     try {
@@ -143,7 +151,7 @@ class DMChannelWithoutDrawer extends Component {
       let newMessage = {
         text: this.simpleCrypto.encrypt(text.trim()),
         channel,
-        user: this.props.user,
+        user: this.global.user,
         file: response ? this.simpleCrypto.encrypt(response.url) : null,
         fileName: response ? response.name : null,
       };
@@ -198,7 +206,7 @@ class DMChannelWithoutDrawer extends Component {
   _subToMore = subscribeToMore => {
     subscribeToMore({
       document: SUB_TO_MESSAGES_BY_CHANNEL_ID,
-      variables: { id: this.props.activeChannel || '' },
+      variables: { id: this.global.activeChannel || '' },
       updateQuery: (prev, { subscriptionData }) => {
         let newMsg = subscriptionData.data.Message.node;
         // if (!prev.Channel.messages.find(m => m.id === newMsg.id)) {
@@ -218,7 +226,7 @@ class DMChannelWithoutDrawer extends Component {
     return (
       <Query
         query={GET_MESSAGES_FROM_CHANNEL_ID}
-        variables={{ id: this.props.activeChannel || '' }}
+        variables={{ id: this.global.activeChannel || '' }}
         onCompleted={this.scrollToBottom}
       >
         {({ data, subscribeToMore }) => {
@@ -275,24 +283,16 @@ class DMChannelWithoutDrawer extends Component {
     );
   }
 }
-function mapStateToProps(state) {
-  return {
-    user: pull(state, 'user'),
-    activeChannel: pull(state, 'activeChannel'),
-    dmSettings: pullUI(state, 'dmSettings'),
-  };
-}
-const DMChannelWithAllGarbage = connect(mapStateToProps)(
-  compose(
-    graphql(CREATE_MESSAGE, { name: 'createMessage' }),
-    graphql(GET_USER_KEYS, {
-      name: 'getUserKeys',
-      options: ({ user, activeChannel }) => ({
-        variables: { user: user, channel: activeChannel },
-      }),
+
+const DMChannelWithAllGarbage = compose(
+  graphql(CREATE_MESSAGE, { name: 'createMessage' }),
+  graphql(GET_USER_KEYS, {
+    name: 'getUserKeys',
+    options: ({ user, activeChannel }) => ({
+      variables: { user: user, channel: activeChannel },
     }),
-  )(DMChannelWithoutDrawer),
-);
+  }),
+)(DMChannelWithoutDrawer);
 
 export default createDrawerNavigator(
   {
@@ -309,9 +309,6 @@ export default createDrawerNavigator(
 
 const styles = StyleSheet.create({
   wrapper: {
-    // alignItems: "stretch",
-    // justifyContent: "flex-start",
-    // width: "100%",
     flex: 1,
   },
 });

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useGlobal } from 'reactn';
 import {
   View,
   Text,
@@ -11,10 +11,8 @@ import {
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import Statistic from '../../../components/Statistic';
 import DiffSection from '../../../components/DiffSection';
-import { updateChannel, updateViewUser } from '../../../redux/state/actions';
 import moment from 'moment';
-import { pull } from '../../../redux/state/reducers';
-import { connect } from 'react-redux';
+
 import { graphql, compose } from 'react-apollo';
 import { withNavigation } from 'react-navigation';
 import { CREATE_VOTE, UPDATE_VOTE } from '../../../graphql/mutations';
@@ -26,8 +24,10 @@ import {
 import { UIActivityIndicator } from 'react-native-indicators';
 
 function ViewRevision(props) {
+  const [activeChannel, setActiveChannel] = useGlobal('activeChannel');
+
   useEffect(() => {
-    props.dispatch(updateChannel(null));
+    setActiveChannel(null);
   }, []);
 
   // const checkIfPass = () => {
@@ -35,7 +35,7 @@ function ViewRevision(props) {
   // };
 
   const goToUser = id => {
-    props.dispatch(updateViewUser(id));
+    setActiveViewUser(id);
     props.navigation.navigate('ViewOtherUser');
   };
 
@@ -168,16 +168,16 @@ function ViewRevision(props) {
               )}
               <View style={styles.wrapSection}>
                 <Statistic
-                  header='Date Proposed'
+                  header="Date Proposed"
                   text={new Date(revision.createdAt).toLocaleDateString()}
                 />
                 <Statistic
-                  header='Expires'
+                  header="Expires"
                   text={new Date(revision.expires).toLocaleDateString()}
                 />
-                <Statistic header='Votes to Support' text={23} />
-                <Statistic header='Votes to Reject' text={15} />
-                {hasExpired && <Statistic header='Passed' text={false} />}
+                <Statistic header="Votes to Support" text={23} />
+                <Statistic header="Votes to Reject" text={15} />
+                {hasExpired && <Statistic header="Passed" text={false} />}
               </View>
               <Text style={styles.disclaimer}>Backer</Text>
               <TouchableOpacity
@@ -194,30 +194,31 @@ function ViewRevision(props) {
                   {revision.backer.firstName + ' ' + revision.backer.lastName}
                 </Text>
               </TouchableOpacity>
-              {canVote && hasExpired === false && (
-                <View style={styles.voteSectionWrapper}>
-                  <TouchableOpacity
-                    style={[styles.voteButton, styles.greenBorder]}
-                    onPress={() => {
-                      vote(true);
-                    }}
-                  >
-                    <Text style={[styles.voteText, styles.greenText]}>
-                      SUPPORT
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.voteButton, styles.redBorder]}
-                    onPress={() => {
-                      vote(false);
-                    }}
-                  >
-                    <Text style={[styles.voteText, styles.redText]}>
-                      REJECT
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              )}
+              {canVote &&
+                hasExpired === false && (
+                  <View style={styles.voteSectionWrapper}>
+                    <TouchableOpacity
+                      style={[styles.voteButton, styles.greenBorder]}
+                      onPress={() => {
+                        vote(true);
+                      }}
+                    >
+                      <Text style={[styles.voteText, styles.greenText]}>
+                        SUPPORT
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.voteButton, styles.redBorder]}
+                      onPress={() => {
+                        vote(false);
+                      }}
+                    >
+                      <Text style={[styles.voteText, styles.redText]}>
+                        REJECT
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
             </View>
           </View>
         </ScrollView>
@@ -234,32 +235,23 @@ function ViewRevision(props) {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    user: pull(state, 'user'),
-    activeCircle: pull(state, 'activeCircle'),
-    activeRevision: pull(state, 'activeRevision'),
-  };
-}
+export default compose(
+  graphql(CREATE_VOTE, { name: 'createVote' }),
+  graphql(UPDATE_VOTE, { name: 'updateVote' }),
+  graphql(IS_USER_IN_CIRCLE, {
+    name: 'isUserInCircle',
+    options: ({ activeCircle, user }) => ({
+      variables: { circle: activeCircle || '', user: user || '' },
+    }),
+  }),
+  graphql(GET_REVISION_BY_ID, {
+    options: ({ activeRevision }) => ({
+      variables: { id: activeRevision || '' },
+      pollInterval: 5000,
+    }),
+  }),
+)(withNavigation(ViewRevision));
 
-export default connect(mapStateToProps)(
-  compose(
-    graphql(CREATE_VOTE, { name: 'createVote' }),
-    graphql(UPDATE_VOTE, { name: 'updateVote' }),
-    graphql(IS_USER_IN_CIRCLE, {
-      name: 'isUserInCircle',
-      options: ({ activeCircle, user }) => ({
-        variables: { circle: activeCircle || '', user: user || '' },
-      }),
-    }),
-    graphql(GET_REVISION_BY_ID, {
-      options: ({ activeRevision }) => ({
-        variables: { id: activeRevision || '' },
-        pollInterval: 5000,
-      }),
-    }),
-  )(withNavigation(ViewRevision)),
-);
 const styles = StyleSheet.create({
   wrapper: {
     alignItems: 'stretch',

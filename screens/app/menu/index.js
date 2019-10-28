@@ -1,50 +1,67 @@
-import React, { Component } from 'reactn';
+import React, { useGlobal } from 'reactn';
 import { NavigationActions } from 'react-navigation';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, AsyncStorage } from 'react-native';
+import { Linking } from 'expo';
+import { Query } from 'react-apollo';
 import UserLink from '../../../components/UserLink';
 import MenuLink from '../../../components/MenuLink';
 import ScreenWrapper from '../../../components/ScreenWrapper';
-import { Linking } from 'expo';
 
-import { Query } from 'react-apollo';
 import { GET_USER_BY_ID } from '../../../graphql/queries';
 
 function SideMenu(props) {
-  navigateToScreen = route => () => {
+  const [, setActiveChannel] = useGlobal('activeChannel');
+  const [, setActiveCircle] = useGlobal('activeCircle');
+  const [, setActiveRevision] = useGlobal('activeRevision');
+  const [user, setUser] = useGlobal('user');
+  const [, setPub] = useGlobal('pub');
+  const [, setActiveAmendment] = useGlobal('setActiveAmendment');
+  const [, setChannels] = useGlobal('setChannels');
+  const [, setUnreadChannels] = useGlobal('setUnreadChannels');
+  const [, setDMs] = useGlobal('setDMs');
+  const [, setUnreadDMs] = useGlobal('setUnreadDMs');
+
+  const navigateToScreen = (route) => () => {
     const navigateAction = NavigationActions.navigate({
       routeName: route,
     });
     props.navigation.dispatch(navigateAction);
   };
-  logout = async () => {
+
+  const logout = async () => {
     setActiveChannel(null);
     setActiveCircle(null);
     setActiveRevision(null);
-    setUser(null), setPub(null);
+    setUser(null);
+    setPub(null);
     setActiveAmendment(null);
     setChannels([]);
     setUnreadChannels([]);
     setDMs([]);
     setUnreadDMs([]);
-    AsyncStorage.multiRemove([
+    await AsyncStorage.multiRemove([
       'ATHARES_ALIAS',
       'ATHARES_HASH',
       'ATHARES_TOKEN',
     ]);
     props.navigation.navigate('Login');
   };
+
   const goToLogin = () => {
     props.navigation.navigate('Login');
   };
+
   const goToProfile = () => {
     const navigateAction = NavigationActions.navigate({
       routeName: 'ViewUser',
     });
     props.navigation.dispatch(navigateAction);
   };
+
   const goToAbout = () => {
     Linking.openURL('https://www.athares.us/about');
   };
+
   const goToPolicy = () => {
     Linking.openURL('https://www.athares.us/policy');
   };
@@ -52,19 +69,19 @@ function SideMenu(props) {
   return (
     <Query
       query={GET_USER_BY_ID}
-      variables={{ id: props.userId || '' }}
+      variables={{ id: user || '' }}
       pollInterval={30000}
     >
       {({ data }) => {
-        let user = null;
+        let userObj = null;
         if (data.User) {
-          user = data.User;
+          userObj = data.User;
         }
         return (
           <ScreenWrapper styles={[styles.wrapper]}>
             {/* User */}
-            {user ? (
-              <UserLink onPress={goToProfile} user={user} />
+            {userObj ? (
+              <UserLink onPress={goToProfile} user={userObj} />
             ) : (
               <MenuLink icon="log-in" label="Login" onPress={goToLogin} />
             )}
@@ -82,7 +99,7 @@ function SideMenu(props) {
                 details="Privacy Policy and Terms of Use"
                 onPress={goToPolicy}
               />
-              {user && (
+              {userObj && (
                 <MenuLink icon="log-out" label="Log out" onPress={logout} />
               )}
             </ScrollView>

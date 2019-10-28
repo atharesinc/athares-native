@@ -107,7 +107,7 @@ function Register({ createUser, signinUser, createUserPref, ...props }) {
           id: userId,
         },
       });
-      //store in redux
+
       await AsyncStorage.setItem('ATHARES_ALIAS', email);
       await AsyncStorage.setItem('ATHARES_HASH', hashedToken);
       await AsyncStorage.setItem('ATHARES_TOKEN', token);

@@ -16,7 +16,6 @@ import { CREATE_CIRCLE, ADD_USER_TO_CIRCLE } from '../../../graphql/mutations';
 import { compose, graphql } from 'react-apollo';
 import { UIActivityIndicator } from 'react-native-indicators';
 
-import { updateCircle } from '../../../redux/state/actions';
 import defaultCircleImage from '../../../components/defaultCircleImage';
 
 function CreateCircle(props) {

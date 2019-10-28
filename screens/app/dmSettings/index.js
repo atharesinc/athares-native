@@ -17,8 +17,6 @@ import { NavigationActions } from 'react-navigation';
 import InviteUser from '../../../components/InviteUser';
 import Icon from '@expo/vector-icons/Feather';
 
-import { updateChannel } from '../../../redux/state/actions';
-
 import {
   GET_USERS_BY_CHANNEL_ID,
   GET_USER_KEYS,

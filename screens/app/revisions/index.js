@@ -13,7 +13,6 @@ import {
   IS_USER_IN_CIRCLE,
 } from '../../../graphql/queries';
 import { Query, graphql } from 'react-apollo';
-import { updateChannel } from '../../../redux/state/actions';
 
 import { UIActivityIndicator } from 'react-native-indicators';
 import moment from 'moment';

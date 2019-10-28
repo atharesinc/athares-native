@@ -1,14 +1,9 @@
-import React, { Component } from 'reactn';
+import React from 'reactn';
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import Amendment from '../../../components/Amendment';
 
 import { Text, ScrollView, StyleSheet } from 'react-native';
 
-import {
-  updateCircle,
-  updateChannel,
-  updateRevision,
-} from '../../../redux/state/actions';
 import { GET_AMENDMENTS_FROM_CIRCLE_ID } from '../../../graphql/queries';
 import { Query } from 'react-apollo';
 import { SUB_TO_CIRCLES_AMENDMENTS } from '../../../graphql/subscriptions';

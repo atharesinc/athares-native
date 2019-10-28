@@ -2,7 +2,6 @@ import React, { useGlobal } from 'reactn';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from '@expo/vector-icons/Feather';
 import { withNavigation } from 'react-navigation';
-import { updateChannel } from '../redux/state/actions';
 
 const ChannelItem = ({
   channel = { name: '', channelType: 'group' },

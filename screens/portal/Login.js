@@ -61,11 +61,20 @@ function Login(props) {
         props.navigation.navigate('Dashboard');
       } catch (err) {
         console.error(new Error(err));
-        // there was some sort of error auto-logging in, clear localStorage and redux just in case
-        props.dispatch(logout());
+        // there was some sort of error auto-logging in, clear localStorage just in case
+        AsyncStorage.multiRemove([
+          'ATHARES_ALIAS',
+          'ATHARES_HASH',
+          'ATHARES_TOKEN',
+        ]);
+        setActiveChannel(null);
+        setActiveCircle(null);
+        setActiveRevision(null);
+        setUser(null);
       }
     }
   };
+
   useEffect(() => {
     init();
   }, []);
@@ -106,7 +115,6 @@ function Login(props) {
         },
       } = res;
 
-      //store in redux
       await AsyncStorage.setItem('ATHARES_ALIAS', email);
       await AsyncStorage.setItem('ATHARES_HASH', hashedToken);
       await AsyncStorage.setItem('ATHARES_TOKEN', token);

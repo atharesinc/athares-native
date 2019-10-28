@@ -15,7 +15,7 @@ function InviteUser({ style = {}, getUsers, tags, circle, ...props }) {
   const [input, setInput] = useState('');
 
   const handleAddition = suggestion => {
-    let newTags = props.tags.concat([suggestion]);
+    let newTags = tags.concat([suggestion]);
     props.updateTags(newTags);
     setInput('');
   };

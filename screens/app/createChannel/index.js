@@ -17,7 +17,6 @@ import {
 } from '../../../graphql/mutations';
 import { GET_CIRCLE_NAME_BY_ID } from '../../../graphql/queries';
 import { compose, graphql, Query } from 'react-apollo';
-import { updateChannel } from '../../../redux/state/actions';
 
 function CreateChannel(props) {
   const [name, setName] = useState('');

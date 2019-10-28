@@ -10,9 +10,6 @@ import RevisionMonitor from './components/RevisionMonitor';
 import ChannelUpdateMonitor from './components/ChannelUpdateMonitor';
 import DMUpdateMonitor from './components/DMUpdateMonitor';
 
-// redux tomfoolery
-import { Provider } from 'react-redux';
-import { store } from './redux';
 import AppContaner from './screens';
 
 // apollo graphql
@@ -82,29 +79,27 @@ export default function App() {
     <Fragment>
       <StatusBar barStyle="light-content" />
       <ApolloProvider client={client}>
-        <Provider store={store}>
-          <SafeAreaView
-            style={styles.container}
-            forceInset={{
-              top: 'always',
-              bottom: 'always',
-            }}
+        <SafeAreaView
+          style={styles.container}
+          forceInset={{
+            top: 'always',
+            bottom: 'always',
+          }}
+        >
+          <ImageBackground
+            source={require('./assets/iss-master.jpg')}
+            style={styles.image}
+            progressiveRenderingEnabled
           >
-            <ImageBackground
-              source={require('./assets/iss-master.jpg')}
-              style={styles.image}
-              progressiveRenderingEnabled
-            >
-              <View style={styles.transparentView}>
-                <AppContaner style={styles.appContainer} />
-              </View>
-              {/* Fun Stuff! */}
-              <RevisionMonitor />
-              <ChannelUpdateMonitor />
-              <DMUpdateMonitor />
-            </ImageBackground>
-          </SafeAreaView>
-        </Provider>
+            <View style={styles.transparentView}>
+              <AppContaner style={styles.appContainer} />
+            </View>
+            {/* Fun Stuff! */}
+            <RevisionMonitor />
+            <ChannelUpdateMonitor />
+            <DMUpdateMonitor />
+          </ImageBackground>
+        </SafeAreaView>
       </ApolloProvider>
     </Fragment>
   );

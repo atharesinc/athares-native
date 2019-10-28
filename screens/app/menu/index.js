@@ -6,8 +6,6 @@ import MenuLink from '../../../components/MenuLink';
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import { Linking } from 'expo';
 
-import { logout } from '../../../redux/state/actions';
-
 import { Query } from 'react-apollo';
 import { GET_USER_BY_ID } from '../../../graphql/queries';
 
@@ -18,8 +16,21 @@ function SideMenu(props) {
     });
     props.navigation.dispatch(navigateAction);
   };
-  logoutUser = async () => {
-    props.dispatch(logout());
+  logout = async () => {
+    setActiveChannel(null);
+    setActiveCircle(null);
+    setActiveRevision(null);
+    setUser(null), setPub(null);
+    setActiveAmendment(null);
+    setChannels([]);
+    setUnreadChannels([]);
+    setDMs([]);
+    setUnreadDMs([]);
+    AsyncStorage.multiRemove([
+      'ATHARES_ALIAS',
+      'ATHARES_HASH',
+      'ATHARES_TOKEN',
+    ]);
     props.navigation.navigate('Login');
   };
   const goToLogin = () => {
@@ -72,7 +83,7 @@ function SideMenu(props) {
                 onPress={goToPolicy}
               />
               {user && (
-                <MenuLink icon="log-out" label="Log out" onPress={logoutUser} />
+                <MenuLink icon="log-out" label="Log out" onPress={logout} />
               )}
             </ScrollView>
           </ScreenWrapper>

@@ -2,8 +2,6 @@ import React, { useEffect, useGlobal } from 'reactn';
 import { AsyncStorage, Image, View } from 'react-native';
 import { SIGNIN_USER } from '../../graphql/mutations';
 import { graphql } from 'react-apollo';
-import { sha } from '../../utils/crypto';
-import { UIActivityIndicator } from 'react-native-indicators';
 import FadeInView from '../../components/FadeInView';
 
 export const SplashScreen = props => {
@@ -49,7 +47,7 @@ export const SplashScreen = props => {
         props.navigation.navigate('Dashboard');
       } catch (err) {
         console.error(new Error(err));
-        // there was some sort of error auto-logging in, clear localStorage and redux just in case
+        // there was some sort of error auto-logging in, clear localStorage just in case
         logout();
         props.navigation.navigate('Login');
       }
@@ -72,6 +70,11 @@ export const SplashScreen = props => {
     setUnreadChannels([]);
     setDMs([]);
     setUnreadDMs([]);
+    AsyncStorage.multiRemove([
+      'ATHARES_ALIAS',
+      'ATHARES_HASH',
+      'ATHARES_TOKEN',
+    ]);
   };
 
   return (

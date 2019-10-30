@@ -21,12 +21,12 @@ function SideMenu(props) {
   const [, setDMs] = useGlobal('setDMs');
   const [, setUnreadDMs] = useGlobal('setUnreadDMs');
 
-  const navigateToScreen = (route) => () => {
-    const navigateAction = NavigationActions.navigate({
-      routeName: route,
-    });
-    props.navigation.dispatch(navigateAction);
-  };
+  // const navigateToScreen = route => () => {
+  //   const navigateAction = NavigationActions.navigate({
+  //     routeName: route,
+  //   });
+  //   props.navigation.dispatch(navigateAction);
+  // };
 
   const logout = async () => {
     setActiveChannel(null);

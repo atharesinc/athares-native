@@ -2,7 +2,12 @@ import React, { Component } from 'reactn';
 import { FlatList } from 'react-native';
 import Message from './Message';
 
-export default function Chat({ messages, ...props }) {
+export default function Chat({
+  messages,
+  style = {},
+  paddingBottom = 40,
+  ...props
+}) {
   _renderItem = ({ item, index }) => (
     <Message
       multiMsg={
@@ -28,7 +33,7 @@ export default function Chat({ messages, ...props }) {
       renderItem={_renderItem}
       inverted
       keyExtractor={_keyExtractor}
-      contentContainerStyle={{ paddingBottom: 40 }}
+      contentContainerStyle={{ paddingBottom: paddingBottom || 40, ...style }}
     />
   );
 }

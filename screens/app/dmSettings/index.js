@@ -1,7 +1,5 @@
-import React, { Component, useGlobal, useState } from 'reactn';
+import React, { useGlobal, useState, withGlobal } from 'reactn';
 
-import ScreenWrapper from '../../../components/ScreenWrapper';
-import PortalButton from '../../../components/PortalButton';
 import {
   Text,
   View,
@@ -12,10 +10,15 @@ import {
   Alert,
   AsyncStorage,
 } from 'react-native';
-import { UIActivityIndicator } from 'react-native-indicators';
+// import { UIActivityIndicator } from 'react-native-indicators';
 import { NavigationActions } from 'react-navigation';
-import InviteUser from '../../../components/InviteUser';
 import Icon from '@expo/vector-icons/Feather';
+import SimpleCrypto from 'simple-crypto-js';
+import { compose, graphql } from 'react-apollo';
+import ScreenWrapper from '../../../components/ScreenWrapper';
+import PortalButton from '../../../components/PortalButton';
+import InviteUser from '../../../components/InviteUser';
+import Tag from './Tag';
 
 import {
   GET_USERS_BY_CHANNEL_ID,
@@ -28,9 +31,7 @@ import {
   DELETE_USER_FROM_DM,
   DELETE_USER_KEY,
 } from '../../../graphql/mutations';
-import SimpleCrypto from 'simple-crypto-js';
 import { encrypt, decrypt } from '../../../utils/crypto';
-import { compose, graphql } from 'react-apollo';
 
 function DMSettings(props) {
   const [activeChannel, setActiveChannel] = useGlobal('activeChannel');
@@ -38,6 +39,7 @@ function DMSettings(props) {
   const [loading, setLoading] = useState(false);
   const [showAddUsers, setShowAddUsers] = useState(false);
   const [tags, setTags] = useState([]);
+  const [isFocused, setIsFocused] = useState(false);
 
   const confirmLeave = () => {
     Alert.alert(
@@ -53,14 +55,14 @@ function DMSettings(props) {
       { cancelable: true },
     );
   };
-  leave = async () => {
-    let { activeChannel, user, updateChannelName } = props;
+  const leave = async () => {
+    const { activeChannel, user, updateChannelName } = props;
 
     try {
       // real quick, get the existing channel's name, and remove our name from it
-      let channelName = props.getUsers.Channel.users
+      const channelName = props.getUsers.Channel.users
         .filter(u => u.id !== user)
-        .map(u => u.firstName + ' ' + u.lastName)
+        .map(u => `${u.firstName} ${u.lastName}`)
         .join(', ');
 
       updateChannelName({
@@ -69,13 +71,13 @@ function DMSettings(props) {
           name: channelName,
         },
       });
-      let res = await props.deleteUserFromDM({
+      const res = await props.deleteUserFromDM({
         variables: {
           user,
           channel: activeChannel,
         },
       });
-      let { id } = res.data.removeFromUsersOnChannels.usersUser.keys[0];
+      const { id } = res.data.removeFromUsersOnChannels.usersUser.keys[0];
 
       await props.deleteUserKey({
         variables: {
@@ -85,65 +87,58 @@ function DMSettings(props) {
 
       Alert.alert(
         'Removed From Channel',
-        `You have left this channel. You will have to be re-invited to participate at a later time.`,
+        'You have left this channel. You will have to be re-invited to participate at a later time.',
       );
       setActiveChannel(null);
       close();
-      navigateToScreen(`Dashboard`);
+      navigateToScreen('Dashboard');
     } catch (err) {
       console.error(new Error(err));
       Alert.alert('Error', 'There was an error leaving this channel.');
     }
   };
-  navigateToScreen = route => () => {
+  const navigateToScreen = route => () => {
     const navigateAction = NavigationActions.navigate({
       routeName: route,
     });
     props.navigation.dispatch(navigateAction);
   };
 
-  handleDelete = index => {
-    let tagsSelected = tags;
+  const handleDelete = index => {
+    console.log('delete me 2', index);
+    console.log(tags);
+    const tagsSelected = tags;
     tagsSelected.splice(index, 1);
     setTags(tagsSelected);
   };
-  renderTags = tagsToRender => {
-    return tagsToRender.map((t, i) => (
-      <View style={styles.tag} key={t.id}>
-        <Text style={styles.tagText}>{t.name}</Text>
-        <TouchableOpacity
-          style={{ justifyContent: 'center', alignItems: 'center' }}
-          onPress={() => {
-            handleDelete(i);
-          }}
-        >
-          <Icon name="x" size={20} color={styles.tagText.color} />
-        </TouchableOpacity>
-      </View>
+
+  const renderTags = tagsToRender =>
+    tagsToRender.map((t, i) => (
+      <Tag key={t.id} handleDelete={handleDelete} i={i} tag={t} />
     ));
-  };
-  submit = async () => {
+
+  const submit = async () => {
     // hoo boy theres a lot to do here
-    let { activeChannel, updateChannelName } = props;
-    let { User: user } = props.getUserKeys;
+    const { activeChannel, updateChannelName } = props;
+    const { User: user } = props.getUserKeys;
     // get the users encrypted priv key
-    let userChannelKey = user.keys[0].key;
-    let myToken = AsyncStorage.getItem('ATHARES_HASH');
+    const userChannelKey = user.keys[0].key;
+    const myToken = AsyncStorage.getItem('ATHARES_HASH');
 
     // decrypt user's priv with stored token
-    let simpleCrypto = new SimpleCrypto(myToken);
+    const simpleCrypto = new SimpleCrypto(myToken);
 
-    let userPriv = simpleCrypto.decrypt(user.priv);
+    const userPriv = simpleCrypto.decrypt(user.priv);
 
     try {
       // decrypt this user's channel key
-      let decryptedChannelSecret = decrypt(userChannelKey, userPriv);
+      const decryptedChannelSecret = decrypt(userChannelKey, userPriv);
 
       // for each new user, encrypt the sym key
       // add connection from new user to channel
       // add each users key
       // give each user an encrypted copy of this keypair and store it in
-      let promiseList = selectedUsers.map(async u => {
+      const promiseList = selectedUsers.map(async u => {
         const encryptedKey = encrypt(decryptedChannelSecret, u.pub);
         return props.createKey({
           variables: {
@@ -155,7 +150,7 @@ function DMSettings(props) {
       });
 
       // add each user to this channel
-      let promiseList2 = selectedUsers.map(u =>
+      const promiseList2 = selectedUsers.map(u =>
         props.addUserToChannel({
           variables: {
             channel: activeChannel,
@@ -167,7 +162,7 @@ function DMSettings(props) {
       const allUsers = [...selectedUsers, ...existingUsers];
 
       const channelName = allUsers
-        .map(u => u.firstName + ' ' + u.lastName)
+        .map(u => `${u.firstName} ${u.lastName}`)
         .join(', ');
 
       // store all the keys, add all the users, and update the channel name
@@ -197,81 +192,78 @@ function DMSettings(props) {
       <View style={[styles.lineItem, { backgroundColor: '#2f3242' }]}>
         <Text style={styles.sectionHeading}>Settings</Text>
         <TouchableOpacity style={styles.center} onPress={close}>
-          <Icon name={'x'} size={25} color={'#FFFFFF'} />
+          <Icon name="x" size={25} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
-      {/* <KeyboardAvoidingView behavior="position">
-          <ScrollView styles={[styles.wrapper]}>
-            <View style={styles.lineItem}>
-              <Text style={styles.sectionHeading}>Add User</Text>
-              <Icon name={"user-plus"} size={20} color={"#FFFFFF"} />
+      <KeyboardAvoidingView behavior="position">
+        <ScrollView styles={[styles.wrapper]}>
+          <View style={styles.lineItem}>
+            <Text style={styles.sectionHeading}>Add User</Text>
+            <Icon name="user-plus" size={20} color="#FFFFFF" />
+          </View>
+          {tags.length !== 0 && (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <Text style={styles.toText}>Invite:</Text>
+              <ScrollView contentContainerStyle={styles.tagsList} horizontal>
+                {renderTags(tags)}
+              </ScrollView>
+              <TouchableOpacity style={styles.addButton} onPress={submit}>
+                <Icon name="plus" size={20} color="#00dffc" />
+              </TouchableOpacity>
             </View>
-            {tags.length !== 0 && (
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center"
-                }}
-              >
-                <Text style={styles.toText}>Invite:</Text>
-                <ScrollView
-                  contentContainerStyle={styles.tagsList}
-                  horizontal={true}
-                >
-                  {renderTags(tags)}
-                </ScrollView>
-                <TouchableOpacity
-                  style={styles.addButton}
-                  onPress={submit}
-                >
-                  <Icon name={"plus"} size={20} color={"#00dffc"} />
-                </TouchableOpacity>
-              </View>
-            )}
-            <InviteUser
-              tags={tags}
-              updateTags={updateTags}
-              onFocusChange={onFocusChange}
-            />
+          )}
+          <InviteUser
+            tags={tags}
+            updateTags={setTags}
+            onFocusChange={setIsFocused}
+          />
 
-            <View style={styles.section}>
-              <Text style={styles.sectionHeading}>Leave Channel</Text>
-              <Text style={styles.disclaimer}>
-                By pressing "Leave Channel" you will be removed from this
-                channel, and any messages or files you shared will not be
-                accessible by you. If you would like to return to this channel
-                at a later date, you will need to be re-invited by someone
-                inside the channel.
-              </Text>
-              <PortalButton
-                style={styles.repealButton}
-                textStyle={styles.repealText}
-                title={"Leave Channel"}
-              />
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView> */}
+          <View style={styles.section}>
+            <Text style={styles.sectionHeading}>Leave Channel</Text>
+            <Text style={styles.disclaimer}>
+              {`By pressing "Leave Channel" you will be removed from this channel, and any messages or files you shared will not be
+                accessible by you. If you would like to return to this channel at a later date, you will need to be re-invited by someone inside the channel.`}
+            </Text>
+            <PortalButton
+              style={styles.repealButton}
+              textStyle={styles.repealText}
+              title="Leave Channel"
+              onPress={leave}
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </ScreenWrapper>
   );
 }
 
-export default compose(
-  graphql(ADD_USER_TO_CHANNEL, { name: 'addUserToChannel' }),
-  graphql(UPDATE_CHANNEL_NAME, { name: 'updateChannelName' }),
-  graphql(CREATE_KEY, { name: 'createKey' }),
-  graphql(GET_USER_KEYS, {
-    name: 'getUserKeys',
-    options: ({ activeChannel, user }) => ({
-      variables: { channel: activeChannel || '', user: user || '' },
+export default withGlobal(({ user, activeChannel }) => ({
+  user,
+  activeChannel,
+}))(
+  compose(
+    graphql(ADD_USER_TO_CHANNEL, { name: 'addUserToChannel' }),
+    graphql(UPDATE_CHANNEL_NAME, { name: 'updateChannelName' }),
+    graphql(CREATE_KEY, { name: 'createKey' }),
+    graphql(GET_USER_KEYS, {
+      name: 'getUserKeys',
+      options: ({ activeChannel, user }) => ({
+        variables: { channel: activeChannel || '', user: user || '' },
+      }),
     }),
-  }),
-  graphql(GET_USERS_BY_CHANNEL_ID, {
-    name: 'getUsers',
-    options: ({ activeChannel }) => ({
-      variables: { id: activeChannel || '' },
+    graphql(GET_USERS_BY_CHANNEL_ID, {
+      name: 'getUsers',
+      options: ({ activeChannel }) => ({
+        variables: { id: activeChannel || '' },
+      }),
     }),
-  }),
-)(DMSettings);
+  )(DMSettings),
+);
 
 const styles = StyleSheet.create({
   wrapper: {

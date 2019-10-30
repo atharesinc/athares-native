@@ -1,5 +1,6 @@
-import React, { Component } from 'reactn';
+import React, { Component, withGlobal } from 'reactn';
 import { createDrawerNavigator } from 'react-navigation-drawer';
+import Constants from 'expo-constants';
 
 import {
   StyleSheet,
@@ -7,6 +8,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  Dimensions,
+  Text,
 } from 'react-native';
 import Menu from '../dmSettings';
 import ScreenWrapper from '../../../components/ScreenWrapper';
@@ -23,6 +26,7 @@ import { SUB_TO_MESSAGES_BY_CHANNEL_ID } from '../../../graphql/subscriptions';
 import { compose, graphql, Query } from 'react-apollo';
 import { uploadImage, uploadDocument } from '../../../utils/upload';
 import { UIActivityIndicator } from 'react-native-indicators';
+import { isIphone10 } from '../../../utils/device';
 
 class DMChannelWithoutDrawer extends Component {
   constructor(props) {
@@ -31,15 +35,12 @@ class DMChannelWithoutDrawer extends Component {
     this.state = {
       cryptoEnabled: false,
       text: '',
-      footerLocation: 0,
       uploadInProgress: false,
     };
     this.simpleCrypto = new SimpleCrypto('nope');
   }
-  async componentDidMount() {
-    Keyboard.addListener('keyboardWillShow', this.keyboardWillShow);
-    Keyboard.addListener('keyboardWillHide', this.keyboardWillHide);
 
+  async componentDidMount() {
     if (this.props.activeChannel) {
       this.removeUnreadDM(this.props.activeChannel);
     }
@@ -78,13 +79,7 @@ class DMChannelWithoutDrawer extends Component {
       }
     }
   }
-  keyboardWillShow = e => {
-    this.setState({ footerLocation: e.endCoordinates.height });
-  };
 
-  keyboardWillHide = e => {
-    this.setState({ footerLocation: 0 });
-  };
   async componentDidUpdate(prevProps) {
     if (prevProps.dmSettings !== this.props.dmSettings) {
       this.props.navigation.toggleDrawer();
@@ -209,10 +204,10 @@ class DMChannelWithoutDrawer extends Component {
       variables: { id: this.global.activeChannel || '' },
       updateQuery: (prev, { subscriptionData }) => {
         let newMsg = subscriptionData.data.Message.node;
-        // if (!prev.Channel.messages.find(m => m.id === newMsg.id)) {
-        // merge new messages into prev.messages
-        prev.Channel.messages = [...prev.Channel.messages, newMsg];
-        // }
+        if (!prev.Channel.messages.find(m => m.id === newMsg.id)) {
+          // merge new messages into prev.messages
+          prev.Channel.messages = [...prev.Channel.messages, newMsg];
+        }
 
         return prev;
       },
@@ -250,31 +245,31 @@ class DMChannelWithoutDrawer extends Component {
               <ScreenWrapper styles={[styles.wrapper]}>
                 <Chat user={user} messages={messages} />
                 <KeyboardAvoidingView
-                  behavior='padding'
-                  style={{
-                    position: 'absolute',
-                    left: 0,
-                    right: 0,
-                    bottom: this.state.btnLocation || 0,
-                    backgroundColor: '#0090FF',
-                  }}
+                  behavior="padding"
+                  keyboardVerticalOffset={
+                    Platform.OS === 'android' ? 85 : isIphone10() ? 105 : 80
+                  }
                 >
                   <ChatInput
                     onSend={this.submit}
                     uploadInProgress={this.state.uploadInProgress}
                   />
                 </KeyboardAvoidingView>
-                {/* {Platform.OS === "android" ? (
-                  <KeyboardSpacer topSpacing={-130} />
-                ) : null} */}
               </ScreenWrapper>
             );
           } else {
             return (
               <ScreenWrapper
-                styles={{ justifyContent: 'center', alignItems: 'center' }}
+                styles={{
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
               >
                 <UIActivityIndicator color={'#FFFFFF'} />
+                <Text style={{ marginTop: 15, fontSize: 20, color: '#FFFFFF' }}>
+                  Decrypting Messages
+                </Text>
               </ScreenWrapper>
             );
           }
@@ -284,15 +279,20 @@ class DMChannelWithoutDrawer extends Component {
   }
 }
 
-const DMChannelWithAllGarbage = compose(
-  graphql(CREATE_MESSAGE, { name: 'createMessage' }),
-  graphql(GET_USER_KEYS, {
-    name: 'getUserKeys',
-    options: ({ user, activeChannel }) => ({
-      variables: { user: user, channel: activeChannel },
+const DMChannelWithAllGarbage = withGlobal(({ user, activeChannel }) => ({
+  user,
+  activeChannel,
+}))(
+  compose(
+    graphql(CREATE_MESSAGE, { name: 'createMessage' }),
+    graphql(GET_USER_KEYS, {
+      name: 'getUserKeys',
+      options: ({ user, activeChannel }) => ({
+        variables: { user: user, channel: activeChannel },
+      }),
     }),
-  }),
-)(DMChannelWithoutDrawer);
+  )(DMChannelWithoutDrawer),
+);
 
 export default createDrawerNavigator(
   {
@@ -310,5 +310,8 @@ export default createDrawerNavigator(
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    alignItems: 'stretch',
   },
 });

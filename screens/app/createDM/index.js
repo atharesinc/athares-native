@@ -1,4 +1,4 @@
-import React, { useState } from 'reactn';
+import React, { useState, withGlobal } from 'reactn';
 import {
   View,
   ScrollView,
@@ -29,8 +29,10 @@ import {
   ADD_USER_TO_CHANNEL,
 } from '../../../graphql/mutations';
 import { graphql, compose } from 'react-apollo';
+import { isIphone10 } from '../../../utils/device';
 
 function CreateDM({ user, ...props }) {
+  console.log('user', user);
   const [isFocused, setIsFocused] = useState(false);
   const [tags, setTags] = useState([]);
   const [uploadInProgress, setUploadInProgress] = useState(false);
@@ -56,6 +58,7 @@ function CreateDM({ user, ...props }) {
       </View>
     ));
   };
+
   const submit = async (text = '', file = null) => {
     let response = null;
     let { data } = props;
@@ -69,14 +72,14 @@ function CreateDM({ user, ...props }) {
     //   return false;
     // }
     // if the user addresses themselves, remove them because they'll get added anyway
-    let userIndex = tags.findIndex(u => u.id === props.user);
+    let userIndex = tags.findIndex(u => u.id === user);
     if (userIndex !== -1) {
       tags.splice(userIndex, 1);
     }
     if (text.trim().length === 0 && file === null) {
       return false;
     }
-    let { User: user } = data;
+    let { User: userObj } = data;
 
     // create a symmetric key for the new channel
     var _secretKey = SimpleCrypto.generateRandom({ length: 256 });
@@ -84,7 +87,7 @@ function CreateDM({ user, ...props }) {
     var simpleCrypto = new SimpleCrypto(_secretKey);
 
     // add this user to the list of selectedUsers
-    tags.push(user);
+    tags.push(userObj);
 
     const tempName = tags.map(u => u.firstName + ' ' + u.lastName).join(', ');
 
@@ -154,7 +157,7 @@ function CreateDM({ user, ...props }) {
       let newMessage = {
         text: simpleCrypto.encrypt(text.trim()),
         channel: id,
-        user: props.user,
+        user,
         file: response ? simpleCrypto.encrypt(response.url) : null,
         fileName: response ? response.name : null,
       };
@@ -217,9 +220,14 @@ function CreateDM({ user, ...props }) {
         />
       </View>
       <Chat user={user} messages={[]} />
-      <ChatInput onSend={submit} uploadInProgress={uploadInProgress} />
-      <KeyboardAvoidingView behavior="padding" />
-      {Platform.OS === 'android' ? <KeyboardSpacer topSpacing={-130} /> : null}
+      <KeyboardAvoidingView
+        behavior="padding"
+        keyboardVerticalOffset={
+          Platform.OS === 'android' ? 100 : isIphone10() ? 105 : 80
+        }
+      >
+        <ChatInput onSend={submit} uploadInProgress={uploadInProgress} />
+      </KeyboardAvoidingView>
     </ScreenWrapper>
   );
 }
@@ -266,12 +274,16 @@ const styles = StyleSheet.create({
   },
 });
 
-export default compose(
-  graphql(CREATE_MESSAGE, { name: 'createMessage' }),
-  graphql(ADD_USER_TO_CHANNEL, { name: 'addUserToChannel' }),
-  graphql(CREATE_CHANNEL, { name: 'createChannel' }),
-  graphql(CREATE_KEY, { name: 'createKey' }),
-  graphql(GET_USER_BY_ID, {
-    options: ({ user }) => ({ variables: { id: user || '' } }),
-  }),
-)(CreateDM);
+export default withGlobal(({ user }) => ({
+  user,
+}))(
+  compose(
+    graphql(CREATE_MESSAGE, { name: 'createMessage' }),
+    graphql(ADD_USER_TO_CHANNEL, { name: 'addUserToChannel' }),
+    graphql(CREATE_CHANNEL, { name: 'createChannel' }),
+    graphql(CREATE_KEY, { name: 'createKey' }),
+    graphql(GET_USER_BY_ID, {
+      options: ({ user }) => ({ variables: { id: user || '' } }),
+    }),
+  )(CreateDM),
+);

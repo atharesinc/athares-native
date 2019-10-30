@@ -48,18 +48,13 @@
     "react-navigation-animated-switch": "^0.3.2",
     "react-navigation-drawer": "^2.1.2",
     "react-navigation-stack": "^2.0.0-alpha.13",
+    "reactn": "^2.2.4",
     "simple-crypto-js": "^2.0.2",
     "subscriptions-transport-ws": "^0.9.15",
     "validate.js": "^0.12.0"
   },
   "devDependencies": {
-    "babel-eslint": "^10.0.3",
     "babel-preset-expo": "^5.0.0",
-    "eslint": "^6.6.0",
-    "eslint-config-airbnb": "^18.0.1",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-react": "^7.16.0",
     "husky": "^3.0.8",
     "prettier": "~1.12.1"
   },

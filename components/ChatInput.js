@@ -79,7 +79,7 @@ export default function ChatInput(props) {
       }
       return <Image style={styles.previewImage} source={{ uri: file.uri }} />;
     } else {
-      return <Icon name='file-text' color={'#FFFFFFb7'} size={20} />;
+      return <Icon name="file-text" color={'#FFFFFFb7'} size={20} />;
     }
   };
 
@@ -105,7 +105,7 @@ export default function ChatInput(props) {
           </Text>
 
           <TouchableOpacity onPress={deleteImage}>
-            <Icon name='x' color={'#FFFFFFb7'} size={20} />
+            <Icon name="x" color={'#FFFFFFb7'} size={20} />
           </TouchableOpacity>
         </View>
       )}
@@ -123,7 +123,7 @@ export default function ChatInput(props) {
         />
         {(input !== '' || file !== null) && (
           <TouchableOpacity onPress={submit} style={styles.sendContainer}>
-            <Icon name='send' size={20} color={'#FFFFFF'} />
+            <Icon name="send" size={20} color={'#FFFFFF'} />
           </TouchableOpacity>
         )}
       </View>
@@ -174,6 +174,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    backgroundColor: '#3a3e52',
+    backgroundColor: 'transparent',
   },
 });
